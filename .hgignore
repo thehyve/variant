@@ -1,0 +1,8 @@
+syntax: regexp
+^bin/
+^develop-eggs/
+.installed.cfg
+^parts/
+
+syntax: glob
+*.pyc

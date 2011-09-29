@@ -1,0 +1,2 @@
+
+from eurreca.settings import *
