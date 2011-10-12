@@ -1,0 +1,63 @@
+{% extends "portal.html" %}
+
+<div id="views">{% block viewsblock %}
+
+    <div id="userlist">{% block userlist %}
+        {% if user_list %} 
+            <b>User list</b>
+            <ul>
+            {% for item in user_list %}
+                <li><a href="/user/{{ user.id }}/">{{ item}}</a></li>
+            {% endfor %}
+            </ul>
+        {% else %}
+            No userlist available.
+        {% endif %}
+    {% endblock userlist %}</div>
+    
+    <div id="authorstuff">
+        <b>Authorstuff</b>
+        {% block authorstuff %}
+            <p>standard authorstuff!</p>
+        {% endblock authorstuff %}
+    </div>
+
+    <div id="authorlist">
+        {% if author_list %}
+            {% block authorlist %}
+                <b>Author list</b>
+                <ul>
+                {% for author in author_list %}
+                    <li><a href="/author/{{ author.id }}/">{{ author.name }}</a></li>
+                {% endfor %}
+                </ul>
+            {% endblock authorlist %}
+        {% endif %}
+    </div>
+    
+    <div id="bookstuff">
+        <b>Bookstuff</b>
+        {% block bookstuff %}
+            <p>standard bookstuff!</p>
+        {% endblock %}
+    </div>
+    
+    <div id="booklist">
+        {% if book_list %}
+            {% block booklist %}
+            <b>Book list</b>
+            
+                <ul>
+                {% for book in book_list %}
+                    <li><a href="/book/{{ book.id }}/">{{ book.name }}</a></li>
+                {% endfor %}
+                </ul>
+            {% endblock booklist %}
+        {% endif %}
+    </div>
+{% endblock viewsblock %}</div>
+
+<div id="bookstuff">{% block editingblock %}
+    <b>Editing</b>
+    <p>This is standard content in the 'editingblock' block.</p>
+{% endblock editingblock %}</div>

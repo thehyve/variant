@@ -1,4 +1,3 @@
-
 from django.conf.urls.defaults import *
 from django.conf import settings
 
@@ -11,10 +10,15 @@ urlpatterns = patterns('',
     # (r'^{{ project_name }}/', include('{{ project_name }}.foo.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:
-    # (r'^admin/doc/', include('django.contrib.admindocs.urls')),
+    (r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
-    # Uncomment the next line to enable the admin:
+    (r'^login/$', 'django.contrib.auth.views.login'),
+    (r'^logout/$', 'eurreca.views.logout_view'),
     (r'^admin/', include(admin.site.urls)),
+    (r'^index/$', 'eurreca.views.index'),
+    (r'^edit$', 'eurreca.views.editing_mode'),
+    (r'^specific_view/$', 'eurreca.views.specific_view'),
+    (r'^$', 'eurreca.views.index'),
 )
 
 if settings.DEBUG:

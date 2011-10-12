@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block pageTitle %}Portal{% endblock pageTitle %}
+
+{% block testingtesting %}<div><a href="/">This links to a general view</a></div><div><a href="/specific_view/">This links to a more specific view</a></div>{% endblock testingtesting %}
+
+{% block body %}
+    {% block portalSpecificContent %}
+            {% block viewsblock %}
+                <p>MISSING viewsblock content!</p>
+            {% endblock viewsblock %}
+
+            {% block editingblock %}
+                <p>MISSING editingblock content!</p>
+            {% endblock editingblock %}
+    {% endblock portalSpecificContent %}
+{% endblock body %}

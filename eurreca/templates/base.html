@@ -1,0 +1,33 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+        {% block head %}
+            <title>{% block pageTitle %}{% endblock pageTitle %}</title>
+        {% endblock %}
+    </head>
+    <body>
+        {% block bodyHeader %}
+            {% if user.is_authenticated %}
+                <h2>Welcome {{ user }}! You are logged in. <a href="/logout/">Click here to logout</a>.</h2>
+            {% else %}
+                <h2>Welcome. You are not logged in. <a href="/login/">Click here to login</a>.</h2>
+            {% endif %}
+        {% endblock bodyHeader %}
+        <hr/>
+        {% block menu %}
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/login/">Login</a></li>
+                <li><a href="/logout/">Logout</a></li>
+             </ul>
+        {% endblock menu %}
+        <hr/>
+            {% block testingtesting %}{% endblock testingtesting %}
+            {% block moretestingtesting %}The requested template is {{templateNameJustForTesting}}.{% endblock moretestingtesting %}
+        <hr/>
+        {% block body %}
+            Content should be placed here.
+        {% endblock body %}
+    </body>
+</html>

@@ -84,6 +84,9 @@ STATICFILES_FINDERS = (
 #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
+# URL of the login page.
+LOGIN_URL = '/login/'
+
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = ')fbh4mr9ll-ap*53ff@3q63_1^4wd94x29ho)r7ar6!ox^ww*4'
 
@@ -108,7 +111,8 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    os.path.join(os.path.dirname(__file__), "templates"),
+    #os.path.join(os.path.dirname(__file__), "templates"),
+    "C:/Users/Workerbee/Documents/NetBeansProjects/djangoProject/eurreca/templates",
 )
 
 INSTALLED_APPS = (
@@ -147,4 +151,8 @@ LOGGING = {
             'propagate': True,
         },
     }
+}
+
+DEBUG_TOOLBAR_CONFIG = {
+    'INTERCEPT_REDIRECTS' : False
 }
