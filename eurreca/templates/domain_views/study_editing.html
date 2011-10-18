@@ -2,14 +2,23 @@
 
 {% block studyBlock %}
     {% for form in formset %}
-        <form method="post" action="/studies/update/{{ form.id.value }}">{% csrf_token %}
+            {% if form.id.value == null %}
+                <form method="post" action="/studies/create/">
+            {% else %}
+                <form method="post" action="/studies/update/{{ form.id.value }}">
+            {% endif %}
+        
+            {% csrf_token %}
             {{ formset.management_form }}
-            {% if form.study_id.value != '' %}
+            
+            {% if form.study_id.value != None %}
                 {{ form.study_id.value }}
             {% endif %}
+            
             <table>
                 {% for field in form %}
                     {% if not field.name == 'id' %}
+                    
                         {% if field.errors %}
                             <tr class = "error {{ field.name }}">
                             <td class= "error"></td>
@@ -17,6 +26,7 @@
                             <tr class = "formfield {{ field.name }}">
                             <td class= "formspacer"></td>
                         {% endif %}
+                        
                         <td>{{ field.label_tag }}</td> 
                         <td>{{ field }}</td>
                         <td>
@@ -27,20 +37,19 @@
                             {% endif %}
                         </td>
                         </tr>
-                    {% else %}  
-                        <td style="display:none;">{{ field.label_tag }}</td> 
-                        <td style="display:none;">{{ field }}</td> 
                     {% endif %}                
                 {% endfor %}
             </table>
             <input type="submit" value="Submit" />
         </form>
-        <span class="button">
-            <a href="/studies/remove/{{ form.id.value }}">
-                <img alt="Remove" src="{{ STATIC_URL }}images/icons/delete.png">
-                Remove this study.
-            </a>
-        </span>
+        {% if form.id.value != None %}
+            <span class="button">
+                <a href="/studies/remove/{{ form.id.value }}">
+                    <img alt="Remove" src="{{ STATIC_URL }}images/icons/delete.png">
+                    Remove this study.
+                </a>
+            </span>
+        {% endif %} 
         <p> {{ form.error_dict }} </p>
     {% endfor %}
 {% endblock studyBlock %}

@@ -14,9 +14,9 @@ from django.shortcuts import render
 from django.http import Http404
 
 def index(request):
-    user_list = User.objects.all()[:5]
-    book_list = Book.objects.all().order_by('name')[:5]
-    author_list = Author.objects.all().order_by('name')[:5]
+    user_list = User.objects.all()[:50]
+    book_list = Book.objects.all().order_by('name')[:50]
+    author_list = Author.objects.all().order_by('name')[:50]
     t = loader.get_template('views.html')
     c = RequestContext( 
         request,
@@ -36,7 +36,7 @@ def logout_view(request):
     return HttpResponseRedirect('/')
 
 def study_list(request):
-    study_list = Study.objects.all()[:5]
+    study_list = Study.objects.all()[:50]
     t = loader.get_template('domain_views/study_list.html')
     c = RequestContext( 
         request,
@@ -60,6 +60,10 @@ def study_create(request):
             print '\nsaved successfully\n'
             message = "The study has been saved."
             messageType = "positive"
+            return render(request, 'domain_views/study_list.html', 
+                {'message' : message,
+                 'messageType' : messageType,
+                 'study_list' : Study.objects.all()[:50],})
         else:
             print '\ndid not save, form invalid',formset.errors,'\n'
             message =  "The study has not been saved."
@@ -85,9 +89,9 @@ def study_update(request, id):
             message = "The study has been saved."
             messageType = "positive"
             return render(request, 'domain_views/study_list.html', 
-            {'message' : message,
-             'messageType' : messageType,
-             'study_list' : Study.objects.all()[:5],})
+                {'message' : message,
+                 'messageType' : messageType,
+                 'study_list' : Study.objects.all()[:50],})
         else:
             print '\ndid not save, form invalid',formset.errors,'\n'
             message =  "The study has not been saved."
@@ -100,7 +104,7 @@ def study_update(request, id):
             return render(request, 'domain_views/study_list.html', 
                 {'message' : "The requested study does not exist.",
                  'messageType' : "negative",
-                  'study_list' : Study.objects.all()[:5],})
+                 'study_list' : Study.objects.all()[:50],})
 
     return render(request, 'domain_views/study_editing.html', 
         {'formset' : formset, 
@@ -116,7 +120,7 @@ def study_view(request, id):
         return render(request, 'domain_views/study_list.html', 
             {'message' : "The requested study does not exist.",
              'messageType' : "negative",
-             'study_list' : Study.objects.all()[:5],})
+             'study_list' : Study.objects.all()[:50],})
 
     return render(request, 'domain_views/study_view.html', 
         {'formset' : formset, 
@@ -139,4 +143,4 @@ def study_remove(request, id):
     return render(request, 'domain_views/study_list.html', 
             {'message' : message,
              'messageType' : messageType,
-             'study_list' : Study.objects.all()[:5],})  
+             'study_list' : Study.objects.all()[:50],})  
