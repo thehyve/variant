@@ -4,30 +4,58 @@
     <head>
         {% block head %}
             <title>{% block pageTitle %}{% endblock pageTitle %}</title>
+            <link rel="stylesheet" type="text/css" 
+                href="{{ STATIC_URL }}css/main.css" />
         {% endblock %}
     </head>
     <body>
-        {% block bodyHeader %}
-            {% if user.is_authenticated %}
-                <h2>Welcome {{ user }}! You are logged in. <a href="/logout/">Click here to logout</a>.</h2>
-            {% else %}
-                <h2>Welcome. You are not logged in. <a href="/login/">Click here to login</a>.</h2>
-            {% endif %}
-        {% endblock bodyHeader %}
-        <hr/>
-        {% block menu %}
-            <ul>
-                <li><a href="/">Home</a></li>
-                <li><a href="/login/">Login</a></li>
-                <li><a href="/logout/">Logout</a></li>
-             </ul>
-        {% endblock menu %}
-        <hr/>
-            {% block testingtesting %}{% endblock testingtesting %}
-            {% block moretestingtesting %}The requested template is {{templateNameJustForTesting}}.{% endblock moretestingtesting %}
-        <hr/>
-        {% block body %}
-            Content should be placed here.
-        {% endblock body %}
+        <div class="content_header_block">
+            {% block header %}
+                <div class="eurreca_header">
+                    <a href="#">
+                        <img alt="Eurreca" src="{{ STATIC_URL }}images/eurreca_logo.png">
+                    </a>
+                </div>
+            {% endblock header %}
+            <div class="app_header_block">
+                {% block bodyHeader %}
+                    <div class="user_status">
+                        <div class="user_status_box">
+                        {% if user.is_authenticated %}
+                            Welcome {{ user }}! You are logged in. <a href="{% url logout %}">Click here to logout</a>.
+                        {% else %}
+                            Welcome. You are not logged in. <a href="{% url login %}">Click here to login</a>.
+                        {% endif %}
+                        </div>
+                    </div>
+                    {% block menu %}
+                        <div class="vertical_menu">
+                            <ul class="menu">
+                                <li><a href="/">Home</a></li>
+                                <li><a href="/studies/">Studies</a></li>
+                                <li><a href="/login/">Login</a></li>
+                                <li><a href="/logout/">Logout</a></li>
+                             </ul>
+                         </div>
+                    {% endblock menu %}
+                {% endblock bodyHeader %}
+            </div>
+            {% block studyMenu %}{% endblock studyMenu %}
+        </div> 
+        <div class="content">
+            {% block body %}
+                Content should be placed here.
+            {% endblock body %}
+        </div>
+        <div class="footers">
+            {% block footer %}
+                <div class="thehyve">
+                    <a href="http://www.thehyve.nl">
+                        Developed by<br/>
+                        <img alt="The Hyve" src="{{ STATIC_URL }}images/thehyve_logo.png">
+                    </a>
+                </div>
+            {% endblock footer %}
+        </div>
     </body>
 </html>

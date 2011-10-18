@@ -1,0 +1,21 @@
+{% extends "domain_views/study_specific.html" %}
+
+{% block studyBlock %}
+    {{ formset.management_form }}
+    <table>
+        {% for form in formset %}
+            {% if form.fields.study_id != '' %}
+                <p>{{ form.fields.study_id.name }}</p>
+            {% endif %}
+            {% for field in form %}
+                {% if not field.name == 'id' %}
+                    <tr class = "formfield {{ field.name }}">
+                        <td class= "formspacer"></td>
+                        <td>{{ field.name }}</td> 
+                        <td>{{ field.value }}</td>
+                    </tr>
+                {% endif %}                
+            {% endfor %}
+        {% endfor %}
+    </table>
+{% endblock studyBlock %}

@@ -1,0 +1,44 @@
+{% extends "domain_views/study_specific.html" %}
+
+{% block studyBlock %}
+	<form method="post" action=".">{% csrf_token %}
+		{{ formset.management_form }}
+        <table>
+            {% for form in formset %}
+                {% if form.fields.study_id != '' %}
+                    <p>{{ form.fields.study_id.name }}</p>
+                {% endif %}
+                {% for field in form %}
+                    {% if not field.name == 'id' %}
+                        {% if field.errors %}
+                            <tr class = "error {{ field.name }}">
+                            <td class= "error"></td>
+                        {% else %}
+                            <tr class = "formfield {{ field.name }}">
+                            <td class= "formspacer"></td>
+                        {% endif %}
+                        <td>{{ field.label_tag }}</td> 
+                        <td>{{ field }}</td>
+                        <td>
+                            {% if field.errors %}
+                                {% for error in field.errors %}
+                                    {{ error|escape }} 
+                                {% endfor %}
+                            {% endif %}
+                        </td>
+                        </tr>
+                    {% endif %}                
+                {% endfor %}
+            {% endfor %}
+        </table>
+        <input type="submit" value="Submit" />
+	</form>
+    <span class="button">
+        <a href="/studies/remove/{{study.id}}">
+            <img alt="Remove" src="{{ STATIC_URL }}images/icons/delete.png">
+            Remove this study.
+        </a>
+    </span>
+	
+    <p> {{ form.error_dict }} </p>
+{% endblock studyBlock %}
