@@ -2,11 +2,11 @@
 
 {% block studyBlock %}
     {{ formset.management_form }}
+    {% if form.study_id.value != '' %}
+        {{ form.study_id.value }}
+    {% endif %}
     <table>
         {% for form in formset %}
-            {% if form.fields.study_id != '' %}
-                <p>{{ form.fields.study_id.name }}</p>
-            {% endif %}
             {% for field in form %}
                 {% if not field.name == 'id' %}
                     <tr class = "formfield {{ field.name }}">

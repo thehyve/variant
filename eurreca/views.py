@@ -68,7 +68,7 @@ def study_create(request):
     else:
         formset = StudyFormSet(queryset=Study.objects.none())
 
-    return render(request, 'domain_views/study_create.html', 
+    return render(request, 'domain_views/study_editing.html', 
         {'formset' : formset, 
          'message' : message,
          'messageType' : messageType,})
@@ -81,10 +81,13 @@ def study_update(request, id):
         formset = StudyFormSet(request.POST, request.FILES)
         if formset.is_valid():
             formset.save()
-            # do something.
             print '\nsaved successfully\n'
             message = "The study has been saved."
             messageType = "positive"
+            return render(request, 'domain_views/study_list.html', 
+            {'message' : message,
+             'messageType' : messageType,
+             'study_list' : Study.objects.all()[:5],})
         else:
             print '\ndid not save, form invalid',formset.errors,'\n'
             message =  "The study has not been saved."
@@ -94,13 +97,12 @@ def study_update(request, id):
         try:
             formset = StudyFormSet(queryset=Study.objects.filter(pk=id))
         except Study.DoesNotExist:
-            #raise Http404
             return render(request, 'domain_views/study_list.html', 
                 {'message' : "The requested study does not exist.",
                  'messageType' : "negative",
                   'study_list' : Study.objects.all()[:5],})
 
-    return render(request, 'domain_views/study_create.html', 
+    return render(request, 'domain_views/study_editing.html', 
         {'formset' : formset, 
          'message' : message,
          'messageType' : messageType,})  
@@ -111,13 +113,30 @@ def study_view(request, id):
     try:
         formset = StudyFormSet(queryset=Study.objects.filter(pk=id))
     except Study.DoesNotExist:
-        #raise Http404
         return render(request, 'domain_views/study_list.html', 
             {'message' : "The requested study does not exist.",
              'messageType' : "negative",
-              'study_list' : Study.objects.all()[:5],})
+             'study_list' : Study.objects.all()[:5],})
 
     return render(request, 'domain_views/study_view.html', 
         {'formset' : formset, 
          'message' : message,
          'messageType' : messageType,})           
+         
+def study_remove(request, id):
+    message = ""
+    messageType = ""
+    try:
+        # Does not yet handle related objects
+        study = Study.objects.get(pk=id)
+        study.delete()
+        message = "Study was succesfully deleted."
+        messageType = "positive"        
+    except Study.DoesNotExist:
+        message = "The requested study does not exist."
+        messageType = "negative"
+
+    return render(request, 'domain_views/study_list.html', 
+            {'message' : message,
+             'messageType' : messageType,
+             'study_list' : Study.objects.all()[:5],})  
