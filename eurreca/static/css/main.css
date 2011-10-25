@@ -121,6 +121,27 @@ div#studylist {
     background-color: #FFFFFF;
 }
 
+div#studylistText {
+    display: inline-block;
+    padding: 0px 0px 0px 20px;
+    background-color: #F8FFF0;
+}
+
+ul#studyList {
+    display: table-row;
+    list-style-type:none;
+}
+
+tr#studyTable {
+    background-color: #F8FFF0;
+}
+
+div#studyTableText {
+    display: inline-block;
+    padding: 0px 0px 0px 20px;
+    background-color: #F8FFF0;
+}
+
 /* end content */
 
 
@@ -129,7 +150,6 @@ tr.formfield {
     background-color: lightgoldenrodyellow;
     border: 5px solid #000000;
     padding: 0px 0px 0px 20px;
-    text-align: center;
 }
 tr.error {
     background-color: #ffcccc;
@@ -146,8 +166,8 @@ td.formspacer {
     padding: 0px 0px 0px 20px;
 }
 
-ul#studyList {
-    list-style-type:none;
+div#hiddenFormField {
+    display: none;
 }
 /* end forms */
 
@@ -169,3 +189,15 @@ div.negativeMessage {
     text-align: center;
 }
 /* end messages */
+
+
+/*login block */
+div#loginBlock {
+    margin:0 auto;
+    width:200px;
+    #text-align:left;
+}
+
+div#loginForm {
+    #display: block;
+}

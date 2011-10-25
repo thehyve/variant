@@ -3,21 +3,27 @@
 {% block studyBlock %}
     <b>Studies</b>
     <p>There are {{ study_list|length }} studies.</p>
-    <ul id="studyList">
+    <table id="studyTable">
         {% for study in study_list %}
-            <li>
-                <span class="button">
-                    <a href="/studies/view/{{study.id}}">
-                        <img alt="View" src="{{ STATIC_URL }}images/icons/page.png">
-                    </a>    
-                </span> 
-                <span class="button">
-                    <a href="/studies/update/{{study.id}}">
-                        <img alt="Edit" src="{{ STATIC_URL }}images/icons/page_edit.png">
-                    </a>    
-                </span> 
-                {{ study }}
-            </li>
+            <tr id="studyTable">
+                <td id="studylistText"> 
+                    <span class="button">
+                        <a href="/studies/view/{{study.id}}">
+                            <img alt="View" src="{{ STATIC_URL }}images/icons/page.png">
+                        </a>    
+                    </span> 
+                    <span class="button">
+                        <a href="/studies/update/{{study.id}}">
+                            <img alt="Edit" src="{{ STATIC_URL }}images/icons/page_edit.png">
+                        </a>    
+                    </span> 
+                    <div id="studyTableText"> 
+                        <a href="/studies/view/{{study.id}}">
+                            {{ study }} 
+                        </a>
+                    </div>
+                </td>
+            </tr>
         {% endfor %}
-    </ul>
+    </table>
 {% endblock studyBlock %}
