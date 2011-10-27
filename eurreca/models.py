@@ -18,6 +18,7 @@ class Study(models.Model):
     paper_title = models.CharField(max_length=200)
     journal_title = models.CharField(max_length=200)
     study_type = models.CharField(max_length=200, blank=True)
+    number_of_participants = models.IntegerField(max_length=9, blank=True, null=True)
     
     def __unicode__(self):
         return self.study_id
@@ -46,7 +47,7 @@ class Genotype(models.Model):
     snp_name = models.CharField(max_length=200, blank=True)
     allele = models.CharField(max_length=200, blank=True)
     mutation = models.CharField(max_length=200, blank=True)
-    type = models.CharField(max_length=1, choices=TYPE_CHOICES)
+    zygosity = models.CharField(max_length=1, choices=TYPE_CHOICES)
     
     def __unicode__(self):
         # Order of preference:
@@ -56,3 +57,21 @@ class Genotype(models.Model):
             return self.snp_ref
         else:
             return self.snp_name
+            
+class Panel(models.Model):
+    GENDER_CHOICES = (
+        ('F', 'Female'),
+        ('M', 'Male'),
+        ('X', 'Mixed'),
+        ('U', 'Unknown'),
+    )
+    study_id = models.ForeignKey(Study)
+    genotpye_id = models.ForeignKey(Genotype)
+    gender = models.CharField(max_length=1, choices=GENDER_CHOICES)
+    number_of_participants = models.IntegerField(max_length=10)
+    genotype_frequency = models.CharField(max_length=200, blank=True)
+    estimated_overall_frequency = models.FloatField(max_length=10, blank=True)
+    mean_age = models.FloatField(max_length=10, blank=True)
+    additional_age_description = models.CharField(max_length=200, blank=True)
+    panel_description = models.CharField(max_length=200, blank=True)
+    
