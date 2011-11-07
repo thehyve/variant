@@ -1,100 +1,162 @@
-/*
-The following variables should be declared before inclusion of this .js:
-
-    genotypeCount = {% if genotypeCount %} {{ genotypeCount }} {% else %} 0 {% endif %}
-    phenotypeCount = {% if phenotypeCount %} {{ phenotypeCount }} {% else %} 0 {% endif %}
-    panelCount = {% if panelCount %} {{ panelCount }} {% else %} 0 {% endif %}
-    interactionCount = {% if interactionCount %} {{ interactionCount }} {% else %} 0 {% endif %}
-
-*/
-
-function incCount(id) {
-    if(id=='genotype'){
-        genotypeCount = genotypeCount + 1;
-    }
-    if(id=='phenotype'){
-        phenotypeCount = phenotypeCount + 1;
-    }
-    if(id=='panel'){
-        panelCount = panelCount + 1;        
-    }
-    if(id=='interaction'){
-        interactionCount = interactionCount + 1;        
-    }
-}
-
-function getCount(id) {
-    if(id=='genotype'){
-        return genotypeCount;
-    }
-    if(id=='phenotype'){
-        return phenotypeCount;
-    }
-    if(id=='panel'){
-        return panelCount;        
-    }
-    if(id=='interaction'){
-        return interactionCount;        
-    }
-}
+var interactCache = new Array();
 
 function addRow(id) {
-  strNewRow = '<tr>';
-  $('#'+id+'_row').find('th').find('div#variable_name').each(function(){
-    strNewRow += "<td id='interactionTable'><input type='text' id='"+id+"-"+getCount(id)+"-"+$(this).html()+"' name='"+id+"-"+getCount(id)+"-"+$(this).html()+"' /></td>"
-  });
-  strNewRow += '<td id="interactionTable"><a href="#" onClick="saveRow(\''+id+'\',this); return false;">save</a></td>';
-  strNewRow += '</tr>';
-  $("#"+id).append(strNewRow);
+    strNewRow = '<tr>';
+    $('#'+id+'_row').find('th').each(function(){
+        strNewRow += "<td><input type='text' id='input_"+$(this).attr('id')+"'/></td>"
+    });
+    strNewRow += '<td><a href="#" onClick="saveRow(\''+id+'\',this); return false;">save</a></td>';
+    strNewRow += '</tr>';
+    $("#"+id).append(strNewRow);
 }
 
 function saveRow(id, that) {
-  if(id=='interaction') {
-    saveInteractionRow();
-  }
-  strNewRow = '';
-  $(that).parents('tr').find('input').each(function(){
-    strNewRow += "<td id='interactionTable'>"+$(this).val()+"&nbsp;";
-    strNewRow += "<input type='text' id='"+$(this).attr('id')+"' name='"+$(this).attr('name')+"' style='display: none;' value='"+$(this).val()+"' />"
-    strNewRow += '</td>';
-  });
-  strNewRow += '<td id="interactionTable"><a href="#" onClick="editRow(\''+id+'\',this); return false;">edit</a></td>';
-  $(that).parents('tr').html(strNewRow);
-  incCount(id);
+    
+    iRowNr = $(that).parents('tr').index();
+
+    if(id=='interaction') {
+        arrIndex = saveInteractionRow();
+        interactCache[iRowNr] = arrIndex;
+    } else {
+        $('#interaction tr').each(function() {
+            arrIndex = interactCache[$(this).index()];
+            if(iRowNr==arrIndex[id+'Nrs']) {
+                $(this).css('background-color','red');
+            } else {
+                $(this).css('background-color','');
+            }
+            
+        });
+    }
+                    
+    strNewRow = '';
+    $(that).parents('tr').find('input').each(function(){
+        strNewRow += "<td>"+$(this).val()+"</td>";
+    });
+    strNewRow += '<td><a href="#" onClick="editRow(\''+id+'\',this); return false;">edit</a></td>';
+    $(that).parents('tr').html(strNewRow);
 }
 
 function saveInteractionRow() {
-  $("#genotype").append(
-    "<tr><td id='interactionTable'>"+$('#interaction-'+getCount('interaction')+'-gene').val()+
-    "<input type='text' name='genotype-"+getCount('genotype')+"-gene' style='display: none;' value='"+$('#interaction-'+getCount('interaction')+'-gene').val()+"' />"+
-    "&nbsp;</td><td id='interactionTable'>"+$('#interaction-'+getCount('interaction')+'-snp_ref').val()+
-    "<input type='text' name='genotype-"+getCount('genotype')+"-snp_ref' style='display: none;' value='"+$('#interaction-'+getCount('interaction')+'-snp_ref').val()+"' />"+
-    +"&nbsp;</td><td id='interactionTable'>&nbsp;</td>"+
-    "<td id='interactionTable'>&nbsp;</td><td id='interactionTable'>"+ 
-    "<a href='#' onClick='editRow(\"genotype\",this); return false;'>edit</a></td></tr>");
-  incCount('genotype');
-  $("#phenotype").append("<tr><td id='interactionTable'>"+$('#interaction-'+getCount('interaction')+'-phenotype_name').val()+
-    "<input type='text' name='phenotype-"+getCount('phenotype')+"-phenotype_name' style='display: none;' value='"+$('#interaction-'+getCount('interaction')+'-phenotype_name').val()+"' />"+
-    "&nbsp;</td><td id='interactionTable'>&nbsp;</td><td id='interactionTable'>"+
-    "<a href='#' onClick='editRow(\"phenotype\",this); return false;'>edit</a></td></tr>");
-  incCount('phenotype');
-  $("#panel").append("<tr><td id='interactionTable'>"+$('#interaction-'+getCount('interaction')+'-description').val()+
-    "<input type='text' name='panel-"+getCount('panel')+"-description' style='display: none;' value='"+$('#interaction-'+getCount('interaction')+'-description').val()+"' />"+
-    "&nbsp;</td><td id='interactionTable'>&nbsp;</td><td id='interactionTable'>&nbsp;</td>"+ 
-    "<td><a href='#' onClick='editRow(\"panel\",this); return false;'>edit</a></td></tr>");
-  incCount('panel');
+    iGenotype = null;
+    $('#genotype tr').each(function() {
+        if($(this).children('td:nth-child(1)').html()==$('#input_genotype-gene').val() && $(this).children('td:nth-child(2)').html()==$('#input_genotype-snp_ref').val() ) {
+            iGenotype = $(this).index();
+        }
+    });
+    if(iGenotype==null) {                
+        $("#genotype").append("<tr><td>"+$('#input_genotype-gene').val()+"</td><td>"+$('#input_genotype-snp_ref').val()+"</td><td></td><td></td><td><a href='#' onClick='editRow(\"genotype\",this); return false;'>edit</a></td></tr>");
+        iGenotype = $("#genotype").find("tr").length-1;
+    }
+    
+    iPhenotype = null;
+    $('#phenotype tr').each(function() {
+        if($(this).children('td:nth-child(1)').html()==$('#input_phenotype-phenotype_name').val()) {
+            iPhenotype = $(this).index();
+        }
+    });
+    if(iPhenotype==null) {                
+        $("#phenotype").append("<tr><td>"+$('#input_phenotype-phenotype_name').val()+"</td><td></td><td><a href='#' onClick='editRow(\"phenotype\",this); return false;'>edit</a></td></tr>");
+        iPhenotype = $("#phenotype").find("tr").length-1;
+    }
+    
+    iPanel = null;
+    $('#panel tr').each(function() {
+        if($(this).children('td:nth-child(1)').html()==$('#input_panel-panel_description').val()) {
+            iPanel = $(this).index();
+        }
+    });
+    if(iPanel==null) {                
+        $("#panel").append("<tr><td>"+$('#input_panel-panel_description').val()+"</td><td></td><td></td><td><a href='#' onClick='editRow(\"panel\",this); return false;'>edit</a></td></tr>");
+        iPanel = $("#panel").find("tr").length-1;
+    }				
+    
+    return {"genotypeNrs":iGenotype, "phenotypeNrs":iPhenotype, "panelNrs":iPanel};
 }
 
 function editRow(id, that) {
-  lstHeaders = $('#'+id+'_row').find('th');
-  iCounter = 0;
-  $(that).parents('tr').find('td').each(function(){
-    if(iCounter < lstHeaders.length) {
-      oldVal = $(this).html();
-      $(this).html("<input type='text' id='"+$(lstHeaders[iCounter]).html()+"'  name='"+$(lstHeaders[iCounter]).html()+"' value='"+oldVal+"' />");
-    } else {
-      $(this).html('<a href="#" onClick="saveRow(\''+id+'\',this); return false;">save</a>');
+    lstHeaders = $('#'+id+'_row').find('th');
+    iCounter = 0;
+    $(that).parents('tr').find('td').each(function(){
+        if(iCounter < lstHeaders.length) {
+            oldVal = $(this).html();
+            $(this).html("<input type='text' id='"+$(lstHeaders[iCounter]).html()+"' value='"+oldVal+"'/>");
+        } else {
+            $(this).html('<a href="#" onClick="saveRow(\''+id+'\',this); return false;">save</a>');
+        }
+        iCounter = iCounter + 1;
+    });
+}
+
+function submitData() {
+    genotypes = '"genotype":'+submitDataHelper('genotype');
+
+    phenotypes = '"phenotype":'+submitDataHelper('phenotype');
+    
+    panels =  '"panel":'+submitDataHelper('panel');
+    
+    //interactions = '"interaction":'+submitDataHelper('interaction');
+    interactions = '"interaction":{';
+    count = 0;
+    coll = $('#interaction tr td:nth-child(5)');
+    coll.each(function() {
+        rij = this;
+        interactions = interactions + '"'+count+'":"'+$(rij).html()+'"';
+        count = count + 1;
+        if(count!=coll.length){
+            interactions = interactions + ',';
+        }
+    });
+    interactions = interactions + '}'
+    
+    interactionRelations = '"interactionRelations":'+retrieve_interaction_relations();
+
+    returnObject =  '{' + genotypes + "," + phenotypes + "," + panels + ",";
+    returnObject += interactions + ',' + interactionRelations + '}'; 
+    
+    form = $('form[name=study_editing]');
+    formstuff = "<input type=hidden name='returnObject' value='";
+    form.append(formstuff + returnObject +"'>");
+    form.submit();
+}
+
+function retrieve_interaction_relations(){
+    ret = '{';
+    
+    for(i=0;i<interactCache.length;i++){
+        if(ret.length>1) {
+            ret+= ',';
+        }
+        ret += '"'+i+'":{"genotype":'+interactCache[i]["genotypeNrs"]+',"phenotype":'+interactCache[i]["phenotypeNrs"]+',"panel":'+interactCache[i]["panelNrs"]+'}';
     }
-    iCounter = iCounter + 1;
-  });
+    ret += "}";
+    return ret;
+}
+
+function submitDataHelper(type){
+    headers = []
+    $('#'+type+'_row').find('th').each(function(){
+        headers.push($(this).attr('id'));
+    });
+    
+    ret = '{';
+    count = 0;
+    coll = $('#'+type+' tr');
+    coll.each(function() {
+        string = '';
+        count2 = 0;
+        coll2 = $(this).children('td:not(:last-child)');
+        coll2.each(function() {
+            item = $(this).html();
+            if(item==''){ item = 'null'; }
+            string += '"'+headers[count2]+'":"'+item+'"';
+            count2 += 1;
+            if(count2!=coll2.length){ string += ","; }
+        });
+        ret += '"'+count+'":{'+string+'}';
+        count += 1;
+        if(count!=coll.length){ ret += ","; }
+    });
+    ret += "}";
+    return ret;
 }

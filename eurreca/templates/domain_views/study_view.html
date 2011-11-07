@@ -32,4 +32,49 @@
             {% endfor %}
         {% endfor %}
     </table>
+    
+    <p>Phenotype</p>
+    <table>
+        {% for form in formsetPhenotype %}
+            {% for field in form %}
+                 {% if not field.name == 'study_id' and not field.name == 'id' %}
+                    <tr class = "formfield {{ field.name }}">
+                        <td class= "formspacer"></td>
+                        <td>{{ field.name }}</td> 
+                        <td>{{ field.value }}</td>
+                    </tr>
+                {% endif %}                
+            {% endfor %}
+        {% endfor %}
+    </table>
+    
+    <p>Panel</p>
+    <table>
+        {% for form in formsetPanel %}
+            {% for field in form %}
+                 {% if not field.name == 'study_id' and not field.name == 'id' %}
+                    <tr class = "formfield {{ field.name }}">
+                        <td class= "formspacer"></td>
+                        <td>{{ field.name }}</td> 
+                        <td>{{ field.value }}</td>
+                    </tr>
+                {% endif %}                
+            {% endfor %}
+        {% endfor %}
+    </table>
+    
+    <p>Interaction</p>
+    <table>
+        {% for form in formsetInteraction %}
+            {% for field in form %}
+                 {% if not field.name == 'study_id' and not field.name == 'id' %}
+                    <tr class = "formfield {{ field.name }}">
+                        <td class= "formspacer"></td>
+                        <td>{{ field.name }}</td> 
+                        <td>{{ field.value }}</td>
+                    </tr>
+                {% endif %}                
+            {% endfor %}
+        {% endfor %}
+    </table>
 {% endblock studyBlock %}
