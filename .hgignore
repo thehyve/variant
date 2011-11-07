@@ -7,3 +7,6 @@ eurecca.db
 
 syntax: glob
 *.pyc
+
+syntax: regexp
+^\.project$
