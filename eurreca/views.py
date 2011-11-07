@@ -53,52 +53,54 @@ def study_create(request):
     message = ""
     messageType = ""
     if request.method == 'POST':
-        all_went_well = True
-        
-        # Saving the study
         formset = StudyFormSet(request.POST, prefix="study")
-        formsetGenotype = GenotypeFormSet(request.POST, prefix="genotype")
-        study = None
-        if formset[0].is_valid:
+        forms = {}
+
+        if formset[0].is_valid():
+            study = formset[0].save()
             try:
-                study = formset[0].save()
-            except:
-                all_went_well = False
-        else:
-            all_went_well = False
-            
-        if all_went_well:
-            # We can now save the genotypes with the correct study id
-            try:
-                formsetGenotypeData = []
-                for form in formsetGenotype:
-                    data = {}
-                    for field in form:
-                        data[field.name] = field.value()
-                    data['study_id'] = study.id
-                    formGenotype = GenotypeForm(data)
-                    formGenotype.save()
-                message =  "The study has been saved."
+                # There are no old items. Create and pass the object anyway,
+                # so that we can re-use 'update'-functions
+                old_items = {'study':[],'genotype':[],'phenotype':[],'panel':[], 'interaction':[]}  
+                
+                # Fill forms to get new items, save the forms
+                forms = eurecca_utils.process_clientside_studydata(
+                    json.loads(request.POST['returnObject']), study, old_items)
+      
+                # Study has been saved, return to study list
+                message = "The study has been saved."
                 messageType = "positive"
-            except:
-                all_went_well = False
-        if all_went_well:
-            return render(request, 'domain_views/study_list.html', 
-                {'message' : message,
-                 'messageType' : messageType,
-                 'study_list' : Study.objects.all()[:50],})  
+                print "The study has been saved."                
+                return render(request, 'domain_views/study_list.html', 
+                    {'message' : message,
+                     'messageType' : messageType,
+                     'study_list' : Study.objects.all()[:50],})
+            except Exception as inst:
+                print "in study create view"
+                print type(inst)     # the exception instance
+                print inst.args      # arguments stored in .args
+                print inst    
+                # Exception while reading or writing the study-related objects
+                message =  "The study has not been saved."
+                message += " Please review the errors and try again. "+str(inst)
+                messageType = "negative"
+                
+                # Remove the new study
+                study.delete()
+                
+                return render(request, 'domain_views/study_editing.html', 
+                    {'formset' : formset, 
+                     'message' : message,
+                     'messageType' : messageType,})  
         else:
-            print 'formset.errors',formset.errors
-            message =  "The study has not been saved. "
+            # Study form did not validate
+            message =  "The study has not been saved."
             message += "Please review the errors and try again."
             messageType = "negative"
-            # Everything that has been saved so far, needs to be deleted.
-            if study != None:
-                study.delete()
-                gts = Genotype.objects.filter(study_id=study.id)
-                for gt in gts:
-                    if gt != None:
-                        gt.delete()
+            return render(request, 'domain_views/study_editing.html', 
+                {'formset' : formset, 
+                 'message' : message,
+                 'messageType' : messageType,})  
     else:
         formset = StudyFormSet(queryset=Study.objects.none(), prefix="study")
         formsetGenotype = GenotypeFormSet(queryset=Genotype.objects.none(), prefix="genotype")
@@ -125,38 +127,25 @@ def study_update(request, id):
             old_study = Study.objects.get(pk=id)
             study = formset[0].save()
             try:
+                # Make list of old items, so that the could be restored if
+                # necessary.
                 old_Genotypes = Genotype.objects.filter(study_id=id)
                 old_Phenotypes = Phenotype.objects.filter(study_id=id)
                 old_Panels = Panel.objects.filter(study_id=id)
                 old_Interactions = Interaction.objects.filter(study_id=id)
-                print 'request.POST',request.POST 
-                print 'about to retrieve returnObject from request.POST'
-                jason = json.loads(request.POST['returnObject'])
-                print 'done so succesfully'
-                print "jason:",jason
+                old_items = {'study':[old_study],'genotype':old_Genotypes,'phenotype':old_Phenotypes,'panel':old_Panels, 'interaction':old_Interactions}
                 
-                forms = eurecca_utils.process_clientside_studydata(jason, study)
-                        
-                print "Commencing form validation round 2."
-                for key in forms:
-                    #print key
-                    count = 0
-                    for form in forms[key]:
-                        #print "\t",count
-                        count += 1
-                        if not form.is_valid():
-                            print "ValueError?"
-                            raise ValueError('Some of the forms did not validate.')
-                        #for field in form:
-                        #    if not field.value() == None:
-                        #        print "\t\t",field.name,field.value()
-                print "Validation went swimmingly."
+                # Remove old items, except study
                 for gt in old_Genotypes: gt.delete()
                 for pt in old_Phenotypes: pt.delete()
                 for p in old_Panels: p.delete()
-                for i in old_Interactions: i.delete()            
-                for key in forms:
-                    for form in forms[key]: obj = form.save()
+                for i in old_Interactions: i.delete()      
+                
+                # Fill forms to get new items, save the forms
+                forms = eurecca_utils.process_clientside_studydata(
+                    json.loads(request.POST['returnObject']), study, old_items)
+      
+                # Study has been saved, return to study list
                 message = "The study has been saved."
                 messageType = "positive"
                 print "The study has been saved."                
@@ -165,24 +154,19 @@ def study_update(request, id):
                      'messageType' : messageType,
                      'study_list' : Study.objects.all()[:50],})
             except Exception as inst:
+                print "in study update view"
                 print type(inst)     # the exception instance
                 print inst.args      # arguments stored in .args
                 print inst    
                 # Exception while reading or writing the study-related objects
                 message =  "The study has not been saved."
-                message += "Please review the errors and try again."
+                message += " Please review the errors and try again."+str(inst)
                 messageType = "negative"
+                
+                # Remove the new study and re-save the old study
                 study.delete()
                 old_study.save()
-                print "That was exceptional."
-                for key in forms:
-                    print key
-                    count = 0
-                    for form in forms[key]:
-                        print "\t",count
-                        for error in form.errors:
-                            print "\t\t",error,form.errors[error]
-                        count += 1
+                
                 return render(request, 'domain_views/study_editing.html', 
                     {'formset' : formset, 
                      'message' : message,
