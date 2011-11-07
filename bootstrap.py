@@ -55,7 +55,7 @@ args = args + ['bootstrap']
 
 to_reload = False
 try:
-    import pkg_resources
+    import setuptools, pkg_resources
     if not hasattr(pkg_resources, '_distribute'):
         to_reload = True
         raise ImportError
