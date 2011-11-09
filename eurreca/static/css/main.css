@@ -98,6 +98,7 @@ div.contentItem {
 }
 
 div.searchResult {
+    background-color: #FFFFFF;
     display: block; 
     float: left;
     margin: 15px 15px 15px 15px;

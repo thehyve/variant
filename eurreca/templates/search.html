@@ -2,7 +2,7 @@
 
 {% block body %}
     <form name="input" action="/search/" method="post">
-        Search: <input type="text" name="search_terms" />
+        Search: <input type="text" name="search_terms" {% if previousSearchString %} value="{{previousSearchString}}" {% endif %}/>
         <input type="submit" value="Submit" />
     </form> 
     {% if searchTerms %}
