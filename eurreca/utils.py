@@ -1,9 +1,11 @@
 from eurreca.models import Study, Genotype, Phenotype, Panel, Interaction
 from eurreca.forms import StudyFormSet, StudyForm, GenotypeFormSet, GenotypeForm, PhenotypeFormSet, PhenotypeForm, PanelForm, PanelFormSet, InteractionForm, InteractionFormSet
+from itertools import chain
+import operator
+from django.db.models import Q
 
 def hello():
     print "Oh hai there."
-
     
 def process_clientside_studydata(jason, study, old_items):
     saved_objects = {'genotype':[],'phenotype':[],'panel':[]}
@@ -50,7 +52,6 @@ def process_clientside_studydata(jason, study, old_items):
             for obj in old_items[key]:
                 obj.save()
         raise Exception(inst)
-         
          
 def set_interaction_relations(obj, saved_objects, relations_lists):
     # At this moment in time we are not yet dealing with lists, but single items
@@ -112,3 +113,80 @@ def errors_to_string(errors):
             returnMessage += error+" "
         returnMessage += ' '    
     return returnMessage
+    
+def get_formsets_by_id(id):
+    formset = StudyFormSet(
+        queryset=Study.objects.filter(pk=id), 
+        prefix="study")
+    formsetGenotype = GenotypeFormSet(
+        queryset=Genotype.objects.filter(study_id=id), 
+        prefix="genotype")
+    formsetPhenotype = PhenotypeFormSet(
+        queryset=Phenotype.objects.filter(study_id=id), 
+        prefix="phenotype")
+    formsetPanel = PanelFormSet(
+        queryset=Panel.objects.filter(study_id=id), 
+        prefix="panel")
+    formsetInteraction = InteractionFormSet(
+        queryset=Interaction.objects.filter(study_id=id), 
+        prefix="interaction")
+    formSets = {'study':formset,'genotype':formsetGenotype,
+        'phenotype':formsetPhenotype,'panel':formsetPanel,
+        'interaction':formsetInteraction}
+    return formSets
+    
+def get_formsets_from_objects(list):
+    q_objects = {'genotype':[],'phenotype':[],'panel':[],'study':[],
+        'interaction':[]}
+    for item in list:
+        t = type(item)
+        if t == Interaction:
+            q_objects['interaction'].append(Q(pk=item.id))
+            continue    
+        if t == Phenotype:
+            q_objects['phenotype'].append(Q(pk=item.id))
+            continue
+        if t == Panel:
+            q_objects['panel'].append(Q(pk=item.id))
+            continue
+        if t == Genotype:
+            q_objects['genotype'].append(Q(pk=item.id))
+            continue
+        if t == Study:    
+            q_objects['study'].append(Q(pk=item.id))
+            continue
+            
+    formSets = {'genotype':None,'phenotype':None,'panel':None,'study':None,
+        'interaction':None}     
+    for key in formSets:
+        if len(q_objects[key]) == 0:
+            continue
+        else:
+            filter = reduce(operator.or_, q_objects[key])
+            if key == 'study':        
+                formSets[key] = StudyFormSet(
+                    queryset=Study.objects.filter(filter), 
+                    prefix=key)
+                continue    
+            if key == 'genotype':        
+                formSets[key] = GenotypeFormSet(
+                    queryset=Genotype.objects.filter(filter), 
+                    prefix=key)
+                continue
+            if key == 'phenotype':        
+                formSets[key] = PhenotypeFormSet(
+                    queryset=Phenotype.objects.filter(filter), 
+                    prefix=key)
+                continue
+            if key == 'panel':        
+                formSets[key] = PanelFormSet(
+                    queryset=Panel.objects.filter(filter), 
+                    prefix=key)
+                continue
+            if key == 'interaction':        
+                formSets[key] = InteractionFormSet(
+                    queryset=Interaction.objects.filter(filter), 
+                    prefix=key)
+                continue
+    
+    return formSets

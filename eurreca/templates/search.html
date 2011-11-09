@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+
+{% block body %}
+    <form name="input" action="/search/" method="post">
+        Search: <input type="text" name="search_terms" />
+        <input type="submit" value="Submit" />
+    </form> 
+    {% if searchTerms %}
+        <div class="searchTerms">
+            The search result is based on the following search term{{ searchTerms|pluralize }}:
+            {% for term in searchTerms %}
+                '{{ term }}'
+                {% if forloop.last %}
+                    .
+                {% else %}
+                    ,
+                {% endif %}
+            {% endfor %}    
+        </div>
+    {% endif %}
+    {% if formSets %}
+        <div class="resultCounts">
+            The search resulted in 
+            {% if formSets.study|length == '' %} no studies, {% endif %}
+            {% if formSets.study|length == '1' %} 1 study, {% endif %}
+            {% if not formSets.study|length == '' and not formSets.study|length == '1' %} 
+                    {{ formSets.study|length }} studies, 
+            {% endif %}
+            {% if formSets.interaction|length == '' %} no {% endif %}
+            {{ formSets.interaction|length }} interaction{{ formSets.interaction|pluralize }}, 
+            {% if formSets.genotype|length == '' %} no {% endif %}
+            {{ formSets.genotype|length }} genotype{{ formSets.genotype|pluralize }}, 
+            {% if formSets.phenotype|length == '' %} no {% endif %}
+            {{ formSets.phenotype|length }} phenotype{{ formSets.phenotype|pluralize }} and 
+            {% if formSets.panel|length == '' %} no {% endif %}
+            {{ formSets.panel|length }} panel{{ formSets.panel|pluralize }}.
+        </div>
+        {% for form in formSets.study %}
+            <div class="searchResult">
+                <p>
+                    Study
+                    <span class="button">
+                        <a href="/studies/view/{{ form.id.value }}">
+                            <img alt="View" src="{{ STATIC_URL }}images/icons/page.png">View this study
+                        </a>    
+                    </span> 
+                </p>
+                <table>
+                    {% for field in form %}
+                        {% if not field.name == 'id' %}
+                            {% if field.value|lower in matchedValues %}
+                                <tr class = "formfield {{ field.name }}">
+                                    <td class= "formspacer"></td>
+                                    <td>{{ field.name }}</td> 
+                                    <td>{{ field.value }}</td>
+                                </tr>
+                            {% endif %}                
+                        {% endif %}                
+                    {% endfor %}
+                </table>
+            </div>
+        {% endfor %}
+        {% for form in formSets.interaction %}
+            <div class="searchResult">
+                <p>Interaction
+                    <span class="button">
+                        <a href="/studies/view/{{ form.study_id.value }}">
+                            <img alt="View" src="{{ STATIC_URL }}images/icons/page.png">View related study
+                        </a>    
+                    </span> 
+                </p>
+                <table>
+                    {% for field in form %}
+                        {% if not field.name == 'id' and not field.name == 'study_id'  %}
+                            {% if field.value|lower in matchedValues %}
+                                <tr class = "formfield {{ field.name }}">
+                                    <td class= "formspacer"></td>
+                                    <td>{{ field.name }}</td> 
+                                    <td>{{ field.value }}</td>
+                                </tr>
+                            {% endif %} 
+                        {% endif %}                
+                    {% endfor %}
+                </table>
+            </div>
+        {% endfor %}
+        {% for form in formSets.genotype %}
+            <div class="searchResult">
+                <p>Genotype
+                    <span class="button">
+                        <a href="/studies/view/{{ form.study_id.value }}">
+                            <img alt="View" src="{{ STATIC_URL }}images/icons/page.png">View related study
+                        </a>    
+                    </span> 
+                </p>
+                <table>
+                    {% for field in form %}
+                        {% if not field.name == 'id' and not field.name == 'study_id'  %}
+                            {% if field.value|lower in matchedValues %}
+                                <tr class = "formfield {{ field.name }}">
+                                    <td class= "formspacer"></td>
+                                    <td>{{ field.name }}</td> 
+                                    <td>{{ field.value }}</td>
+                                </tr>
+                            {% endif %} 
+                        {% endif %}                
+                    {% endfor %}
+                </table>
+            </div>
+        {% endfor %}
+        {% for form in formSets.phenotype %}
+            <div class="searchResult">
+                <p>Phenotype
+                    <span class="button">
+                        <a href="/studies/view/{{ form.study_id.value }}">
+                            <img alt="View" src="{{ STATIC_URL }}images/icons/page.png">View related study
+                        </a>    
+                    </span> 
+                </p>
+                <table>
+                    {% for field in form %}
+                        {% if not field.name == 'id' and not field.name == 'study_id'  %}
+                            {% if field.value|lower in matchedValues %}
+                                <tr class = "formfield {{ field.name }}">
+                                    <td class= "formspacer"></td>
+                                    <td>{{ field.name }}</td> 
+                                    <td>{{ field.value }}</td>
+                                </tr>
+                            {% endif %} 
+                        {% endif %}                
+                    {% endfor %}
+                </table>
+            </div>
+        {% endfor %}
+        {% for form in formSets.panel %}
+            <div class="searchResult">
+                <p>Panel
+                    <span class="button">
+                        <a href="/studies/view/{{ form.study_id.value }}">
+                            <img alt="View" src="{{ STATIC_URL }}images/icons/page.png">View related study
+                        </a>    
+                    </span> 
+                </p>
+                <table>
+                    {% for field in form %}
+                        {% if not field.name == 'id' and not field.name == 'study_id'  %}
+                            {% if field.value|lower in matchedValues %}
+                                <tr class = "formfield {{ field.name }}">
+                                    <td class= "formspacer"></td>
+                                    <td>{{ field.name }}</td> 
+                                    <td>{{ field.value }}</td>
+                                </tr>
+                            {% endif %} 
+                        {% endif %}                
+                    {% endfor %}
+                </table>
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endblock body %}
