@@ -97,6 +97,13 @@ div.contentItem {
     padding: 15px 15px 15px 15px;
 }
 
+div.searchResult {
+    display: block; 
+    float: left;
+    margin: 15px 15px 15px 15px;
+    padding: 15px 15px 15px 15px;
+}
+
 div#userlist {
     background-color: lightgoldenrodyellow;
 }

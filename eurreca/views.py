@@ -16,7 +16,8 @@ from django.core import serializers
 import json
 import pprint
 from django.utils import simplejson
-import eurecca_utils 
+import utils 
+import search
 
 def index(request):
     user_list = User.objects.all()[:50]
@@ -61,10 +62,11 @@ def study_create(request):
             try:
                 # There are no old items. Create and pass the object anyway,
                 # so that we can re-use 'update'-functions
-                old_items = {'study':[],'genotype':[],'phenotype':[],'panel':[], 'interaction':[]}  
+                old_items = {'study':[],'genotype':[],'phenotype':[],
+                    'panel':[], 'interaction':[]}  
                 
                 # Fill forms to get new items, save the forms
-                forms = eurecca_utils.process_clientside_studydata(
+                forms = utils.process_clientside_studydata(
                     json.loads(request.POST['returnObject']), study, old_items)
       
                 # Study has been saved, return to study list
@@ -103,11 +105,8 @@ def study_create(request):
                  'messageType' : messageType,})  
     else:
         formset = StudyFormSet(queryset=Study.objects.none(), prefix="study")
-        formsetGenotype = GenotypeFormSet(queryset=Genotype.objects.none(), prefix="genotype")
-        
     return render(request, 'domain_views/study_editing.html', 
         {'formset' : formset, 
-         'formsetGenotype' : formsetGenotype,
          'message' : message,
          'messageType' : messageType,})
          
@@ -133,7 +132,9 @@ def study_update(request, id):
                 old_Phenotypes = Phenotype.objects.filter(study_id=id)
                 old_Panels = Panel.objects.filter(study_id=id)
                 old_Interactions = Interaction.objects.filter(study_id=id)
-                old_items = {'study':[old_study],'genotype':old_Genotypes,'phenotype':old_Phenotypes,'panel':old_Panels, 'interaction':old_Interactions}
+                old_items = {'study':[old_study],'genotype':old_Genotypes,
+                    'phenotype':old_Phenotypes,'panel':old_Panels, 
+                    'interaction':old_Interactions}
                 
                 # Remove old items, except study
                 for gt in old_Genotypes: gt.delete()
@@ -142,7 +143,7 @@ def study_update(request, id):
                 for i in old_Interactions: i.delete()      
                 
                 # Fill forms to get new items, save the forms
-                forms = eurecca_utils.process_clientside_studydata(
+                forms = utils.process_clientside_studydata(
                     json.loads(request.POST['returnObject']), study, old_items)
       
                 # Study has been saved, return to study list
@@ -183,11 +184,7 @@ def study_update(request, id):
             
     else:
         try:
-            formset = StudyFormSet(queryset=Study.objects.filter(pk=id), prefix="study")
-            formsetGenotype = GenotypeFormSet(queryset=Genotype.objects.filter(study_id=id), prefix="genotype")
-            formsetPhenotype = PhenotypeFormSet(queryset=Phenotype.objects.filter(study_id=id), prefix="phenotype")
-            formsetPanel = PanelFormSet(queryset=Panel.objects.filter(study_id=id), prefix="panel")
-            formsetInteraction = InteractionFormSet(queryset=Interaction.objects.filter(study_id=id), prefix="interaction")
+            fs = utils.get_formsets_by_id(id)
         except Study.DoesNotExist:
             return render(request, 'domain_views/study_list.html', 
                 {'message' : "The requested study does not exist.",
@@ -195,24 +192,19 @@ def study_update(request, id):
                  'study_list' : Study.objects.all()[:50],})
         finally:
             return render(request, 'domain_views/study_editing.html', 
-                {'formset' : formset, 
-                 'formsetGenotype' : formsetGenotype,
-                 'formsetPhenotype' : formsetPhenotype,
-                 'formsetPanel' : formsetPanel,
-                 'formsetInteraction' : formsetInteraction,
+                {'formset' : fs['study'], 
+                 'formsetGenotype' : fs['genotype'],
+                 'formsetPhenotype' :  fs['phenotype'],
+                 'formsetPanel' :  fs['panel'],
+                 'formsetInteraction' :  fs['interaction'],
                  'message' : message,
                  'messageType' : messageType,})  
 
 def study_view(request, id):
     message = ""
     messageType = ""
-    
     try:
-        formset = StudyFormSet(queryset=Study.objects.filter(pk=id), prefix="study")
-        formsetGenotype = GenotypeFormSet(queryset=Genotype.objects.filter(study_id=id), prefix="genotype")
-        formsetPhenotype = PhenotypeFormSet(queryset=Phenotype.objects.filter(study_id=id), prefix="phenotype")
-        formsetPanel = PanelFormSet(queryset=Panel.objects.filter(study_id=id), prefix="panel")
-        formsetInteraction = InteractionFormSet(queryset=Interaction.objects.filter(study_id=id), prefix="interaction")
+        fs = utils.get_formsets_by_id(id)
     except Study.DoesNotExist:
         return render(request, 'domain_views/study_list.html', 
             {'message' : "The requested study does not exist.",
@@ -220,11 +212,11 @@ def study_view(request, id):
              'study_list' : Study.objects.all()[:50],})
     finally:
         return render(request, 'domain_views/study_view.html', 
-            {'formset' : formset, 
-             'formsetGenotype' : formsetGenotype,
-             'formsetPhenotype' : formsetPhenotype,
-             'formsetPanel' : formsetPanel,
-             'formsetInteraction' : formsetInteraction,
+            {'formset' : fs['study'], 
+                 'formsetGenotype' : fs['genotype'],
+                 'formsetPhenotype' :  fs['phenotype'],
+                 'formsetPanel' :  fs['panel'],
+                 'formsetInteraction' :  fs['interaction'],
              'message' : message,
              'messageType' : messageType,})           
          
@@ -233,11 +225,15 @@ def study_remove(request, id):
     messageType = ""
     try:
         study = Study.objects.get(pk=id)
-        gts = Genotype.objects.filter(study_id=study.id)
+        a = Interaction.objects.filter(study_id=id)
+        b = Phenotype.objects.filter(study_id=id)
+        c = Panel.objects.filter(study_id=id)
+        d = Genotype.objects.filter(study_id=study.id)
+        items = chain(a,b,c,d)
         study.delete()
-        for gt in gts:
-            if gt != None:
-                gt.delete()
+        for item in items:
+            if item != None:
+                item.delete()
         message = "The study has been deleted."
         messageType = "positive"        
     except Study.DoesNotExist:
@@ -248,3 +244,24 @@ def study_remove(request, id):
             {'message' : message,
              'messageType' : messageType,
              'study_list' : Study.objects.all()[:50],})  
+             
+def search_view(request):
+    message = ""
+    messageType = ""
+    if request.method == 'POST':
+        search_terms = request.POST['search_terms'].lower().split(' ')
+            
+        search_output = search.simple_search(search_terms)
+        
+        formSets = utils.get_formsets_from_objects(search_output['results'])
+        
+        return render(request, 'search.html', 
+            {'message' : message,
+             'messageType' : messageType,
+             'matchedValues' : search_output['matches'],
+             'searchTerms' : search_terms,
+             'formSets' : formSets})  
+    
+    return render(request, 'search.html', 
+            {'message' : message,
+             'messageType' : messageType})  
