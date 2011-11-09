@@ -249,7 +249,7 @@ def search_view(request):
     message = ""
     messageType = ""
     if request.method == 'POST':
-        search_terms = request.POST['search_terms'].lower().split(' ')
+        search_terms = request.POST['search_terms'].replace('  ', ' ').lower().split(' ')
             
         search_output = search.simple_search(search_terms)
         
