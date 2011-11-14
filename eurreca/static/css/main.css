@@ -101,8 +101,8 @@ div.searchResult {
     background-color: #FFFFFF;
     display: block; 
     float: left;
-    margin: 15px 15px 15px 15px;
-    padding: 15px 15px 15px 15px;
+    margin: 5px;
+    padding: 10px;
 }
 
 div#userlist {
@@ -126,7 +126,8 @@ div#booklist {
 }
 
 div#studylist {
-    background-color: #FFFFFF;
+    #background-color: #FFFFFF;
+    background-color: #F8FFF0;
 }
 
 div#studylistText {
@@ -199,13 +200,34 @@ div.negativeMessage {
 /* end messages */
 
 
-/*login block */
+/* login block */
 div#loginBlock {
     margin:0 auto;
     width:200px;
     #text-align:left;
 }
+/* end block */
 
-div#loginForm {
-    #display: block;
+
+/* autocomplete block */
+ul.ui-autocomplete {
+    display: block;
+    left: 56px;
+    top: 41px;
+    width: 151px;
+    z-index: 1;
+    border-bottom-right-radius: 4px;
+    border-bottom-left-radius: 4px;
+    border-top-right-radius: 4px;
+    border-top-left-radius: 4px;
+    background-color: #FFFFFF;
+    border: 1px solid #AAAAAA;
+    color: #222222;
+    float: left;
+    list-style: none outside none;
+    margin: 0;
+    padding: 2px;
+    cursor: default;
+    position: absolute;
 }
+/* end autocomplete block */

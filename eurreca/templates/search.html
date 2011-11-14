@@ -1,13 +1,102 @@
 {% extends "base.html" %}
+{% load contains %}
+
+{% block extraScripts %}
+    <script type="text/javascript" 
+        src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js">
+    </script>
+    <script type="text/javascript" 
+        src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js">
+    </script>
+    <script type="text/javascript" 
+        src="{{ STATIC_URL }}js/jquery.ui.autocomplete.js">
+    </script>
+    {% if advancedSearch %}
+        <script type='text/javascript'>
+            $(function() {
+                var availableFields = [
+                    "Study id",
+                    "Pubmed id",
+                    "Year of publication",
+                    "Micronutrient",
+                    "Gene",
+                    "SNP ref",
+                    "Phenotype name",
+                    "SNP variant"
+                ];
+                $( ".fields" ).autocomplete({
+                    source: availableFields
+                });
+                $( ".fields" ).each(function() {
+                    $(this).autocomplete({
+                        source: availableFields
+                    })
+                });
+            });
+        </script>
+    {% endif %}
+{% endblock %}
 
 {% block body %}
-    <form name="input" action="/search/" method="post">
-        Search: <input type="text" name="search_terms" {% if previousSearchString %} value="{{previousSearchString}}" {% endif %}/>
-        <input type="submit" value="Submit" />
-    </form> 
+    {% if advancedSearch %}
+        <form name="input" action="/search/" method="post">
+            <input name="search_type"  type="hidden" value="advanced"/>
+            <div class="ui-widget">
+                <label for="fields">Field: </label>
+                <input class="fields" name="search_field_0" 
+                    {% if previousSearchField.0 %} 
+                    value="{{previousSearchField.0}}" {% endif %}/>
+                <label for="value">Value: </label>
+                <input class="value" name="search_term_0" 
+                    {% if previousSearchString.0 %} 
+                    value="{{previousSearchString.0}}" {% endif %}/>
+            </div>
+            or
+            <div class="ui-widget">
+                <label for="fields">Field: </label>
+                <input class="fields" name="search_field_1" 
+                    {% if previousSearchField.1 %} 
+                        value="{{previousSearchField.1}}" 
+                    {% endif %}
+                />
+                <label for="value">Value: </label>
+                <input class="value" name="search_term_1" 
+                    {% if previousSearchString.1 %} 
+                        value="{{previousSearchString.1}}" 
+                    {% endif %}
+                />
+            </div>
+            or
+            <div class="ui-widget">
+                <label for="fields">Field: </label>
+                    <input class="fields" name="search_field_2" 
+                        {% if previousSearchField.2 %} 
+                            value="{{previousSearchField.2}}" 
+                        {% endif %}
+                    />
+                <label for="value">Value: </label>
+                <input class="value" name="search_term_2" 
+                    {% if previousSearchString.2 %} 
+                        value="{{previousSearchString.2}}" 
+                    {% endif %}
+                />
+            </div>
+            <input type="submit" value="Submit in quite an advanced manner" />
+        </form>
+    {% else %}
+        <form name="input" action="/search/" method="post">
+            Search: <input type="text" name="search_terms" 
+                {% if previousSearchString %} 
+                    value="{{previousSearchString}}" 
+                {% endif %}
+            />
+            <input type="submit" value="Submit" />
+        </form> 
+    {% endif %}
     {% if searchTerms %}
         <div class="searchTerms">
-            The search result is based on the following search term{{ searchTerms|pluralize }}:
+            The search result is based on 
+            the following search term{{ searchTerms|pluralize }}:
             {% for term in searchTerms %}
                 '{{ term }}'
                 {% if forloop.last %}
@@ -36,125 +125,19 @@
             {{ formSets.panel|length }} panel{{ formSets.panel|pluralize }}.
         </div>
         {% for form in formSets.study %}
-            <div class="searchResult">
-                <p>
-                    Study
-                    <span class="button">
-                        <a href="/studies/view/{{ form.id.value }}">
-                            <img alt="View" src="{{ STATIC_URL }}images/icons/page.png">View this study
-                        </a>    
-                    </span> 
-                </p>
-                <table>
-                    {% for field in form %}
-                        {% if not field.name == 'id' %}
-                            {% if field.value|lower in matchedValues %}
-                                <tr class = "formfield {{ field.name }}">
-                                    <td class= "formspacer"></td>
-                                    <td>{{ field.name }}</td> 
-                                    <td>{{ field.value }}</td>
-                                </tr>
-                            {% endif %}                
-                        {% endif %}                
-                    {% endfor %}
-                </table>
-            </div>
+            {% include 'table.html' with title="Study" class="searchResult" filtered="True" %}
         {% endfor %}
         {% for form in formSets.interaction %}
-            <div class="searchResult">
-                <p>Interaction
-                    <span class="button">
-                        <a href="/studies/view/{{ form.study_id.value }}">
-                            <img alt="View" src="{{ STATIC_URL }}images/icons/page.png">View related study
-                        </a>    
-                    </span> 
-                </p>
-                <table>
-                    {% for field in form %}
-                        {% if not field.name == 'id' and not field.name == 'study_id'  %}
-                            {% if field.value|lower in matchedValues %}
-                                <tr class = "formfield {{ field.name }}">
-                                    <td class= "formspacer"></td>
-                                    <td>{{ field.name }}</td> 
-                                    <td>{{ field.value }}</td>
-                                </tr>
-                            {% endif %} 
-                        {% endif %}                
-                    {% endfor %}
-                </table>
-            </div>
+            {% include 'table.html' with title="Interaction" class="searchResult" filtered="True" %}
         {% endfor %}
         {% for form in formSets.genotype %}
-            <div class="searchResult">
-                <p>Genotype
-                    <span class="button">
-                        <a href="/studies/view/{{ form.study_id.value }}">
-                            <img alt="View" src="{{ STATIC_URL }}images/icons/page.png">View related study
-                        </a>    
-                    </span> 
-                </p>
-                <table>
-                    {% for field in form %}
-                        {% if not field.name == 'id' and not field.name == 'study_id'  %}
-                            {% if field.value|lower in matchedValues %}
-                                <tr class = "formfield {{ field.name }}">
-                                    <td class= "formspacer"></td>
-                                    <td>{{ field.name }}</td> 
-                                    <td>{{ field.value }}</td>
-                                </tr>
-                            {% endif %} 
-                        {% endif %}                
-                    {% endfor %}
-                </table>
-            </div>
+            {% include 'table.html' with title="Genotype" class="searchResult" filtered="True" %}
         {% endfor %}
         {% for form in formSets.phenotype %}
-            <div class="searchResult">
-                <p>Phenotype
-                    <span class="button">
-                        <a href="/studies/view/{{ form.study_id.value }}">
-                            <img alt="View" src="{{ STATIC_URL }}images/icons/page.png">View related study
-                        </a>    
-                    </span> 
-                </p>
-                <table>
-                    {% for field in form %}
-                        {% if not field.name == 'id' and not field.name == 'study_id'  %}
-                            {% if field.value|lower in matchedValues %}
-                                <tr class = "formfield {{ field.name }}">
-                                    <td class= "formspacer"></td>
-                                    <td>{{ field.name }}</td> 
-                                    <td>{{ field.value }}</td>
-                                </tr>
-                            {% endif %} 
-                        {% endif %}                
-                    {% endfor %}
-                </table>
-            </div>
+            {% include 'table.html' with title="Phenotype" class="searchResult" filtered="True" %}
         {% endfor %}
         {% for form in formSets.panel %}
-            <div class="searchResult">
-                <p>Panel
-                    <span class="button">
-                        <a href="/studies/view/{{ form.study_id.value }}">
-                            <img alt="View" src="{{ STATIC_URL }}images/icons/page.png">View related study
-                        </a>    
-                    </span> 
-                </p>
-                <table>
-                    {% for field in form %}
-                        {% if not field.name == 'id' and not field.name == 'study_id'  %}
-                            {% if field.value|lower in matchedValues %}
-                                <tr class = "formfield {{ field.name }}">
-                                    <td class= "formspacer"></td>
-                                    <td>{{ field.name }}</td> 
-                                    <td>{{ field.value }}</td>
-                                </tr>
-                            {% endif %} 
-                        {% endif %}                
-                    {% endfor %}
-                </table>
-            </div>
+            {% include 'table.html' with title="Panel" class="searchResult" filtered="True" %}
         {% endfor %}
     {% endif %}
 {% endblock body %}

@@ -7,76 +7,26 @@
     <p>Study</p>
     <table>
         {% for form in formset %}
-            {% for field in form %}
-                {% if not field.name == 'id' %}
-                    <tr class = "formfield {{ field.name }}">
-                        <td class= "formspacer"></td>
-                        <td>{{ field.name }}</td> 
-                        <td>{{ field.value }}</td>
-                    </tr>
-                {% endif %}                
-            {% endfor %}
+        {% for form in formSets.study %}
+            {% include 'table.html' with title="Study" class="searchResult" filtered="False" %}
+        {% endfor %}
         {% endfor %}
     </table>
     
     {% for form in formsetGenotype %}
-        <p>Genotype</p>
-        <table>
-            {% for field in form %}
-                 {% if not field.name == 'study_id' and not field.name == 'id' %}
-                    <tr class = "formfield {{ field.name }}">
-                        <td class= "formspacer"></td>
-                        <td>{{ field.name }}</td> 
-                        <td>{{ field.value }}</td>
-                    </tr>
-                {% endif %}                
-            {% endfor %}
-        </table>
+        {% include 'table.html' with title="Genotype" class="searchResult" filtered="False" %}
     {% endfor %}
     
     
     {% for form in formsetPhenotype %}
-        <p>Phenotype</p>
-        <table>
-            {% for field in form %}
-                 {% if not field.name == 'study_id' and not field.name == 'id' %}
-                    <tr class = "formfield {{ field.name }}">
-                        <td class= "formspacer"></td>
-                        <td>{{ field.name }}</td> 
-                        <td>{{ field.value }}</td>
-                    </tr>
-                {% endif %}                
-            {% endfor %}
-        </table>
+        {% include 'table.html' with title="Phenotype" class="searchResult" filtered="False" %}
     {% endfor %}
     
     {% for form in formsetPanel %}
-        <p>Panel</p>
-        <table>
-        {% for field in form %}
-                 {% if not field.name == 'study_id' and not field.name == 'id' %}
-                    <tr class = "formfield {{ field.name }}">
-                        <td class= "formspacer"></td>
-                        <td>{{ field.name }}</td> 
-                        <td>{{ field.value }}</td>
-                    </tr>
-                {% endif %}                
-            {% endfor %}
-        </table>
+        {% include 'table.html' with title="Panel" class="searchResult" filtered="False" %}
     {% endfor %}
     
     {% for form in formsetInteraction %}
-        <p>Interaction</p>
-        <table>
-            {% for field in form %}
-                 {% if not field.name == 'study_id' and not field.name == 'id' %}
-                    <tr class = "formfield {{ field.name }}">
-                        <td class= "formspacer"></td>
-                        <td>{{ field.name }}</td> 
-                        <td>{{ field.value }}</td>
-                    </tr>
-                {% endif %}                
-            {% endfor %}
-        </table>
+        {% include 'table.html' with title="Interaction" class="searchResult" filtered="False" %}
     {% endfor %}
 {% endblock studyBlock %}

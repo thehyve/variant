@@ -248,24 +248,86 @@ def study_remove(request, id):
 def search_view(request):
     message = ""
     messageType = ""
+    search_terms = ['']
+    search_terms_string = ''
+    advancedSearch = False
     if request.method == 'POST':
-        search_terms = request.POST['search_terms'].lower().split(' ')
-        search_terms = [term for term in search_terms if term!='']
-        if len(search_terms) == 0:
-            search_terms = ['']
-        
-        search_output = search.simple_search(search_terms)
-        
-        formSets = utils.get_formsets_from_objects(search_output['results'])
+        if request.POST.has_key('search_type'):
+            # This should probably check for the actual value instead
+            print 'advanced search'
+            advancedSearch = True
+            from_term_to_model_type = {
+                "Study id":"study",
+                "Pubmed id":"study",
+                "Year of publication":"study",
+                "Micronutrient":"study",
+                "Gene":"genotype",
+                "SNP ref":"genotype",
+                "Phenotype name":"phenotype",
+                "SNP variant":"genotype"
+            }
+            from_string_to_proper_field_name = {
+                "Study id":"study_id",
+                "Pubmed id":"pubmed_id",
+                "Year of publication":"year_of_publication",
+                "Micronutrient":"micronutrient",
+                "Gene":"geno",
+                "SNP ref":"snp_ref",
+                "Phenotype name":"phenotype_name",
+                "SNP variant":"snp_variant"
+            }
+            
+            # Determine which terms are meant to be searched in which fields
+            search_terms_by_number = {}
+            for key in request.POST:
+                if (key.startswith('search_field') or key.startswith('search_term')) and (not request.POST[key] == ''):
+                    key_elements = key.split('_')
+                    number = key_elements[2]
+                    if not search_terms_by_number.has_key(number):
+                        search_terms_by_number[number] = {}
+                    search_terms_by_number[number][key_elements[1]] = request.POST[key]
+                    
+            # Determine where the fields can be found        
+            for number in search_terms_by_number:
+                type = from_term_to_model_type[
+                            search_terms_by_number[number]['field']
+                        ]
+                search_terms_by_number[number]['type'] = type
+                field = from_string_to_proper_field_name[
+                            search_terms_by_number[number]['field']
+                        ]
+                search_terms_by_number[number]['field'] = field
+                search_terms_string += search_terms_by_number[number]['term']+' '
+
+            search_output = search.advanced_search(search_terms_by_number)
+            
+        else:
+            print 'simple search'
+            search_terms_string = request.POST['search_terms']
+            search_terms = search_terms_string.lower().split(' ')
+            search_terms = [term for term in search_terms if term!='']
+            if len(search_terms) == 0:
+                search_terms = ['']
+                
+            search_output = search.simple_search(search_terms)
         
         return render(request, 'search.html', 
             {'message' : message,
              'messageType' : messageType,
              'matchedValues' : search_output['matches'],
              'searchTerms' : search_terms,
-             'previousSearchString' : request.POST['search_terms'],
-             'formSets' : formSets})  
+             'previousSearchString' : search_terms_string,
+             'formSets' : search_output['results'],
+             'advancedSearch' : advancedSearch})  
     
     return render(request, 'search.html', 
             {'message' : message,
              'messageType' : messageType})  
+             
+def advanced_search_view(request):
+    message = ""
+    messageType = ""
+    return render(request, 'search.html', 
+            {'message' : message,
+             'messageType' : messageType,
+             'advancedSearch' : True})               

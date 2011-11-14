@@ -135,7 +135,7 @@ def get_formsets_by_id(id):
         'interaction':formsetInteraction}
     return formSets
     
-def get_formsets_from_objects(list):
+def get_formsets_from_model_objects(list):
     q_objects = {'genotype':[],'phenotype':[],'panel':[],'study':[],
         'interaction':[]}
     for item in list:
@@ -156,6 +156,10 @@ def get_formsets_from_objects(list):
             q_objects['study'].append(Q(pk=item.id))
             continue
             
+    formSets = get_formsets_from_q_objects(q_objects)    
+    return formSets
+    
+def get_formsets_from_q_objects(q_objects):
     formSets = {'genotype':None,'phenotype':None,'panel':None,'study':None,
         'interaction':None}     
     for key in formSets:
@@ -164,29 +168,40 @@ def get_formsets_from_objects(list):
         else:
             filter = reduce(operator.or_, q_objects[key])
             if key == 'study':        
-                formSets[key] = StudyFormSet(
-                    queryset=Study.objects.filter(filter), 
-                    prefix=key)
+                q = Study.objects.filter(filter)
+                if q:
+                    formSets[key] = StudyFormSet(
+                        queryset=q, 
+                        prefix=key)
                 continue    
             if key == 'genotype':        
-                formSets[key] = GenotypeFormSet(
-                    queryset=Genotype.objects.filter(filter), 
-                    prefix=key)
+                q = Genotype.objects.filter(filter)
+                if q:
+                    formSets[key] = GenotypeFormSet(
+                        queryset=q, 
+                        prefix=key)
+                    print "FS:",formSets[key]
                 continue
-            if key == 'phenotype':        
-                formSets[key] = PhenotypeFormSet(
-                    queryset=Phenotype.objects.filter(filter), 
-                    prefix=key)
+            if key == 'phenotype':     
+                q = Phenotype.objects.filter(filter)
+                if q:
+                    formSets[key] = PhenotypeFormSet(
+                        queryset=q, 
+                        prefix=key)
                 continue
-            if key == 'panel':        
-                formSets[key] = PanelFormSet(
-                    queryset=Panel.objects.filter(filter), 
-                    prefix=key)
+            if key == 'panel':
+                q = Panel.objects.filter(filter)
+                if q:
+                    formSets[key] = PanelFormSet(
+                        queryset=q, 
+                        prefix=key)
                 continue
             if key == 'interaction':        
-                formSets[key] = InteractionFormSet(
-                    queryset=Interaction.objects.filter(filter), 
-                    prefix=key)
+                q = Interaction.objects.filter(filter)
+                if q:
+                    formSets[key] = InteractionFormSet(
+                        queryset=q, 
+                        prefix=key)
                 continue
     
     return formSets
