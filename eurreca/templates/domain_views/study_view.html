@@ -4,29 +4,19 @@
     {% if form.study_id.value != '' %}
         {{ form.study_id.value }}
     {% endif %}
-    <p>Study</p>
-    <table>
-        {% for form in formset %}
-        {% for form in formSets.study %}
-            {% include 'table.html' with title="Study" class="searchResult" filtered="False" %}
-        {% endfor %}
-        {% endfor %}
-    </table>
-    
+    {% for form in formset %}
+        {% include 'table.html' with title="Study" class="contentItem" filtered="False" %}
+    {% endfor %}
     {% for form in formsetGenotype %}
-        {% include 'table.html' with title="Genotype" class="searchResult" filtered="False" %}
+        {% include 'table.html' with title="Genotype" class="contentItem" filtered="False" %}
     {% endfor %}
-    
-    
     {% for form in formsetPhenotype %}
-        {% include 'table.html' with title="Phenotype" class="searchResult" filtered="False" %}
+        {% include 'table.html' with title="Phenotype" class="contentItem" filtered="False" %}
     {% endfor %}
-    
     {% for form in formsetPanel %}
-        {% include 'table.html' with title="Panel" class="searchResult" filtered="False" %}
+        {% include 'table.html' with title="Panel" class="contentItem" filtered="False" %}
     {% endfor %}
-    
     {% for form in formsetInteraction %}
-        {% include 'table.html' with title="Interaction" class="searchResult" filtered="False" %}
+        {% include 'table.html' with title="Interaction" class="contentItem" filtered="False" %}
     {% endfor %}
 {% endblock studyBlock %}

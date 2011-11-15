@@ -124,20 +124,22 @@
             {% if formSets.panel|length == '' %} no {% endif %}
             {{ formSets.panel|length }} panel{{ formSets.panel|pluralize }}.
         </div>
-        {% for form in formSets.study %}
-            {% include 'table.html' with title="Study" class="searchResult" filtered="True" %}
-        {% endfor %}
-        {% for form in formSets.interaction %}
-            {% include 'table.html' with title="Interaction" class="searchResult" filtered="True" %}
-        {% endfor %}
-        {% for form in formSets.genotype %}
-            {% include 'table.html' with title="Genotype" class="searchResult" filtered="True" %}
-        {% endfor %}
-        {% for form in formSets.phenotype %}
-            {% include 'table.html' with title="Phenotype" class="searchResult" filtered="True" %}
-        {% endfor %}
-        {% for form in formSets.panel %}
-            {% include 'table.html' with title="Panel" class="searchResult" filtered="True" %}
-        {% endfor %}
+        <ul>
+            {% for form in formSets.study %}
+                {% include 'new_result.html' with title="Study" class="contentItem" filtered="True" %}
+            {% endfor %}
+            {% for form in formSets.interaction %}
+                {% include 'new_result.html' with title="Interaction" class="contentItem" filtered="True" %}
+            {% endfor %}
+            {% for form in formSets.genotype %}
+                {% include 'new_result.html' with title="Genotype" class="contentItem" filtered="True" %}
+            {% endfor %}
+            {% for form in formSets.phenotype %}
+                {% include 'new_result.html' with title="Phenotype" class="contentItem" filtered="True" %}
+            {% endfor %}
+            {% for form in formSets.panel %}
+                {% include 'new_result.html' with title="Panel" class="contentItem" filtered="True" %}
+            {% endfor %}
+        <ul>
     {% endif %}
 {% endblock body %}

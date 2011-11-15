@@ -1,65 +1,47 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-    <head>
+<!doctype html>
+<html>
+	<head>
         {% block head %}
-            <title>{% block pageTitle %}{% endblock pageTitle %}</title>
-            <link rel="stylesheet" type="text/css" 
-                href="{{ STATIC_URL }}css/main.css" />
+            <title>Variant template</title>
+            <link href="{{ STATIC_URL }}css/variant.css" type="text/css"
+                rel="stylesheet" />
         {% endblock %}
-        {% block extraScripts %}
-        {% endblock %}
-    </head>
-    <body>
-        <div class="content_header_block">
-            {% block header %}
-                <div class="eurreca_header">
-                    <a href="#">
-                        <img alt="Eurreca" src="{{ STATIC_URL }}images/eurreca_logo.png">
-                    </a>
+        {% block extraScripts %}{% endblock %}
+	</head>
+	<body>
+		<div id="container">
+			<div id="header">
+				<h1 id="logo">
+					<img src="{{ STATIC_URL }}images/eurreca_klein.png">
+				</h1>
+				<form id="login">
+					<input class="roundedcorners" type="text" placeholder="name" name="name">
+					<input class="roundedcorners" type="password" placeholder="password" name="password">
+					<input class="button" type="submit" value="login">
+				</form>
+				<div class="clear"></div>
+			</div>
+			<div id="mainmenu">
+				<form id="searchform" name="input" action="/search/" method="post">
+					<input class="roundedcorners" type="text" placeholder="search" name="search_terms">
+					<input class="button" type="submit" value="search">
+				</form>
+				<ul class="menu">
+					<li class="home"><a href="#"><img src="{{ STATIC_URL }}images/home_klein.png"></a></li>
+					<li><a href="/studies/">Studies</a></li>
+					<li class="active"><a href="/studies/create/">Add new study</a></li>
+					<li><a href="#">FAQ</a></li>
+				</ul>
+			</div>
+			<div id="content">{% block body %}{% endblock body %}
+                <div class="clear">
                 </div>
-            {% endblock header %}
-            <div class="app_header_block">
-                {% block bodyHeader %}
-                    <div class="user_status">
-                        <div class="user_status_box">
-                        {% if user.is_authenticated %}
-                            Welcome {{ user }}! You are logged in. <a href="{% url logout %}">Click here to logout</a>.
-                        {% else %}
-                            Welcome. You are not logged in. <a href="{% url login %}">Click here to login</a>.
-                        {% endif %}
-                        </div>
-                    </div>
-                    {% block menu %}
-                        <div class="vertical_menu">
-                            <ul class="menu">
-                                <li><a href="/">Home</a></li>
-                                <li><a href="/search/">Search</a></li>
-                                <li><a href="/advanced_search/">Advanced search</a></li>
-                                <li><a href="/studies/">Studies</a></li>
-                                <li><a href="/login/">Login</a></li>
-                                <li><a href="/logout/">Logout</a></li>
-                             </ul>
-                         </div>
-                    {% endblock menu %}
-                {% endblock bodyHeader %}
             </div>
-            {% block studyMenu %}{% endblock studyMenu %}
-        </div> 
-        <div class="content">
-            {% block body %}
-                Content should be placed here.
-            {% endblock body %}
-        </div>
-        <div class="footers">
-            {% block footer %}
-                <div class="thehyve">
-                    <a href="http://www.thehyve.nl">
-                        Developed by<br/>
-                        <img alt="The Hyve" src="{{ STATIC_URL }}images/thehyve_logo.png">
-                    </a>
-                </div>
-            {% endblock footer %}
-        </div>
-    </body>
+			<div id="footer">
+				<a href="http://www.thehyve.nl" target="_blank"><img src="{{ STATIC_URL }}images/thehyve.png" align="left"></a>
+				<img src="{{ STATIC_URL }}images/eurreca_onder.png" align="right">
+				<div class="clear"></div>
+			</div>
+		</div>
+	</body>
 </html>

@@ -1,0 +1,183 @@
+﻿{% load contains %}
+{% load truncatechars %}
+
+<li class="{{ class }}">
+    {% if title and not title == '' %}
+        {% if title == "Study" %}
+            <span class="button">
+                <a href="/studies/view/{{ form.id.value }}">
+                    {% if filtered == "True" and form.study_id.value|containedin:matchedValues %} 
+                        Study <b>{{ form.study_id.value }}</b>
+                    {% else %}
+                        Study {{ form.study_id.value }}
+                    {% endif %}
+                    <img alt="View" src="{{ STATIC_URL }}images/icons/page.png">
+                </a>    
+            </span> 
+            <br/>
+            <span>
+                Pubmed: 
+                {% if filtered == "True" and form.pubmed_id.value|containedin:matchedValues %} 
+                    <b>
+                        {{ form.pubmed_id.value }} 
+                    </b>
+                {% else %}
+                    {{ form.pubmed_id.value }} 
+                {% endif %}
+                &nbsp;|&nbsp;
+                Micronutrient: 
+                {% if filtered == "True" and form.micronutrient.value|containedin:matchedValues %} 
+                    <b>
+                        {{ form.micronutrient.value }} 
+                    </b>
+                {% else %}
+                    {{ form.micronutrient.value }} 
+                {% endif %}
+                &nbsp;|&nbsp;
+                Endpoint:
+                {% if filtered == "True" and form.endpoint.value|containedin:matchedValues %} 
+                    <b>
+                        {{ form.endpoint.value }} 
+                    </b>
+                {% else %}
+                    {{ form.endpoint.value }} 
+                {% endif %}
+            </span>
+            {% if not form.paper_title.value == '' %}
+                <br/>
+                <span>
+                    {{ form.paper_title.value|truncatechars:20 }}
+                    {% if not form.journal_title.value == '' %}
+                        in {{ form.journal_title.value }}
+                    {% endif %}
+                </span>
+            {% endif %}
+        {% endif %}
+        
+        {% if title == "Genotype" %}
+            <span class="button">
+                <a href="/studies/view/{{ form.study_id.value }}">
+                    {{ title }}
+                    <img alt="View" 
+                        src="{{ STATIC_URL }}images/icons/page.png">
+                        View related study
+                </a>    
+            </span> 
+            <br/>
+            <span>
+                Gene: 
+                {% if filtered == "True" and form.gene.value|containedin:matchedValues %} 
+                    <b>
+                        {{ form.gene.value }} 
+                    </b>
+                {% else %}
+                    {{ form.gene.value }} 
+                {% endif %}
+                &nbsp;|&nbsp;
+                Snp ref: 
+                {% if filtered == "True" and form.snp_ref.value|containedin:matchedValues %} 
+                    <b>
+                        {{ form.snp_ref.value }} 
+                    </b>
+                {% else %}
+                    {{ form.snp_ref.value }} 
+                {% endif %}
+                &nbsp;|&nbsp;
+                Snp variant:
+                {% if filtered == "True" and form.snp_variant.value|containedin:matchedValues %} 
+                    <b>
+                        {{ form.snp_variant.value }} 
+                    </b>
+                {% else %}
+                    {{ form.snp_variant.value }} 
+                {% endif %}
+            </span>
+        {% endif %}
+        
+        {% if title == "Phenotype" %}
+            <span class="button">
+                <a href="/studies/view/{{ form.study_id.value }}">
+                    {{ title }}
+                    <img alt="View" 
+                        src="{{ STATIC_URL }}images/icons/page.png">
+                        View related study
+                </a>    
+            </span> 
+            <br/>
+            <span>
+                Phenotype name: 
+                {% if filtered == "True" and form.phenotype_name.value|containedin:matchedValues %} 
+                    <b>
+                        {{ form.phenotype_name.value }} 
+                    </b>
+                {% else %}
+                    {{ form.phenotype_name.value }} 
+                {% endif %}
+                &nbsp;|&nbsp;
+                Environmental factor: 
+                {% if filtered == "True" and form.environmental_factor.value|containedin:matchedValues %} 
+                    <b>
+                        {{ form.environmental_factor.value }} 
+                    </b>
+                {% else %}
+                    {{ form.environmental_factor.value }} 
+                {% endif %}
+                &nbsp;|&nbsp;
+                Type:
+                {% if filtered == "True" and form.type.value|containedin:matchedValues %} 
+                    <b>
+                        {{ form.type.value }} 
+                    </b>
+                {% else %}
+                    {{ form.type.value }} 
+                {% endif %}
+            </span>
+        {% endif %}
+    
+        {% if title == "Interaction" %}
+            <span class="button">
+                <a href="/studies/view/{{ form.study_id.value }}">
+                    {{ title }}
+                    <img alt="View" 
+                        src="{{ STATIC_URL }}images/icons/page.png">
+                        View related study
+                </a>    
+            </span> 
+            <br/>
+            <span>
+                Statistical model: 
+                {% if filtered == "True" and form.statistical_model.value|containedin:matchedValues %} 
+                    <b>
+                        {{ form.statistical_model.value }} 
+                    </b>
+                {% else %}
+                    {{ form.statistical_model.value }} 
+                {% endif %}
+                {% if not form.ratio.value == '' %}
+                    &nbsp;|&nbsp;
+                    Ratio: 
+                    {% if filtered == "True" and form.ratio.value|containedin:matchedValues %} 
+                        <b>
+                            {{ form.ratio.value }} 
+                        </b>
+                    {% else %}
+                        {{ form.ratio.value }} 
+                    {% endif %}
+                    &nbsp;|&nbsp;
+                    Ratio type:
+                    {% if not form.ratio_type.value == '' %}
+                        {% if filtered == "True" and form.ratio_type.value|containedin:matchedValues %} 
+                            <b>
+                                {{ form.ratio_type.value }} 
+                            </b>
+                        {% else %}
+                            {{ form.ratio_type.value }} 
+                        {% endif %}
+                    {% else %}
+                        -
+                    {% endif %}
+                {% endif %}
+            </span>
+        {% endif %}
+    {% endif %}    
+</li>

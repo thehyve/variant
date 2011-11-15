@@ -180,7 +180,6 @@ def get_formsets_from_q_objects(q_objects):
                     formSets[key] = GenotypeFormSet(
                         queryset=q, 
                         prefix=key)
-                    print "FS:",formSets[key]
                 continue
             if key == 'phenotype':     
                 q = Phenotype.objects.filter(filter)
