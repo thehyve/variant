@@ -22,14 +22,7 @@ import advanced_search
 def index(request):
     user_list = User.objects.all()[:50]
     t = loader.get_template('index.html')
-    c = RequestContext( 
-        request,
-        {
-            'user_list': user_list,
-            'logged_in' : request.user.is_authenticated(),
-            'user' : request.user,
-        }
-    )
+    c = RequestContext(request, {})
     return HttpResponse(t.render(c))
 
 def do_logout(request):
@@ -40,6 +33,10 @@ def do_login(request):
     message = ""
     messageType = ""
     
+    # If the request does not contain the required keys, do nothing.
+    if not request.POST.has_key('username') or not request.POST.has_key('password'):
+        return render(request, 'index.html', {}) 
+        
     # Retrieve relevant information from request before calling logout(), 
     # which wipes it
     username = request.POST['username']

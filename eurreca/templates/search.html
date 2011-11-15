@@ -130,19 +130,19 @@
         </div>
         <ul class="searchResults">
             {% for form in formSets.study %}
-                {% include 'new_result.html' with title="Study" class="contentItem" filtered="True" %}
+                {% include 'search_result.html' with title="Study" class="contentItem" filtered="True" %}
             {% endfor %}
             {% for form in formSets.interaction %}
-                {% include 'new_result.html' with title="Interaction" class="contentItem" filtered="True" %}
+                {% include 'search_result.html' with title="Interaction" class="contentItem" filtered="True" %}
             {% endfor %}
             {% for form in formSets.genotype %}
-                {% include 'new_result.html' with title="Genotype" class="contentItem" filtered="True" %}
+                {% include 'search_result.html' with title="Genotype" class="contentItem" filtered="True" %}
             {% endfor %}
             {% for form in formSets.phenotype %}
-                {% include 'new_result.html' with title="Phenotype" class="contentItem" filtered="True" %}
+                {% include 'search_result.html' with title="Phenotype" class="contentItem" filtered="True" %}
             {% endfor %}
             {% for form in formSets.panel %}
-                {% include 'new_result.html' with title="Panel" class="contentItem" filtered="True" %}
+                {% include 'search_result.html' with title="Panel" class="contentItem" filtered="True" %}
             {% endfor %}
         <ul>
     {% endif %}

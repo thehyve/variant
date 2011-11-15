@@ -3,23 +3,6 @@
 <div class="{{ class }}">
     {% if title and not title == '' %}
         {{ title }}
-        {% if title == "Study" %}
-            <span class="button">
-                <a href="/studies/view/{{ form.id.value }}">
-                    <img alt="View" 
-                        src="{{ STATIC_URL }}images/icons/page.png">
-                        View this study
-                </a>    
-            </span> 
-        {% else %}
-            <span class="button">
-                <a href="/studies/view/{{ form.study_id.value }}">
-                    <img alt="View" 
-                        src="{{ STATIC_URL }}images/icons/page.png">
-                        View related study
-                </a>    
-            </span> 
-        {% endif %}
     {% endif %}
     <table>
         {% for field in form %}

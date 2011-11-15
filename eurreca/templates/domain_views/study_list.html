@@ -1,29 +1,31 @@
-{% extends "domain_views/study_specific.html" %}
+{% extends "base.html" %}
 
-{% block studyBlock %}
-    <b>Studies</b>
-    <p>There are {{ study_list|length }} studies.</p>
-    <table id="studyTable">
-        {% for study in study_list %}
-            <tr id="studyTable">
-                <td id="studylistText"> 
-                    <span class="button">
-                        <a href="/studies/view/{{study.id}}">
-                            <img alt="View" src="{{ STATIC_URL }}images/icons/page.png">
-                        </a>    
-                    </span> 
-                    <span class="button">
-                        <a href="/studies/update/{{study.id}}">
-                            <img alt="Edit" src="{{ STATIC_URL }}images/icons/page_edit.png">
-                        </a>    
-                    </span> 
-                    <div id="studyTableText"> 
-                        <a href="/studies/view/{{study.id}}">
-                            {{ study }} 
-                        </a>
-                    </div>
-                </td>
-            </tr>
-        {% endfor %}
-    </table>
-{% endblock studyBlock %}
+{% block body %}
+    <div id="studylist">
+        <b>Studies</b>
+        <p>There are {{ study_list|length }} studies.</p>
+        <table id="studyTable">
+            {% for study in study_list %}
+                <tr id="studyTable">
+                    <td id="studylistText"> 
+                        <span class="button">
+                            <a href="/studies/view/{{study.id}}">
+                                <img alt="View" src="{{ STATIC_URL }}images/icons/page.png">
+                            </a>    
+                        </span> 
+                        <span class="button">
+                            <a href="/studies/update/{{study.id}}">
+                                <img alt="Edit" src="{{ STATIC_URL }}images/icons/page_edit.png">
+                            </a>    
+                        </span> 
+                        <div id="studyTableText"> 
+                            <a href="/studies/view/{{study.id}}">
+                                {{ study }} 
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+{% endblock body %}

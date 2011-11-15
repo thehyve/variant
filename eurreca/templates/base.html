@@ -14,11 +14,17 @@
 				<h1 id="logo">
 					<img src="{{ STATIC_URL }}images/eurreca_klein.png">
 				</h1>
-				<form id="login" name="login" action="/do_login/" method="post">
-					<input class="roundedcorners" type="text" placeholder="username" name="username">
-					<input class="roundedcorners" type="password" placeholder="password" name="password">
-					<input class="button" type="submit" value="login">
-				</form>
+                {% if user.is_authenticated %}
+                    <form id="logout" name="logout" action="{% url do_logout %}" method="post">
+                        Welcome, {{ user.username }}. <input class="button" type="submit" value="logout">
+                    </form>
+                {% else %}
+                    <form id="login" name="login" action="{% url do_login %}" method="post">
+                        <input class="roundedcorners" type="text" placeholder="username" name="username">
+                        <input class="roundedcorners" type="password" placeholder="password" name="password">
+                        <input class="button" type="submit" value="login">
+                    </form>
+                {% endif %}
 				<div class="clear"></div>
 			</div>
 			<div id="mainmenu">

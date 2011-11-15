@@ -18,6 +18,7 @@ input.button { width: 60px; }
 #header { padding: 0 20px;  }
 h1 { float: left; margin: 0; padding: 0;}
 form#login { float: right; padding-top: 6px;}
+form#logout { float: right; padding-top: 6px;}
 
 /* Main menu */
 div#mainmenu { background-color: #adc376; padding: 0 20px; } /* #dd963b */

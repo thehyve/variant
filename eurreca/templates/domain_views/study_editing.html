@@ -1,4 +1,4 @@
-{% extends "domain_views/study_specific.html" %}
+{% extends "base.html" %}
 
 {% block extraScripts %}
   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
@@ -9,10 +9,7 @@
     interactionCount = {% if interactionCount %} {{ interactionCount }} {% else %} 0 {% endif %}
   </script>
   <script type="text/javascript" src="{{ STATIC_URL }}js/study_editing.js"></script>
-  
-  <link rel="stylesheet" type="text/css" 
-                href="{{ STATIC_URL }}css/main.css" />
-  
+    
   <STYLE type="text/css">
     table #interactionTable {
       border: #006dba solid 1px;
@@ -38,124 +35,126 @@
   </STYLE>
 {% endblock %}
 
-{% block studyBlock %}
-  {% for form in formset %}
-    {% if form.id.value == null or form.id.value == '' or form.id.value == None %}
-      <form name="study_editing" method="post" action="/studies/create/">
-    {% else %}
-      <form name="study_editing" method="post" action="/studies/update/{{ form.id.value }}">
-      <span class="button">
-        <a class="interactionTable" href="/studies/remove/{{ form.id.value }}">
-          <img alt="Remove" src="{{ STATIC_URL }}images/icons/delete.png">
-          Remove this study.
-        </a>
-      </span>
-    {% endif %}
-      
-       
-      {% csrf_token %}
-      {{ formset.management_form }}
-      {{ formsetGenotype.management_form }}
-      
-      {% for hid in form.hidden_fields %} {{hid}} {% endfor %}
-      
-      <p>Study</p>
-      
-      <table>
-        {% for field in form %}
-          {% if not field.name == 'id' %}
+{% block body %}
+    <div id="studylist">
+        {% for form in formset %}
+        {% if form.id.value == null or form.id.value == '' or form.id.value == None %}
+          <form name="study_editing" method="post" action="/studies/create/">
+        {% else %}
+          <form name="study_editing" method="post" action="/studies/update/{{ form.id.value }}">
+          <span class="button">
+            <a class="interactionTable" href="/studies/remove/{{ form.id.value }}">
+              <img alt="Remove" src="{{ STATIC_URL }}images/icons/delete.png">
+              Remove this study.
+            </a>
+          </span>
+        {% endif %}
           
-            {% if field.errors %}
-              <tr class = "error {{ field.name }}">
-              <td class= "error"></td>
-            {% else %}
-              <tr class = "formfield {{ field.name }}">
-              <td class= "formspacer"></td>
-            {% endif %}
+           
+          {% csrf_token %}
+          {{ formset.management_form }}
+          {{ formsetGenotype.management_form }}
+          
+          {% for hid in form.hidden_fields %} {{hid}} {% endfor %}
+          
+          <p>Study</p>
+          
+          <table>
+            {% for field in form %}
+              {% if not field.name == 'id' %}
+              
+                {% if field.errors %}
+                  <tr class = "error {{ field.name }}">
+                  <td class= "error"></td>
+                {% else %}
+                  <tr class = "formfield {{ field.name }}">
+                  <td class= "formspacer"></td>
+                {% endif %}
+                
+                <td>{{ field.label_tag }}</td> 
+                <td>{{ field }}</td>
+                <td>
+                  {% if field.errors %}
+                    {% for error in field.errors %}
+                      {{ error|escape }} 
+                    {% endfor %}
+                  {% endif %}
+                </td>
+                </tr>
+              {% endif %}        
+            {% endfor %}
+          </table>
+
+          <!-- <input type="submit" value="Submit"  /> -->
+            <p> {{ form.error_dict }} </p>
+          {% endfor %}
+        </form>
+
+        <table>
+            <thead>
+                <caption>Interaction</caption>
+                <tr id="interaction_row">
+                  <th id="genotype-gene">Genotype_name</th>
+                  <th id="genotype-snp_ref">SNP_ref</th>
+                  <th id="phenotype-phenotype_name">Phenotype_name</th>
+                  <th id="panel-panel_description">Panel description</th>
+                  <th id="ratio">Ratio</th>
+                </tr>
+            </thead>
+            <tbody id="interaction">
             
-            <td>{{ field.label_tag }}</td> 
-            <td>{{ field }}</td>
-            <td>
-              {% if field.errors %}
-                {% for error in field.errors %}
-                  {{ error|escape }} 
-                {% endfor %}
-              {% endif %}
-            </td>
-            </tr>
-          {% endif %}        
-        {% endfor %}
-      </table>
-    
-      <!-- <input type="submit" value="Submit"  /> -->
-        <p> {{ form.error_dict }} </p>
-      {% endfor %}
-    </form>
-    
-    <table>
-        <thead>
-            <caption>Interaction</caption>
-            <tr id="interaction_row">
-              <th id="genotype-gene">Genotype_name</th>
-              <th id="genotype-snp_ref">SNP_ref</th>
-              <th id="phenotype-phenotype_name">Phenotype_name</th>
-              <th id="panel-panel_description">Panel description</th>
-              <th id="ratio">Ratio</th>
-            </tr>
-        </thead>
-        <tbody id="interaction">
-        
-        </tbody>
-    </table>
-    <a href="#" onClick="addRow('interaction'); return false;">+</a>
-    
-    <hr/>
-    <table>
-        <thead>
-            <caption>Genotype</caption>
-            <tr id="genotype_row">
-              <th id="gene">Name</th>
-              <th id="snp_ref">SNP_ref</th>
-              <th id="snp_variant">SNP_variant</th>
-              <th id="mutation">Mutation</th>
-            </tr>
-        </thead>
-        <tbody id="genotype">
-        
-        </tbody>
-    </table>
-    <a href="#" onClick="addRow('genotype'); return false;">+</a>
-    
-    <table>
-        <thead>
-            <caption>Phenotype</caption>
-            <tr id="phenotype_row">
-              <th id="phenotype_name">Name</th>
-              <th id="environmental_factor">Environmental_Factor</th>
-            </tr>
-        </thead>
-        <tbody id="phenotype">
-        
-        </tbody>
-    </table>
-    <a href="#" onClick="addRow('phenotype'); return false;">+</a>
-    
-    <table>
-        <thead>
-            <caption>Panel</caption>
-            <tr id="panel_row">
-                <th id="panel_description">Panel description</th>
-                <th id="number_of_participants">No_of_participants</th>
-                <th id="gender">Gender</th>
-            </tr>
-        </thead>
-        <tbody id="panel">
-        
-        </tbody>
-    </table>
-    <a href="#" onClick="addRow('panel'); return false;">+</a>
-    
-    <hr />
-    
-    <a href="#" onClick="submitData(); return false;">Submit Data</a>
-{% endblock studyBlock %} 
+            </tbody>
+        </table>
+        <a href="#" onClick="addRow('interaction'); return false;">+</a>
+
+        <hr/>
+        <table>
+            <thead>
+                <caption>Genotype</caption>
+                <tr id="genotype_row">
+                  <th id="gene">Name</th>
+                  <th id="snp_ref">SNP_ref</th>
+                  <th id="snp_variant">SNP_variant</th>
+                  <th id="mutation">Mutation</th>
+                </tr>
+            </thead>
+            <tbody id="genotype">
+            
+            </tbody>
+        </table>
+        <a href="#" onClick="addRow('genotype'); return false;">+</a>
+
+        <table>
+            <thead>
+                <caption>Phenotype</caption>
+                <tr id="phenotype_row">
+                  <th id="phenotype_name">Name</th>
+                  <th id="environmental_factor">Environmental_Factor</th>
+                </tr>
+            </thead>
+            <tbody id="phenotype">
+            
+            </tbody>
+        </table>
+        <a href="#" onClick="addRow('phenotype'); return false;">+</a>
+
+        <table>
+            <thead>
+                <caption>Panel</caption>
+                <tr id="panel_row">
+                    <th id="panel_description">Panel description</th>
+                    <th id="number_of_participants">No_of_participants</th>
+                    <th id="gender">Gender</th>
+                </tr>
+            </thead>
+            <tbody id="panel">
+            
+            </tbody>
+        </table>
+        <a href="#" onClick="addRow('panel'); return false;">+</a>
+
+        <hr />
+
+        <a href="#" onClick="submitData(); return false;">Submit Data</a>
+    </div>
+{% endblock body %}
