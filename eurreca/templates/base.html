@@ -14,26 +14,46 @@
 				<h1 id="logo">
 					<img src="{{ STATIC_URL }}images/eurreca_klein.png">
 				</h1>
-				<form id="login">
-					<input class="roundedcorners" type="text" placeholder="name" name="name">
+				<form id="login" name="login" action="/do_login/" method="post">
+					<input class="roundedcorners" type="text" placeholder="username" name="username">
 					<input class="roundedcorners" type="password" placeholder="password" name="password">
 					<input class="button" type="submit" value="login">
 				</form>
 				<div class="clear"></div>
 			</div>
 			<div id="mainmenu">
-				<form id="searchform" name="input" action="/search/" method="post">
-					<input class="roundedcorners" type="text" placeholder="search" name="search_terms">
-					<input class="button" type="submit" value="search">
-				</form>
+                <ul id="searchMenu">
+                    <li>
+                        <form id="searchform" name="input" action="/login/" method="post">
+                            <input class="roundedcorners" type="text" placeholder="search" name="search_terms">
+                            <input class="button" type="submit" value="search">
+                        </form>
+                    </li>
+                    <li>
+                        <div id="advancedSearch">
+                            <a href="/advanced_search/">Advanced Search</a>
+                        </div>
+                    </li>
+                </ul>
 				<ul class="menu">
-					<li class="home"><a href="#"><img src="{{ STATIC_URL }}images/home_klein.png"></a></li>
+					<li class="home"><a href="/"><img src="{{ STATIC_URL }}images/home_klein.png"></a></li>
 					<li><a href="/studies/">Studies</a></li>
 					<li class="active"><a href="/studies/create/">Add new study</a></li>
 					<li><a href="#">FAQ</a></li>
 				</ul>
 			</div>
-			<div id="content">{% block body %}{% endblock body %}
+			<div id="content">
+                {% if message %}
+                    <div  
+                        {% if messageType == "positive" %}
+                            class = "positiveMessage"
+                        {% else %}
+                            class = "negativeMessage"
+                        {% endif %}
+                    > {{ message }}
+                    </div>
+                {% endif %}
+                {% block body %}{% endblock body %}
                 <div class="clear">
                 </div>
             </div>

@@ -1,5 +1,5 @@
 from django.http import HttpResponse
-from django.template import Context, loader
+from django.template import RequestContext, Context, loader
 from eurreca.models import Study, Genotype, Phenotype, Panel, Interaction
 from eurreca.forms import StudyFormSet, StudyForm, GenotypeFormSet, GenotypeForm, PhenotypeFormSet, PhenotypeForm, PanelForm, PanelFormSet, InteractionForm, InteractionFormSet
 from django.http import HttpResponseRedirect
@@ -9,19 +9,19 @@ from django.contrib.auth.decorators import login_required
 from django.forms.models import modelformset_factory, inlineformset_factory
 from django.views.decorators.csrf import csrf_protect
 from django.core.context_processors import csrf
-from django.template import RequestContext
 from django.shortcuts import render
-from django.http import Http404
+from django.http import Http404, HttpRequest
 from django.core import serializers
 import json
 import pprint
 from django.utils import simplejson
 import utils 
-import search
+import simple_search
+import advanced_search
 
 def index(request):
     user_list = User.objects.all()[:50]
-    t = loader.get_template('views.html')
+    t = loader.get_template('index.html')
     c = RequestContext( 
         request,
         {
@@ -32,10 +32,38 @@ def index(request):
     )
     return HttpResponse(t.render(c))
 
-def logout_view(request):
+def do_logout(request):
     logout(request)
     return HttpResponseRedirect('/')
 
+def do_login(request):
+    message = ""
+    messageType = ""
+    
+    # Retrieve relevant information from request before calling logout(), 
+    # which wipes it
+    username = request.POST['username']
+    password = request.POST['password']
+        
+    # Make sure that you log any logged-in user out, before logging another in.
+    logout(request)
+    user = authenticate(username=username, password=password)
+    if user is not None:
+        if user.is_active:
+            login(request, user)
+            messageType = 'positive'
+            message = 'You have succesfully logged in.'
+        else:
+            messageType = 'negative'
+            message = 'Your account appears to be disabled.'
+    else:
+        messageType = 'negative'
+        message = 'The entered account information is invalid.'
+    
+    return render(request, 'index.html', 
+        {'message' : message,
+         'messageType' : messageType}) 
+        
 def study_list(request):
     study_list = Study.objects.all()[:50]
     t = loader.get_template('domain_views/study_list.html')
@@ -126,7 +154,7 @@ def study_update(request, id):
             old_study = Study.objects.get(pk=id)
             study = formset[0].save()
             try:
-                # Make list of old items, so that the could be restored if
+                # Make list of old items, so that they could be restored if
                 # necessary.
                 old_Genotypes = Genotype.objects.filter(study_id=id)
                 old_Phenotypes = Phenotype.objects.filter(study_id=id)
@@ -249,73 +277,53 @@ def search_view(request):
     message = ""
     messageType = ""
     search_terms = ['']
+    search_fields = ['']
     search_terms_string = ''
     advancedSearch = False
     if request.method == 'POST':
         if request.POST.has_key('search_type'):
             # This should probably check for the actual value instead
-            print 'advanced search'
             advancedSearch = True
-            from_term_to_model_type = {
-                "Study id":"study",
-                "Pubmed id":"study",
-                "Year of publication":"study",
-                "Micronutrient":"study",
-                "Gene":"genotype",
-                "SNP ref":"genotype",
-                "Phenotype name":"phenotype",
-                "SNP variant":"genotype"
-            }
-            from_string_to_proper_field_name = {
-                "Study id":"study_id",
-                "Pubmed id":"pubmed_id",
-                "Year of publication":"year_of_publication",
-                "Micronutrient":"micronutrient",
-                "Gene":"geno",
-                "SNP ref":"snp_ref",
-                "Phenotype name":"phenotype_name",
-                "SNP variant":"snp_variant"
-            }
             
-            # Determine which terms are meant to be searched in which fields
-            search_terms_by_number = {}
-            for key in request.POST:
-                if (key.startswith('search_field') or key.startswith('search_term')) and (not request.POST[key] == ''):
-                    key_elements = key.split('_')
-                    number = key_elements[2]
-                    if not search_terms_by_number.has_key(number):
-                        search_terms_by_number[number] = {}
-                    search_terms_by_number[number][key_elements[1]] = request.POST[key]
+            # Determine which terms the user wants 
+            # to search for in which fields
+            search_terms_by_number = advanced_search.parse_terms(request.POST)
                     
             # Determine where the fields can be found        
-            for number in search_terms_by_number:
-                type = from_term_to_model_type[
-                            search_terms_by_number[number]['field']
-                        ]
-                search_terms_by_number[number]['type'] = type
-                field = from_string_to_proper_field_name[
-                            search_terms_by_number[number]['field']
-                        ]
-                search_terms_by_number[number]['field'] = field
-                search_terms_string += search_terms_by_number[number]['term']+' '
-
-            search_output = search.advanced_search(search_terms_by_number)
+            search_terms_by_number = advanced_search.locate_fields(
+                search_terms_by_number)
             
+            # Perform search    
+            search_output = advanced_search.search(search_terms_by_number)
+            
+            # Create search terms string and term list (for user feedback)
+            feedback =  advanced_search.get_feedback(
+                search_terms_by_number)
+            search_terms = feedback['search_terms']
+            search_terms_string = feedback['search_terms_string']
+            search_fields = feedback['search_fields']
         else:
-            print 'simple search'
+            if not request.POST.has_key('search_terms'):
+                message = "Please enter a search term."
+                messageType = "negative"
+                return render(request, 'search.html', 
+                    {'message' : message,
+                     'messageType' : messageType}) 
+                     
             search_terms_string = request.POST['search_terms']
-            search_terms = search_terms_string.lower().split(' ')
-            search_terms = [term for term in search_terms if term!='']
-            if len(search_terms) == 0:
-                search_terms = ['']
+            
+            # Parse search terms
+            search_terms = simple_search.parse_terms(search_terms_string)
                 
-            search_output = search.simple_search(search_terms)
+            # Perform search    
+            search_output = simple_search.search(search_terms)
         
         return render(request, 'search.html', 
             {'message' : message,
              'messageType' : messageType,
              'matchedValues' : search_output['matches'],
              'searchTerms' : search_terms,
+             'searchFields' : search_fields,
              'previousSearchString' : search_terms_string,
              'formSets' : search_output['results'],
              'advancedSearch' : advancedSearch})  

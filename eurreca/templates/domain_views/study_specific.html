@@ -8,15 +8,6 @@
 {% endblock studyMenu %}
 
 {% block body %}
-    {% if message %}
-        <div  {% if messageType == "positive" %}
-                class = "positiveMessage"
-            {% else %}
-                class = "negativeMessage"
-            {% endif %}
-        > {{ message }}
-        </div>
-    {% endif %}
     <div id="studylist" class="contentItem">
         {% block studyBlock %}
         {% endblock studyBlock %}

@@ -173,9 +173,29 @@
                         {% else %}
                             {{ form.ratio_type.value }} 
                         {% endif %}
-                    {% else %}
-                        -
                     {% endif %}
+                {% endif %}
+            </span>
+        {% endif %}
+        
+        {% if title == "Panel" %}
+            <span class="button">
+                <a href="/studies/view/{{ form.study_id.value }}">
+                    {{ title }}
+                    <img alt="View" 
+                        src="{{ STATIC_URL }}images/icons/page.png">
+                        View related study
+                </a>    
+            </span> 
+            <br/>
+            <span>
+                Description: 
+                {% if filtered == "True" and form.panel_description.value|containedin:matchedValues %} 
+                    <b>
+                        {{ form.panel_description.value }} 
+                    </b>
+                {% else %}
+                    {{ form.panel_description.value }} 
                 {% endif %}
             </span>
         {% endif %}

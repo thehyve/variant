@@ -44,25 +44,29 @@
             <div class="ui-widget">
                 <label for="fields">Field: </label>
                 <input class="fields" name="search_field_0" 
-                    {% if previousSearchField.0 %} 
-                    value="{{previousSearchField.0}}" {% endif %}/>
+                    {% if searchFields.0 %} 
+                        value="{{searchFields.0}}" 
+                    {% endif %}
+                />
                 <label for="value">Value: </label>
                 <input class="value" name="search_term_0" 
-                    {% if previousSearchString.0 %} 
-                    value="{{previousSearchString.0}}" {% endif %}/>
+                    {% if searchTerms.0 %} 
+                        value="{{searchTerms.0}}" 
+                    {% endif %}
+                />
             </div>
             or
             <div class="ui-widget">
                 <label for="fields">Field: </label>
                 <input class="fields" name="search_field_1" 
-                    {% if previousSearchField.1 %} 
-                        value="{{previousSearchField.1}}" 
+                    {% if searchFields.1 %} 
+                        value="{{searchFields.1}}" 
                     {% endif %}
                 />
                 <label for="value">Value: </label>
                 <input class="value" name="search_term_1" 
-                    {% if previousSearchString.1 %} 
-                        value="{{previousSearchString.1}}" 
+                    {% if searchTerms.1 %} 
+                        value="{{searchTerms.1}}" 
                     {% endif %}
                 />
             </div>
@@ -70,18 +74,18 @@
             <div class="ui-widget">
                 <label for="fields">Field: </label>
                     <input class="fields" name="search_field_2" 
-                        {% if previousSearchField.2 %} 
-                            value="{{previousSearchField.2}}" 
+                        {% if searchFields.2 %} 
+                            value="{{searchFields.2}}" 
                         {% endif %}
                     />
                 <label for="value">Value: </label>
                 <input class="value" name="search_term_2" 
-                    {% if previousSearchString.2 %} 
-                        value="{{previousSearchString.2}}" 
+                    {% if searchTerms.2 %} 
+                        value="{{searchTerms.2}}" 
                     {% endif %}
                 />
             </div>
-            <input type="submit" value="Submit in quite an advanced manner" />
+            <input type="submit" value="search" />
         </form>
     {% else %}
         <form name="input" action="/search/" method="post">
@@ -124,7 +128,7 @@
             {% if formSets.panel|length == '' %} no {% endif %}
             {{ formSets.panel|length }} panel{{ formSets.panel|pluralize }}.
         </div>
-        <ul>
+        <ul class="searchResults">
             {% for form in formSets.study %}
                 {% include 'new_result.html' with title="Study" class="contentItem" filtered="True" %}
             {% endfor %}
