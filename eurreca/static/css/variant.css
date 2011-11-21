@@ -25,7 +25,7 @@ div#mainmenu { background-color: #adc376; padding: 0 20px; } /* #dd963b */
 div#mainmenu ul.menu { list-style-type: none; margin: 0; padding: 0; }
 div#mainmenu ul.menu li { display: inline-block; margin: 0 10px 0 0; line-height: 28px; height: 28px; vertical-align: middle; *display: inline; zoom: 1; }
 div#mainmenu ul.menu li.home { padding-top: 4px; }
-div#mainmenu ul.menu li a { color: white; text-decoration: none; }
+div#mainmenu li a { color: white; text-decoration: none; }
 div#mainmenu ul.menu li.active a { color: black; text-decoration: underline; }
 
 ul#searchMenu { float: right; list-style-type: none; margin: 0; padding: 0; }
