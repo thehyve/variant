@@ -23,14 +23,13 @@ form#logout { float: right; padding-top: 6px;}
 /* Main menu */
 div#mainmenu { background-color: #adc376; padding: 0 20px; } /* #dd963b */
 div#mainmenu ul.menu { list-style-type: none; margin: 0; padding: 0; }
-div#mainmenu ul.menu li { display: inline-block; margin: 0 10px 0 0; line-height: 28px; height: 28px; vertical-align: middle;}
+div#mainmenu ul.menu li { display: inline-block; margin: 0 10px 0 0; line-height: 28px; height: 28px; vertical-align: middle; *display: inline; zoom: 1; }
 div#mainmenu ul.menu li.home { padding-top: 4px; }
 div#mainmenu ul.menu li a { color: white; text-decoration: none; }
 div#mainmenu ul.menu li.active a { color: black; text-decoration: underline; }
 
-form#searchform { padding-top: 4px; }
 ul#searchMenu { float: right; list-style-type: none; margin: 0; padding: 0; }
-div#advancedSearch{ float: right; }
+ul#searchMenu li { display: inline-block; *display: inline; zoom: 1; padding-top: 4px; }
 
 /* Content */
 #content { background-color: white; padding: 12px 20px; }
