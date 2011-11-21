@@ -98,11 +98,14 @@ def study_create(request):
                 message = "The study has been saved."
                 messageType = "positive"
                 print "The study has been saved."                
+                qs = Study.objects.all()
+                study_list = []
+                if not len(qs) == 0:
+                    study_list = StudyFormSet(queryset=qs, prefix="study")
                 return render(request, 'domain_views/study_list.html', 
                     {'message' : message,
                      'messageType' : messageType,
-                     'study_list' : StudyFormSet(queryset=Study.objects.all(), 
-                        prefix="study"),})
+                     'study_list' : study_list,})
             except Exception as inst:
                 print "in study create view"
                 print type(inst)     # the exception instance
@@ -171,13 +174,16 @@ def study_update(request, id):
             
             # Study has been saved, return to study list
             message = "The study has been saved."
-            messageType = "positive"
+            messageType = "positive"                
+            qs = Study.objects.all()
+            study_list = []
+            if not len(qs) == 0:
+                study_list = StudyFormSet(queryset=qs, prefix="study")
             print "The study has been saved."                
             return render(request, 'domain_views/study_list.html', 
                 {'message' : message,
                  'messageType' : messageType,
-                 'study_list' : StudyFormSet(queryset=Study.objects.all(), 
-                    prefix="study"),})
+                 'study_list' : study_list,})
         except Exception as inst:
             print "\nin study update view"
             print '\na)',type(inst)     # the exception instance
@@ -225,11 +231,14 @@ def study_update(request, id):
                  'message' : message,
                  'messageType' : messageType,})
         except Study.DoesNotExist:
+            qs = Study.objects.all()
+            study_list = []
+            if not len(qs) == 0:
+                study_list = StudyFormSet(queryset=qs, prefix="study")
             return render(request, 'domain_views/study_list.html', 
                 {'message' : "The requested study does not exist.",
                  'messageType' : "negative",
-                 'study_list' : StudyFormSet(queryset=Study.objects.all(), 
-                        prefix="study"),})  
+                 'study_list' : study_list,})  
 
 def study_view(request, id):
     message = ""
@@ -271,10 +280,15 @@ def study_remove(request, id):
         message = "The requested study does not exist."
         messageType = "negative"
 
+                 
+    qs = Study.objects.all()
+    study_list = []
+    if not len(qs) == 0:
+        study_list = StudyFormSet(queryset=qs, prefix="study")
     return render(request, 'domain_views/study_list.html', 
             {'message' : message,
              'messageType' : messageType,
-             'study_list' : Study.objects.all()[:50],})  
+             'study_list' : study_list,})  
              
 def search_view(request):
     message = ""
