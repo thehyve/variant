@@ -28,19 +28,15 @@
 				<div class="clear"></div>
 			</div>
 			<div id="mainmenu">
-                <ul id="searchMenu">
-                    <li>
-                        <form id="searchform" name="input" action="/login/" method="post">
-                            <input class="roundedcorners" type="text" placeholder="search" name="search_terms">
-                            <input class="button" type="submit" value="search">
-                        </form>
-                    </li>
-                    <li>
-                        <div id="advancedSearch">
-                            <a href="/advanced_search/">Advanced Search</a>
-                        </div>
-                    </li>
-                </ul>
+				<ul id="searchMenu">
+					<li><a href="/advanced_search/">Advanced Search</a></li>
+					<li>
+						<form id="searchform" name="input" action="/login/" method="post">
+							<input class="roundedcorners" type="text" placeholder="search" name="search_terms">
+							<input class="button" type="submit" value="search">
+						</form>
+					</li>
+				</ul>
 				<ul class="menu">
 					<li class="home"><a href="/"><img src="{{ STATIC_URL }}images/home_klein.png"></a></li>
 					<li><a href="/studies/">Studies</a></li>
