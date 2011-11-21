@@ -4,28 +4,10 @@
     <div id="studylist">
         <b>Studies</b>
         <p>There are {{ study_list|length }} studies.</p>
-        <table id="studyTable">
-            {% for study in study_list %}
-                <tr id="studyTable">
-                    <td id="studylistText"> 
-                        <span class="button">
-                            <a href="/studies/view/{{study.id}}">
-                                <img alt="View" src="{{ STATIC_URL }}images/icons/page.png">
-                            </a>    
-                        </span> 
-                        <span class="button">
-                            <a href="/studies/update/{{study.id}}">
-                                <img alt="Edit" src="{{ STATIC_URL }}images/icons/page_edit.png">
-                            </a>    
-                        </span> 
-                        <div id="studyTableText"> 
-                            <a href="/studies/view/{{study.id}}">
-                                {{ study }} 
-                            </a>
-                        </div>
-                    </td>
-                </tr>
-            {% endfor %}
-        </table>
+        <ul class="searchResults">
+            {% for form in study_list %}
+                {% include 'search_result.html' with title="Study" class="contentItem" filtered="False" %}
+            {% endfor %}            
+        </ul>
     </div>
 {% endblock body %}

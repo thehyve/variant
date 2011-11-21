@@ -3,8 +3,19 @@
 	<head>
         {% block head %}
             <title>Variant template</title>
-            <link href="{{ STATIC_URL }}css/variant.css" type="text/css"
-                rel="stylesheet" />
+            <link type="text/css" href="{{ STATIC_URL }}css/jquery-ui-thehyve/jquery-ui-1.8.16.thehyve.css" rel="stylesheet" />	
+            <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.6.2.min.js"></script>
+            <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui-1.8.16.custom.min.js"></script>
+
+            <!-- Application stylesheet. Load this one last, because it overrides some jquery styles -->
+            <link href="{{ STATIC_URL }}css/variant.css" type="text/css" rel="stylesheet" />
+
+            <script type="text/javascript">
+                $(function(){
+                    // Tabs
+                    $('#pagetabs').tabs();
+                });
+            </script>
         {% endblock %}
         {% block extraScripts %}{% endblock %}
 	</head>

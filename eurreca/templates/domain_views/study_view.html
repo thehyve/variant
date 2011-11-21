@@ -2,29 +2,104 @@
 
 {% block body %}
     <div id="studylist">
-        <div id="contentItem">
-            <span class="button">
-                <a href="/studies/remove/{{ form.id.value }}">
-                    <img alt="View" 
-                        src="{{ STATIC_URL }}images/icons/delete.png">
-                        Remove this study
-                </a>    
-            </span> 
+        <div id="contextmenu">
+            <div class="header roundedcorners">Control panel</div>
+            <ul>
+                <li>
+                    <a href="/studies/remove/{{ formset.0.id.value }}">
+                        <img alt="" 
+                            src="{{ STATIC_URL }}images/remove_40x40.png"/>
+                        <span>        
+                            Remove this study
+                        </span> 
+                    </a>    
+                </li>
+                <li>
+                    <a href="/studies/update/{{ formset.0.id.value }}">
+                        <img alt="" 
+                            src="{{ STATIC_URL }}images/pencil_40x40.png"/>
+                        <span>        
+                            Update this study
+                        </span> 
+                    </a>    
+                </li>
+            </ul>
         </div>
-        {% for form in formset %}
-            {% include 'table.html' with title="Study" class="contentItem" filtered="False" %}
-        {% endfor %}
-        {% for form in formsetGenotype %}
-            {% include 'table.html' with title="Genotype" class="contentItem" filtered="False" %}
-        {% endfor %}
-        {% for form in formsetPhenotype %}
-            {% include 'table.html' with title="Phenotype" class="contentItem" filtered="False" %}
-        {% endfor %}
-        {% for form in formsetPanel %}
-            {% include 'table.html' with title="Panel" class="contentItem" filtered="False" %}
-        {% endfor %}
-        {% for form in formsetInteraction %}
-            {% include 'table.html' with title="Interaction" class="contentItem" filtered="False" %}
-        {% endfor %}
+        
+        <!-- Tabs -->
+        <div id="pagetabs" class="withcontextmenu">
+            <ul>
+                <li>
+                    <a href="#tabs-1">
+                        <img alt="View" 
+                            src="{{ STATIC_URL }}images/paper_40x40.png"/>
+                        <span>        
+                            Study
+                        </span> 
+                    </a>
+                </li>
+                <li>
+                    <a href="#tabs-2">
+                        <img alt="View" 
+                            src="{{ STATIC_URL }}images/interaction_40x40.png"/>
+                        <span>      
+                            Interaction
+                        </span> 
+                    </a>
+                </li>
+                <li>
+                    <a href="#tabs-3">
+                        <img alt="View" 
+                            src="{{ STATIC_URL }}images/genotype_40x40.png"/>
+                        <span>        
+                            Genotypes
+                        </span> 
+                    </a>
+                </li>
+                <li>
+                    <a href="#tabs-4">
+                        <img alt="View" 
+                            src="{{ STATIC_URL }}images/micronutrient_40x40.png"/>
+                        <span>        
+                            Phenotypes
+                        </span> 
+                    </a>
+                </li>
+                <li>
+                    <a href="#tabs-5">
+                        <img alt="View" 
+                            src="{{ STATIC_URL }}images/panel_40x40.png"/>
+                        <span>        
+                            Panels
+                        </span> 
+                    </a>
+                </li>
+            </ul>
+            <div id="tabs-1">
+                {% for form in formset %}
+                    {% include 'table.html' with title="Study" class="contentItem" filtered="False" %}
+                {% endfor %}
+            </div>
+            <div id="tabs-2">
+                {% for form in formsetInteraction %}
+                    {% include 'table.html' with title="Interaction" class="contentItem" filtered="False" %}
+                {% endfor %}
+            </div>
+            <div id="tabs-3">
+                {% for form in formsetGenotype %}
+                    {% include 'table.html' with title="Genotype" class="contentItem" filtered="False" %}
+                {% endfor %}        
+            </div>
+            <div id="tabs-4">
+                {% for form in formsetPhenotype %}
+                    {% include 'table.html' with title="Phenotype" class="contentItem" filtered="False" %}
+                {% endfor %}            
+            </div>
+            <div id="tabs-5">
+                {% for form in formsetPanel %}
+                    {% include 'table.html' with title="Panel" class="contentItem" filtered="False" %}
+                {% endfor %}          
+            </div>
+        </div>
     </div>
 {% endblock body %}

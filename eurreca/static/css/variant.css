@@ -5,7 +5,7 @@ a img { border-width: 0; }
 .clear { clear: both; }
 
 /* Default layout of forms */
-input.roundedcorners { 
+.roundedcorners { 
 	-webkit-border-radius: 6px; -moz-border-radius: 6px; border-radius: 6px;          
 	-moz-background-clip: padding; -webkit-background-clip: padding-box; background-clip: padding-box; 
 	border-width: 0;
@@ -33,42 +33,41 @@ ul#searchMenu li { display: inline-block; *display: inline; zoom: 1; padding-top
 
 /* Content */
 #content { background-color: white; padding: 12px 20px; }
-div.contentItem {
-    background-color: #F8FFF0;
-    display: block; 
-    float: left;
-    margin: 5px;
-    padding: 10px;
-}
-ul.searchResults {
-    list-style-type: none
+#pagetabs { border-width: 0; background-color: transparent; background-image: none; position: relative; }
+#pagetabs.withcontextmenu { margin-right: 210px; }
+#pagetabs .ui-tabs-panel { padding-left: 0; padding-right: 0; }
+#pagetabs li a { margin: 4px; padding: 2px; vertical-align: middle; }
+#pagetabs li a img { vertical-align: middle; display: float; }
+#pagetabs li a span { vertical-align: middle; display: float; }
+
+
+div.contentItem { background-color: #F8FFF0; display: block; float: left; margin: 5px; padding: 10px; }
+ul.searchResults { list-style-type: none; }
+
+.ui-widget { font-size: 1em; }
+
+/* Context menu */
+#contextmenu { float: right; width: 190px; margin-left: 20px; margin-top: 2px; }
+#contextmenu .header { background-color: #adc376; padding: 8px; }
+#contextmenu ul { list-style-type: none; margin: 0; padding: 8px; }
+#contextmenu ul li { margin: 4px 0; padding: 0; }
+#contextmenu li a { text-decoration:none; }
+#contextmenu li a img { vertical-align: middle; display: float; }
+#contextmenu li a span { vertical-align: middle; display: float; }
+
+/* Bugfix for tabs with floating elements next to it: http://bugs.jqueryui.com/ticket/5601 */
+.ui-helper-clearfix:after { }
+.ui-helper-clearfix {
+        overflow: hidden; /* or auto */
+        zoom: 1; /* required for ie hasLayout */
 }
 
 /* Footer */
 #footer { border-top: 1px dotted #adc376; padding: 8px 0px 8px 12px; }
 
 /* Autocomplete */
-ul.ui-autocomplete {
-    display: block;
-    left: 56px;
-    top: 41px;
-    width: 151px;
-    z-index: 1;
-    border-bottom-right-radius: 4px;
-    border-bottom-left-radius: 4px;
-    border-top-right-radius: 4px;
-    border-top-left-radius: 4px;
-    background-color: #FFFFFF;
-    border: 1px solid #AAAAAA;
-    color: #222222;
-    float: left;
-    list-style: none outside none;
-    margin: 0;
-    padding: 2px;
-    cursor: default;
-    position: absolute;
-}
+ul.ui-autocomplete { display: block; left: 56px; top: 41px; width: 151px; z-index: 1; border-bottom-right-radius: 4px; border-bottom-left-radius: 4px; border-top-right-radius: 4px; border-top-left-radius: 4px; background-color: #FFFFFF; border: 1px solid #AAAAAA; color: #222222; float: left; list-style: none outside none; margin: 0; padding: 2px; cursor: default; position: absolute; }
 
-/* User feedback message styling */
+/* User feedback messages */
 div.positiveMessage { display: inline; background: url("/static/images/icons/accept.png") no-repeat scroll 0px 0px #F8FFF0; padding: 0px 0px 0px 20px; text-align: center; }
 div.negativeMessage { display: inline; background: url("/static/images/icons/error.png") no-repeat scroll 0px 0px #ffcccc; padding: 0px 0px 0px 20px; text-align: center; }
