@@ -23,12 +23,17 @@ def search(search_terms):
         if not len(q_dicts[type]) == 0: 
             # Only do 'non-empty' searches.
             # An 'empty' search will yield ALL objects.
-            q_objects[type] = [Q(**q_dicts[type])]
+            print 'q_dicts[type] ->', q_dicts[type]
             
-    
+            # The following does not work!
+            # q_objects[type] = [Q(**q_dicts[type])]
+            # See my question at 
+            # http://stackoverflow.com/questions/8138919/trying-to-reduce-django-q-objects-with-operator-or-seems-to-result-in-reduction
+            q_objects[type] = [Q(**{k: v}) for (k, v) in q_dicts[type].iteritems()]
+        
     # Create formSets from Q-objects
     formSets = utils.get_formsets_from_q_objects(q_objects)   
-                    
+    
     return {'results':formSets,'matches':matches}    
     
     

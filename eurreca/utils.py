@@ -3,55 +3,86 @@ from eurreca.forms import StudyFormSet, StudyForm, GenotypeFormSet, GenotypeForm
 from itertools import chain
 import operator
 from django.db.models import Q
+from django.shortcuts import render
 
 def hello():
     print "Oh hai there."
     
-def process_clientside_studydata(jason, study, old_items):
+def process_clientside_studydata(jason, study, study_formset, request):
     saved_objects = {'genotype':[],'phenotype':[],'panel':[]}
+    interactionValues = {}
     try:
         # Non-interaction fields first, so that all necessary primary keys can be known
         forms = add_non_interaction_forms(jason, study.id)
-        
+        invalid_forms = {'genotype':[],'phenotype':[],'panel':[]}
+        error_messages = []
         for key in forms:
             for form in forms[key]:
                 if not form.is_valid():
                     print 'Encountered invalid non-interaction form'
                     print "errors:",form.errors.items()
-                    raise ValueError('Some of the forms did not validate. '+errors_to_string(form.errors.items()))
-        for key in forms:
-            for form in forms[key]: 
-                obj = form.save()    
-                saved_objects[key].append(obj)
+                    error_messages.append(form.errors.items())
+                    #raise ValueError('Some of the forms did not validate. '+errors_to_string(form.errors.items()))
+                else:
+                    obj = form.save()    
+                    saved_objects[key].append(obj)
                 
         # Interaction fields
+        print "\nAbout to form interaction forms\n"
+            
+        forms['interaction'] = []
         forms = add_interaction_forms(jason, study.id, saved_objects, forms)
-        saved_objects['interaction'] = []
-        for form in forms['interaction']:
-            if not form.is_valid():
-                print 'Encountered invalid interaction form'
-                print "errors:",form.errors.items()
-                raise ValueError('Some of the forms did not validate. '+errors_to_string(form.errors.items()))
+        print '\n',forms['interaction'],'\n'
+        #saved_objects['interaction'] = []
         count = 0
         for form in forms['interaction']:
-            obj = form.save(commit=False) 
-            obj.save()
-            obj = set_interaction_relations(obj, saved_objects, jason['interactionRelations'][str(count)])
-            obj.save()
+            interactionValues[str(count + 1)] = get_interaction_values(count, forms, jason['interactionRelations'][str(count)]) 
+            # use key str(count + 1) for compatibility with the template language
             count += 1
-            saved_objects['interaction'].append(obj)
+        count = 0
+        for form in forms['interaction']:
+            if not form.is_valid():
+                print '\nEncountered invalid interaction form'
+                print "\nerrors:",form.errors.items()
+                error_messages.append(form.errors.items())
+                #raise ValueError('Some of the forms did not validate. '+errors_to_string(form.errors.items()))
+            else:
+                obj = form.save(commit=False) 
+                obj.save()
+                print '\ntestingtesting', count, ' ',jason['interactionRelations']
+                if count < len(jason['interactionRelations']):
+                    obj = set_interaction_relations(obj, saved_objects, jason['interactionRelations'][str(count)])
+                    obj.save()
+                    print '\n       saved!'
+                print '\npassed testing'
+                    
+                count += 1
+                #saved_objects['interaction'].append(obj)
         
+        if not len(error_messages) == 0:
+            raise ValueError('Some of the forms did not validate. {0}'.format(error_messages))
+            
         return forms
     except Exception as inst:
-        print "in eurrecca.utils: ",inst
-        # Remove the new items and re-save the old items
-        for key in saved_objects:
-            for obj in saved_objects[key]:
-                obj.delete()
-        for key in old_items:
-            for obj in old_items[key]:
-                obj.save()
-        raise Exception(inst)
+        print "\nin eurrecca.utils: ",inst
+        exception = []
+        if forms.has_key('interaction'):
+            print '\n\ninteraction key found\n\n'
+            exception = [inst,
+                {'formset' : study_formset, 
+                'formsetGenotype' : forms['genotype'],
+                'formsetPhenotype' :  forms['phenotype'],
+                'formsetPanel' :  forms['panel'],
+                'formsetInteraction' :  forms['interaction'],
+                'interactionValues' : interactionValues}]
+        else:
+            print '\n\nNO interaction key found\n\n'
+            exception = [inst,
+                {'formset' : study_formset, 
+                'formsetGenotype' : forms['genotype'],
+                'formsetPhenotype' :  forms['phenotype'],
+                'formsetPanel' :  forms['panel']}]
+        raise Exception(exception)
          
 def set_interaction_relations(obj, saved_objects, relations_lists):
     # At this moment in time we are not yet dealing with lists, but single items
@@ -59,10 +90,29 @@ def set_interaction_relations(obj, saved_objects, relations_lists):
     for gt in relations_lists['genotype']:
         interaction.genotypes.add(saved_objects['genotype'][gt])
     '''
-    obj.genotypes.add(saved_objects['genotype'][relations_lists['genotype']])
-    obj.phenotypes.add(saved_objects['phenotype'][relations_lists['phenotype']])
-    obj.panels.add(saved_objects['panel'][relations_lists['panel']])
+    if relations_lists['genotype']  < len(saved_objects['genotype']):
+        obj.genotypes.add(saved_objects['genotype'][relations_lists['genotype']])
+    if relations_lists['phenotype'] < len(saved_objects['phenotype']):
+        obj.phenotypes.add(saved_objects['phenotype'][relations_lists['phenotype']])
+    if relations_lists['panel']     < len(saved_objects['panel']):
+        obj.panels.add(saved_objects['panel'][relations_lists['panel']])
     return obj
+
+def get_interaction_values(count, forms, relations_lists):
+    # At this moment in time we are not yet dealing with lists, but single items
+    ''' When dealing with lists it should probably be done like this:
+    for gt in relations_lists['genotype']:
+        interaction.genotypes.add(saved_objects['genotype'][gt])
+    '''
+    return_map = {}
+    if relations_lists['genotype']  < len(forms['genotype']):
+        return_map['gene'] = forms['genotype'][relations_lists['genotype']].data['gene']
+        return_map['snp_ref'] = forms['genotype'][relations_lists['genotype']].data['snp_ref']
+    if relations_lists['phenotype'] < len(forms['phenotype']):
+        return_map['phenotype_name'] = forms['phenotype'][relations_lists['phenotype']].data['phenotype_name']
+    if relations_lists['panel']     < len(forms['panel']):
+        return_map['panel_description'] = forms['panel'][relations_lists['panel']].data['panel_description']
+    return return_map
     
 def add_non_interaction_forms(jason, id):
     # Fully functional
@@ -92,7 +142,6 @@ def add_interaction_forms(jason, study_id, saved_objects, forms):
     # Does not set all fields yet
     forms['interaction'] = []
     for key1 in jason['interaction']:
-        interactionData = jason['interaction'][key1]
         form = InteractionForm(Interaction.objects.none())
         form.data['study_id'] = study_id
         for field in form:
@@ -165,6 +214,7 @@ def get_formsets_from_q_objects(q_objects):
         'interaction':None}     
         
     for key in formSets_0:
+        filter = None
         if len(q_objects[key]) == 0:
             continue
         else:
@@ -204,7 +254,6 @@ def get_formsets_from_q_objects(q_objects):
                         queryset=q, 
                         prefix=key)
                 continue
-    
     # Return non-empty formsets
     formSets_1 = {'genotype':None,'phenotype':None,'panel':None,'study':None,
         'interaction':None}     
@@ -225,6 +274,7 @@ def get_model_type_from_term(field_name):
         "Phenotype name":"phenotype",
         "SNP variant":"genotype"
     }
+    #print 'get_model_type_from_term', field_name, '->', from_term_to_model_type[field_name]
     return from_term_to_model_type[field_name]
     
 
@@ -239,4 +289,5 @@ def get_field_name_from_term(field_name):
         "Phenotype name":"phenotype_name",
         "SNP variant":"snp_variant"
     }
+    #print 'get_field_name_from_term', field_name, '->', from_string_to_proper_field_name[field_name]
     return from_string_to_proper_field_name[field_name]

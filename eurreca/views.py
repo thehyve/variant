@@ -18,6 +18,7 @@ from django.utils import simplejson
 import utils 
 import simple_search
 import advanced_search
+from itertools import chain
 
 def index(request):
     user_list = User.objects.all()[:50]
@@ -62,7 +63,10 @@ def do_login(request):
          'messageType' : messageType}) 
         
 def study_list(request):
-    study_list = Study.objects.all()[:50]
+    qs = Study.objects.all()
+    study_list = []
+    if not len(qs) == 0:
+        study_list = StudyFormSet(queryset=qs, prefix="study")
     t = loader.get_template('domain_views/study_list.html')
     c = RequestContext( 
         request,
@@ -85,14 +89,10 @@ def study_create(request):
         if formset[0].is_valid():
             study = formset[0].save()
             try:
-                # There are no old items. Create and pass the object anyway,
-                # so that we can re-use 'update'-functions
-                old_items = {'study':[],'genotype':[],'phenotype':[],
-                    'panel':[], 'interaction':[]}  
                 
                 # Fill forms to get new items, save the forms
                 forms = utils.process_clientside_studydata(
-                    json.loads(request.POST['returnObject']), study, old_items)
+                    json.loads(request.POST['returnObject']), study, None, request)
       
                 # Study has been saved, return to study list
                 message = "The study has been saved."
@@ -101,7 +101,8 @@ def study_create(request):
                 return render(request, 'domain_views/study_list.html', 
                     {'message' : message,
                      'messageType' : messageType,
-                     'study_list' : Study.objects.all()[:50],})
+                     'study_list' : StudyFormSet(queryset=Study.objects.all(), 
+                        prefix="study"),})
             except Exception as inst:
                 print "in study create view"
                 print type(inst)     # the exception instance
@@ -111,9 +112,6 @@ def study_create(request):
                 message =  "The study has not been saved."
                 message += " Please review the errors and try again. "+str(inst)
                 messageType = "negative"
-                
-                # Remove the new study
-                study.delete()
                 
                 return render(request, 'domain_views/study_editing.html', 
                     {'formset' : formset, 
@@ -146,76 +144,78 @@ def study_update(request, id):
         old_Panels = []
         old_Interactions = []
         forms = {}
-
-        if formset[0].is_valid():
-            old_study = Study.objects.get(pk=id)
-            study = formset[0].save()
-            try:
-                # Make list of old items, so that they could be restored if
-                # necessary.
-                old_Genotypes = Genotype.objects.filter(study_id=id)
-                old_Phenotypes = Phenotype.objects.filter(study_id=id)
-                old_Panels = Panel.objects.filter(study_id=id)
-                old_Interactions = Interaction.objects.filter(study_id=id)
-                old_items = {'study':[old_study],'genotype':old_Genotypes,
-                    'phenotype':old_Phenotypes,'panel':old_Panels, 
-                    'interaction':old_Interactions}
+        study = Study.objects.filter(pk=id)[0]
+        try:
+            # Make list of old items
+            old_Genotypes = Genotype.objects.filter(study_id=id)
+            old_Phenotypes = Phenotype.objects.filter(study_id=id)
+            old_Panels = Panel.objects.filter(study_id=id)
+            old_Interactions = Interaction.objects.filter(study_id=id)
+            old_items = {'study':[study],'genotype':old_Genotypes,
+                'phenotype':old_Phenotypes,'panel':old_Panels, 
+                'interaction':old_Interactions}
+  
+            # Fill forms to get new items, save the forms
+            forms = utils.process_clientside_studydata(
+                json.loads(request.POST['returnObject']), study, formset, request)
+            if formset[0].is_valid():
+                study = formset[0].save()
+            else: 
+                raise ValueError('Some of the forms did not validate. {0}'.format(errors_to_string(formset[0].errors.items())))    
                 
-                # Remove old items, except study
-                for gt in old_Genotypes: gt.delete()
-                for pt in old_Phenotypes: pt.delete()
-                for p in old_Panels: p.delete()
-                for i in old_Interactions: i.delete()      
-                
-                # Fill forms to get new items, save the forms
-                forms = utils.process_clientside_studydata(
-                    json.loads(request.POST['returnObject']), study, old_items)
-      
-                # Study has been saved, return to study list
-                message = "The study has been saved."
-                messageType = "positive"
-                print "The study has been saved."                
-                return render(request, 'domain_views/study_list.html', 
-                    {'message' : message,
-                     'messageType' : messageType,
-                     'study_list' : Study.objects.all()[:50],})
-            except Exception as inst:
-                print "in study update view"
-                print type(inst)     # the exception instance
-                print inst.args      # arguments stored in .args
-                print inst    
-                # Exception while reading or writing the study-related objects
+             # Remove old items, except study
+            for gt in old_Genotypes: gt.delete()
+            for pt in old_Phenotypes: pt.delete()
+            for p in old_Panels: p.delete()
+            for i in old_Interactions: i.delete()    
+            
+            # Study has been saved, return to study list
+            message = "The study has been saved."
+            messageType = "positive"
+            print "The study has been saved."                
+            return render(request, 'domain_views/study_list.html', 
+                {'message' : message,
+                 'messageType' : messageType,
+                 'study_list' : StudyFormSet(queryset=Study.objects.all(), 
+                    prefix="study"),})
+        except Exception as inst:
+            print "\nin study update view"
+            print '\na)',type(inst)     # the exception instance
+            print '\nb)',inst.args[0]
+            if isinstance(inst.args[0], str):
                 message =  "The study has not been saved."
-                message += " Please review the errors and try again."+str(inst)
+                message += " Please review the errors and try again: "+str(inst.args[0])
                 messageType = "negative"
-                
-                # Remove the new study and re-save the old study
-                study.delete()
-                old_study.save()
-                
+                fs = utils.get_formsets_by_id(id)
                 return render(request, 'domain_views/study_editing.html', 
-                    {'formset' : formset, 
+                    {'formset' : fs['study'], 
+                     'formsetGenotype' : fs['genotype'],
+                     'formsetPhenotype' :  fs['phenotype'],
+                     'formsetPanel' :  fs['panel'],
+                     'formsetInteraction' :  fs['interaction'],
                      'message' : message,
                      'messageType' : messageType,})  
-        else:
-            # Study form did not validate
-            message =  "The study has not been saved."
-            message += "Please review the errors and try again."
-            messageType = "negative"
-            return render(request, 'domain_views/study_editing.html', 
-                {'formset' : formset, 
-                 'message' : message,
-                 'messageType' : messageType,})  
+            print '\nc)',inst.args[0][0]      
+            print '\nd)',inst.args[0][1]
             
+            
+            # Exception while reading or writing the study-related objects
+            message =  "The study has not been saved."
+            message += " Please review the errors and try again."+str(inst.args[0][0])
+            messageType = "negative"
+
+            return render(request, 'domain_views/study_editing.html', 
+                {'formset' : inst.args[0][1]['formset'], 
+                 'formsetGenotype' : inst.args[0][1]['formsetGenotype'],
+                 'formsetPhenotype' :  inst.args[0][1]['formsetPhenotype'],
+                 'formsetPanel' :  inst.args[0][1]['formsetPanel'],
+                 'formsetInteraction' :  inst.args[0][1]['formsetInteraction'], 
+                 'interactionValues' : inst.args[0][1]['interactionValues'], 
+                 'message' : message,
+                 'messageType' : messageType,})
     else:
         try:
             fs = utils.get_formsets_by_id(id)
-        except Study.DoesNotExist:
-            return render(request, 'domain_views/study_list.html', 
-                {'message' : "The requested study does not exist.",
-                 'messageType' : "negative",
-                 'study_list' : Study.objects.all()[:50],})
-        finally:
             return render(request, 'domain_views/study_editing.html', 
                 {'formset' : fs['study'], 
                  'formsetGenotype' : fs['genotype'],
@@ -223,7 +223,13 @@ def study_update(request, id):
                  'formsetPanel' :  fs['panel'],
                  'formsetInteraction' :  fs['interaction'],
                  'message' : message,
-                 'messageType' : messageType,})  
+                 'messageType' : messageType,})
+        except Study.DoesNotExist:
+            return render(request, 'domain_views/study_list.html', 
+                {'message' : "The requested study does not exist.",
+                 'messageType' : "negative",
+                 'study_list' : StudyFormSet(queryset=Study.objects.all(), 
+                        prefix="study"),})  
 
 def study_view(request, id):
     message = ""

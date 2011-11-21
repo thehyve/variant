@@ -31,7 +31,7 @@ class Phenotype(models.Model):
     intake_data = models.CharField(max_length=200, blank=True)
     
     def __unicode__(self):
-        return self.phenotype_name
+        return "{0}".format(self.phenotype_name)
         
 class Genotype(models.Model):
     TYPE_CHOICES = (
@@ -54,9 +54,9 @@ class Genotype(models.Model):
         # snp_ref
         # snp_name
         if self.snp_ref != '' and self.snp_ref != None:
-            return self.snp_ref
+            return "{0}".format(self.snp_ref)
         else:
-            return self.snp_name
+            return "{0}".format(self.snp_name)
             
 class Panel(models.Model):
     GENDER_CHOICES = (

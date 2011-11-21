@@ -53,6 +53,9 @@
 {% endblock %}
 
 {% block body %}
+    {% if interactionValues %}
+        {{ interactionValues }}
+    {% endif %}
     <div id="studylist">
         {% for form in formset %}
             {% if form.id.value == null or form.id.value == '' or form.id.value == None %}
@@ -130,23 +133,61 @@
                         <tbody id="interaction">
                             {% for form in formsetInteraction %}
                                 <tr>
-                                    {% for gf in formsetGenotype %}
-                                        {% if gf.id.value == form.genotypes.value.0 %}
-                                            <td>{{gf.gene.value}}</td>
-                                            <td>{{gf.snp_ref.value}}</td>
-                                        {% endif %} 
-                                    {% endfor %}
-                                    {% for pf in formsetPhenotype %}
-                                        {% if pf.id.value == form.phenotypes.value.0 %}
-                                            <td>{{pf.phenotype_name.value}}</td>
-                                        {% endif %} 
-                                    {% endfor %}                                
-                                    {% for p in formsetPanel %}
-                                        {% if p.id.value == form.panels.value.0 %}
-                                            <td>{{p.panel_description.value}}</td>
-                                        {% endif %} 
-                                    {% endfor %}
-                                <td>{{ form.ratio.value }}</td>
+                                    {% if not form.genotypes.value.0 == None %}
+                                        {% for gf in formsetGenotype %}
+                                            {% if gf.id.value == form.genotypes.value.0 %}
+                                                <td>{{gf.gene.value}}</td>
+                                                <td>{{gf.snp_ref.value}}</td>
+                                            {% endif %} 
+                                        {% endfor %}
+                                    {% else %}
+                                        {% if interactionValues %}
+                                            {% for item, value in interactionValues.items %}
+                                                {% ifequal forloop.parentloop.counter forloop.counter %}
+                                                    <td>{{value.gene}}</td>
+                                                    <td>{{value.snp_ref}}</td>
+                                                {% endifequal %}
+                                            {% endfor %}
+                                        {% else %}
+                                            <td></td>
+                                            <td></td>
+                                        {% endif %}
+                                    {% endif %}
+                                    {% if not form.phenotypes.value.0 == None %}
+                                        {% for pf in formsetPhenotype %}
+                                            {% if pf.id.value == form.phenotypes.value.0 %}
+                                                <td>{{pf.phenotype_name.value}}</td>
+                                            {% endif %} 
+                                        {% endfor %}   
+                                    {% else %}
+                                        {% if interactionValues %}
+                                            {% for item, value in interactionValues.items %}
+                                                {% ifequal forloop.parentloop.counter forloop.counter %}
+                                                    <td>{{value.phenotype_name}}</td>
+                                                {% endifequal %}
+                                            {% endfor %}
+                                        {% else %}
+                                            <td></td>
+                                        {% endif %}
+                                    {% endif %}     
+                                    {% if not form.panels.value.0 == None %}                        
+                                        {% for p in formsetPanel %}
+                                            {% if p.id.value == form.panels.value.0 %}
+                                                <td>{{p.panel_description.value}}</td>
+                                            {% endif %} 
+                                        {% endfor %}
+                                    {% else %}
+                                        {% if interactionValues %}
+                                            {% for item, value in interactionValues.items %}
+                                                {% ifequal forloop.parentloop.counter forloop.counter %}
+                                                    <td>{{value.panel_description}}</td>
+                                                {% endifequal %}
+                                            {% endfor %}
+                                        {% else %}
+                                            <td></td>
+                                        {% endif %}
+                                    {% endif %}
+                                <td>{% if form.ratio.value %}{{ form.ratio.value }}{% endif %}</td>
                                 <td>
                                     <a onclick="editRow('interaction',this); return false;" href="#">edit</a>
                                 </td>
@@ -169,13 +210,13 @@
                         <tbody id="genotype">
                             {% for form in formsetGenotype %}
                                 <tr>
-                                <td>{{ form.gene.value }}</td>
-                                <td>{{ form.snp_ref.value }}</td>
-                                <td>{{ form.snp_variant.value }}</td>
-                                <td>{{ form.mutation.value }}</td>
-                                <td>
-                                    <a onclick="editRow('genotype',this); return false;" href="#">edit</a>
-                                </td>
+                                    <td>{% if form.gene.value %}{{ form.gene.value }}{% endif %}</td>
+                                    <td>{% if form.snp_ref.value %}{{ form.snp_ref.value }}{% endif %}</td>
+                                    <td>{% if form.snp_variant.value %}{{ form.snp_variant.value }}{% endif %}</td>
+                                    <td>{% if form.mutation.value %}{{ form.mutation.value }}{% endif %}</td>
+                                    <td>
+                                        <a onclick="editRow('genotype',this); return false;" href="#">edit</a>
+                                    </td>
                                 </tr>
                             {% endfor %}
                         </tbody>
@@ -193,12 +234,11 @@
                         <tbody id="phenotype">
                             {% for form in formsetPhenotype %}
                                 <tr>
-                                <td>{{ form.phenotype_name.value }}</td>
-                                <td>{{ form.snp_ref.value }}</td>
-                                <td>{{ form.environmental_factor.value }}</td>
-                                <td>
-                                    <a onclick="editRow('phenotype',this); return false;" href="#">edit</a>
-                                </td>
+                                    <td>{% if form.phenotype_name.value %}{{ form.phenotype_name.value }}{% endif %}</td>
+                                    <td>{% if form.environmental_factor.value %}{{ form.environmental_factor.value }}{% endif %}</td>
+                                    <td>
+                                        <a onclick="editRow('phenotype',this); return false;" href="#">edit</a>
+                                    </td>
                                 </tr>
                             {% endfor %}
                         </tbody>
@@ -217,12 +257,12 @@
                         <tbody id="panel">
                             {% for form in formsetPanel %}
                                 <tr>
-                                <td>{{ form.panel_description.value }}</td>
-                                <td>{{ form.number_of_participants.value }}</td>
-                                <td>{{ form.gender.value }}</td>
-                                <td>
-                                    <a onclick="editRow('panel',this); return false;" href="#">edit</a>
-                                </td>
+                                    <td>{% if form.panel_description.value %}{{ form.panel_description.value }}{% endif %}</td>
+                                    <td>{% if form.number_of_participants.value %}{{ form.number_of_participants.value }}{% endif %}</td>
+                                    <td>{% if form.gender.value %}{{ form.gender.value }}{% endif %}</td>
+                                    <td>
+                                        <a onclick="editRow('panel',this); return false;" href="#">edit</a>
+                                    </td>
                                 </tr>
                             {% endfor %}
                         </tbody>

@@ -7,13 +7,15 @@ register = template.Library()
 """
 
 @register.filter()
-def truncatechars(value, lenght):
+def truncatechars(value, length):
     """
         truncate after a certain number of characters,
         if the last character is not space truncate at the next space
     """
-    le = lenght
-    if len(value) > lenght:
+    le = length
+    if value == None:
+        return value
+    if len(value) > length:
         try:
             if value[le] == " ":
                 return value[:le]
@@ -24,6 +26,6 @@ def truncatechars(value, lenght):
                     return value[:le]
 
         except IndexError:
-            return value[:lenght]
+            return value[:length]
     else:
         return value
