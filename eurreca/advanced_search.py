@@ -12,6 +12,10 @@ def search(search_terms):
     # Create filters from search terms
     matches = []
     for number in search_terms:
+        if not search_terms[number].has_key('type') or not search_terms[number].has_key('field'):
+            ''' This is a problem; we cannot search for this term 
+                if we don't know where we should be looking. '''
+            continue
         type  = search_terms[number]['type']
         field = search_terms[number]['field']
         term  = search_terms[number]['term']
@@ -59,21 +63,27 @@ def locate_fields(search_terms_by_number):
         currently contained in the 'field' field). '''
         
     for number in search_terms_by_number:
-        # Store user readable field name for later user feedback
-        search_terms_by_number[number][
-            'user_readable_field_name'] = search_terms_by_number[number]['field']
-    
-        # What type of model object?
-        type = utils.get_model_from_search_term(
-                    search_terms_by_number[number]['field']
-                )
-        search_terms_by_number[number]['type'] = type
+        if not search_terms_by_number[number].has_key('field'):
+            ''' It appears that the field that is to be searched, is not known.
+                This is a problem; we cannot search for this term if we don't 
+                know in which field we should be looking. '''
+            continue
+        if search_terms_by_number[number].has_key('term'):
+            # Store user readable field name for later user feedback
+            search_terms_by_number[number][
+                'user_readable_field_name'] = search_terms_by_number[number]['field']
         
-        # In this model object, what field?
-        field = utils.get_field_from_search_term(
-                    search_terms_by_number[number]['field']
-                )
-        search_terms_by_number[number]['field'] = field
+            # What type of model object?
+            type = utils.get_model_from_search_term(
+                        search_terms_by_number[number]['field']
+                    )
+            search_terms_by_number[number]['type'] = type
+            
+            # In this model object, what field?
+            field = utils.get_field_from_search_term(
+                        search_terms_by_number[number]['field']
+                    )
+            search_terms_by_number[number]['field'] = field
     
     return search_terms_by_number
     
@@ -85,11 +95,18 @@ def get_feedback(search_terms_by_number):
     search_terms = []
     search_fields = []
     for number in search_terms_by_number:
-        search_terms_string += search_terms_by_number[number]['term']+' '
-        search_terms.append(search_terms_by_number[number]['term'])
-        search_fields.append(search_terms_by_number[number][
-            'user_readable_field_name'])
-        
+        if search_terms_by_number[number].has_key(
+            'term'):
+            search_terms_string += search_terms_by_number[number]['term']+' '
+            search_terms.append(search_terms_by_number[number]['term'])
+        else:
+            search_terms.append('')
+        if search_terms_by_number[number].has_key(
+            'user_readable_field_name'):
+            search_fields.append(search_terms_by_number[number][
+                'user_readable_field_name'])
+        else:
+            search_fields.append('')
     return {'search_terms_string': search_terms_string, 
             'search_terms': search_terms, 
             'search_fields': search_fields}
