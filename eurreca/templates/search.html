@@ -156,7 +156,12 @@
                         <img alt="View" 
                             src="{{ STATIC_URL }}images/paper_40x40.png"/>
                         <span>        
-                            Studies ({{formSets.study|length}})
+                            Studies
+                            {% if formSets.study|length == '' %}
+                                (0)
+                            {% else %}
+                                ({{formSets.study|length}})
+                            {% endif %}
                         </span> 
                     </a>
                 </li>
@@ -165,7 +170,12 @@
                         <img alt="View" 
                             src="{{ STATIC_URL }}images/interaction_40x40.png"/>
                         <span>      
-                            Interactions ({{formSets.interaction|length}})
+                            Interactions
+                            {% if formSets.interaction|length == '' %}
+                                (0)
+                            {% else %}
+                                ({{formSets.interaction|length}})
+                            {% endif %}
                         </span> 
                     </a>
                 </li>
@@ -174,7 +184,12 @@
                         <img alt="View" 
                             src="{{ STATIC_URL }}images/genotype_40x40.png"/>
                         <span>        
-                            Genotypes ({{formSets.genotype|length}})
+                            Genotypes
+                            {% if formSets.genotype|length == '' %}
+                                (0)
+                            {% else %}
+                                ({{formSets.genotype|length}})
+                            {% endif %}
                         </span> 
                     </a>
                 </li>
@@ -183,7 +198,12 @@
                         <img alt="View" 
                             src="{{ STATIC_URL }}images/micronutrient_40x40.png"/>
                         <span>        
-                            Phenotypes ({{formSets.phenotype|length}})
+                            Phenotypes
+                            {% if formSets.phenotype|length == '' %}
+                                (0)
+                            {% else %}
+                                ({{formSets.phenotype|length}})
+                            {% endif %}
                         </span> 
                     </a>
                 </li>
@@ -192,7 +212,12 @@
                         <img alt="View" 
                             src="{{ STATIC_URL }}images/panel_40x40.png"/>
                         <span>        
-                            Panels ({{formSets.panel|length}})
+                            Panels
+                            {% if formSets.panel|length == '' %}
+                                (0)
+                            {% else %}
+                                ({{formSets.panel|length}})
+                            {% endif %}
                         </span> 
                     </a>
                 </li>
