@@ -22,7 +22,9 @@ def getsearchresultsize(value):
     try:
         s = 0
         for key in value:
-            s += len(value[key])
+            if not value[key] == None:
+                s += len(value[key])
         return s  
-    except Exception:
+    except Exception as inst:
+        print 'getsearchresultsize exception:',inst
         return '?'
