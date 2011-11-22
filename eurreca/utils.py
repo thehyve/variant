@@ -4,6 +4,8 @@ from itertools import chain
 import operator
 from django.db.models import Q
 from django.shortcuts import render
+import time
+from django.conf import settings
 
 def process_clientside_studydata(jason, study, study_formset, request):
     saved_objects = {'genotype':[],'phenotype':[],'panel':[]}
@@ -311,3 +313,17 @@ def get_field_from_search_term(field_name):
     }
     #print 'get_field_from_search_term', field_name, '->', from_string_to_proper_field_name[field_name]
     return from_string_to_proper_field_name[field_name]
+    
+def get_year_list():
+    ''' Returns a list containing, in integer form, each year from 
+        the year now+1 to the year now-year_list_length+1 '''
+    year_list_length = 60
+    try: # Try to find ovverriding settings
+        year_list_length = settings.YEAR_LIST_LENGTH
+    except Exception:
+        year_list_length = 60
+    year_list = []
+    now = time.localtime()
+    for n in range(year_list_length): 
+        year_list.append(now.tm_year - n + 1)
+    return year_list    

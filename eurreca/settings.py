@@ -8,6 +8,9 @@ PROJECT_DIR = os.path.dirname(__file__)
 
 DEBUG = True
 
+# Determines how far back the year lists should go, in years
+YEAR_LIST_LENGTH = 60
+
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
 )

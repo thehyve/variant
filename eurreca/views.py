@@ -119,7 +119,8 @@ def study_create(request):
                 return render(request, 'domain_views/study_editing.html', 
                     {'formset' : formset, 
                      'message' : message,
-                     'messageType' : messageType,})
+                     'messageType' : messageType,
+                     'year_list': utils.get_year_list(),})
             print '\nc)',inst.args[0][0]      
             print '\nd)',inst.args[0][1]
             
@@ -137,13 +138,15 @@ def study_create(request):
                  'formsetInteraction' :  inst.args[0][1]['formsetInteraction'], 
                  'interactionValues' : inst.args[0][1]['interactionValues'], 
                  'message' : message,
-                 'messageType' : messageType,}) 
+                 'messageType' : messageType,
+                 'year_list': utils.get_year_list(),}) 
     else:
         formset = StudyFormSet(queryset=Study.objects.none(), prefix="study")
     return render(request, 'domain_views/study_editing.html', 
         {'formset' : formset, 
          'message' : message,
-         'messageType' : messageType,})
+         'messageType' : messageType,
+         'year_list': utils.get_year_list(),})
          
 @login_required   
 def study_update(request, id):
@@ -216,7 +219,8 @@ def study_update(request, id):
                      'formsetPanel' :  fs['panel'],
                      'formsetInteraction' :  fs['interaction'],
                      'message' : message,
-                     'messageType' : messageType,})  
+                     'messageType' : messageType,
+                     'year_list': utils.get_year_list(),})  
             
             # Exception while reading or writing the study-related objects
             # Make sure these lists of items have already been processed at
@@ -236,7 +240,8 @@ def study_update(request, id):
                  'formsetInteraction' :  inst.args[0][1]['formsetInteraction'], 
                  'interactionValues' : inst.args[0][1]['interactionValues'], 
                  'message' : message,
-                 'messageType' : messageType,})
+                 'messageType' : messageType,
+                 'year_list': utils.get_year_list(),})
     else:
         try:
             fs = utils.get_formsets_by_id(id)
@@ -247,7 +252,8 @@ def study_update(request, id):
                  'formsetPanel' :  fs['panel'],
                  'formsetInteraction' :  fs['interaction'],
                  'message' : message,
-                 'messageType' : messageType,})
+                 'messageType' : messageType,
+                 'year_list': utils.get_year_list(),})
         except Study.DoesNotExist:
             qs = Study.objects.all()
             study_list = []

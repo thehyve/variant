@@ -1,8 +1,16 @@
 {% extends "base.html" %}z
 
 {% block extraScripts %}
+  <script type="text/javascript" 
+    src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js">
+  </script>
+  <script type="text/javascript" 
+    src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js">
+  </script>
+  <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.ui.autocomplete.js"></script>
   <script type="text/javascript" src="{{ STATIC_URL }}js/study_editing.js"></script>
   <script type="text/javascript">
+    {# Initialize interaction table relations management #}
     {% for form in formsetInteraction %}
         interactCache[{{forloop.counter|add:"-1"}}] = {};
         {% for gf in formsetGenotype %}
@@ -20,7 +28,20 @@
                 interactCache[{{forloop.parentloop.counter|add:"-1"}}]["panelNrs"] = {{forloop.counter|add:"-1"}};
             {% endif %} 
         {% endfor %}
-    {% endfor %}
+    {% endfor %}    
+    
+    $(function() {
+        {# Add autocompletion to the field with id 'id_study-0-year_of_publication' #}
+        {# That is, the study's 'Year of publication' field #}
+        var availableFields = [];
+        {% for year in year_list %}
+            availableFields.push("{{year}}");
+        {% endfor %}
+        $( "#id_study-0-year_of_publication" ).autocomplete({
+            source: availableFields
+        });
+    });
+    
     function switchToTab(tabNum){
         // Counting starts at zero.
         var $tabs = $('#pagetabs').tabs();
@@ -102,13 +123,21 @@
                                     <td class= "formspacer"></td>
                                 {% endif %}
                                     <td>{{ field.label_tag }}</td> 
-                                    <td>{{ field }}</td>
                                     <td>
-                                    {% if field.errors %}
-                                        {% for error in field.errors %}
-                                            {{ error|escape }} 
-                                        {% endfor %}
-                                    {% endif %}
+                                        {% if field.name == 'year_of_publication' %}
+                                            <div class="ui-widget">
+                                                {{ field }}
+                                            </div>
+                                        {% else %}
+                                            {{ field }}
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if field.errors %}
+                                            {% for error in field.errors %}
+                                                {{ error|escape }} 
+                                            {% endfor %}
+                                        {% endif %}
                                     </td>
                                 </tr>
                             {% endif %}        
