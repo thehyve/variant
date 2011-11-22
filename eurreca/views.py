@@ -84,51 +84,60 @@ def study_create(request):
     messageType = ""
     if request.method == 'POST':
         formset = StudyFormSet(request.POST, prefix="study")
-        forms = {}
-
-        if formset[0].is_valid():
+        try:
             study = formset[0].save()
-            try:
-                
-                # Fill forms to get new items, save the forms
-                forms = utils.process_clientside_studydata(
-                    json.loads(request.POST['returnObject']), study, None, request)
-      
-                # Study has been saved, return to study list
-                message = "The study has been saved."
-                messageType = "positive"
-                print "The study has been saved."                
-                qs = Study.objects.all()
-                study_list = []
-                if not len(qs) == 0:
-                    study_list = StudyFormSet(queryset=qs, prefix="study")
-                return render(request, 'domain_views/study_list.html', 
-                    {'message' : message,
-                     'messageType' : messageType,
-                     'study_list' : study_list,})
-            except Exception as inst:
-                print "in study create view"
-                print type(inst)     # the exception instance
-                print inst.args      # arguments stored in .args
-                print inst    
-                # Exception while reading or writing the study-related objects
+            
+            # Fill forms to get new items, save the forms
+            forms = utils.process_clientside_studydata(
+                json.loads(request.POST['returnObject']), study, None, request)
+  
+            # Study has been saved, return to study list
+            message = "The study has been saved."
+            messageType = "positive"
+            print "The study has been saved."  
+            # Building the study list
+            qs = Study.objects.all()
+            study_list = []
+            if not len(qs) == 0:
+                study_list = StudyFormSet(queryset=qs, prefix="study")
+            return render(request, 'domain_views/study_list.html', 
+                {'message' : message,
+                 'messageType' : messageType,
+                 'study_list' : study_list,})
+        except Exception as inst:
+            print "\nin study create view"
+            print '\na)',type(inst)     # the exception instance
+            print '\nb)',inst.args[0]
+            
+            if isinstance(inst.args[0], str):
+                # We received a string. So we did not receive a second 
+                # argument (which should be a map of lists of forms)
                 message =  "The study has not been saved."
-                message += " Please review the errors and try again. "+str(inst)
+                message += " Please review the errors and try again: "+str(inst.args[0])
                 messageType = "negative"
-                
+                formset = StudyFormSet(queryset=Study.objects.none(), prefix="study")
                 return render(request, 'domain_views/study_editing.html', 
                     {'formset' : formset, 
                      'message' : message,
-                     'messageType' : messageType,})  
-        else:
-            # Study form did not validate
+                     'messageType' : messageType,})
+            print '\nc)',inst.args[0][0]      
+            print '\nd)',inst.args[0][1]
+            
+            
+            # Exception while reading or writing the study-related objects
             message =  "The study has not been saved."
-            message += "Please review the errors and try again."
+            message += " Please review the errors and try again."+str(inst.args[0][0])
             messageType = "negative"
+
             return render(request, 'domain_views/study_editing.html', 
-                {'formset' : formset, 
+                {'formset' : inst.args[0][1]['formset'], 
+                 'formsetGenotype' : inst.args[0][1]['formsetGenotype'],
+                 'formsetPhenotype' :  inst.args[0][1]['formsetPhenotype'],
+                 'formsetPanel' :  inst.args[0][1]['formsetPanel'],
+                 'formsetInteraction' :  inst.args[0][1]['formsetInteraction'], 
+                 'interactionValues' : inst.args[0][1]['interactionValues'], 
                  'message' : message,
-                 'messageType' : messageType,})  
+                 'messageType' : messageType,}) 
     else:
         formset = StudyFormSet(queryset=Study.objects.none(), prefix="study")
     return render(request, 'domain_views/study_editing.html', 
@@ -147,34 +156,33 @@ def study_update(request, id):
         old_Panels = []
         old_Interactions = []
         forms = {}
-        study = Study.objects.filter(pk=id)[0]
         try:
             # Make list of old items
-            old_Genotypes = Genotype.objects.filter(study_id=id)
-            old_Phenotypes = Phenotype.objects.filter(study_id=id)
-            old_Panels = Panel.objects.filter(study_id=id)
-            old_Interactions = Interaction.objects.filter(study_id=id)
-            old_items = {'study':[study],'genotype':old_Genotypes,
-                'phenotype':old_Phenotypes,'panel':old_Panels, 
-                'interaction':old_Interactions}
-  
+            # Copy items to enforce DB access now, 
+            # rather than at one or more moments in the future
+            old_Genotypes =    [g for g in  Genotype.objects.filter(study=id)]
+            old_Phenotypes =   [p for p in Phenotype.objects.filter(study=id)]
+            old_Panels =       [p for p in Panel.objects.filter(study=id)]
+            old_Interactions = [i for i in Interaction.objects.filter(study=id)]
+            # Remove old items, but do not empty their caches
+            for gt in old_Genotypes: gt.delete()
+            for pt in old_Phenotypes: pt.delete()
+            for p in old_Panels: p.delete()
+            for i in old_Interactions: i.delete()  
+            # Right now, the study data has been removed!
+            
             # Fill forms to get new items, save the forms
             forms = utils.process_clientside_studydata(
-                json.loads(request.POST['returnObject']), study, formset, request)
+                json.loads(request.POST['returnObject']), Study.objects.get(pk=id), formset, request)
             if formset[0].is_valid():
                 study = formset[0].save()
             else: 
                 raise ValueError('Some of the forms did not validate. {0}'.format(errors_to_string(formset[0].errors.items())))    
                 
-             # Remove old items, except study
-            for gt in old_Genotypes: gt.delete()
-            for pt in old_Phenotypes: pt.delete()
-            for p in old_Panels: p.delete()
-            for i in old_Interactions: i.delete()    
-            
             # Study has been saved, return to study list
             message = "The study has been saved."
             messageType = "positive"                
+            # Building the study list
             qs = Study.objects.all()
             study_list = []
             if not len(qs) == 0:
@@ -189,10 +197,18 @@ def study_update(request, id):
             print '\na)',type(inst)     # the exception instance
             print '\nb)',inst.args[0]
             if isinstance(inst.args[0], str):
+                # We received a string. So we did not receive a second 
+                # argument (which should be a map of lists of forms)
                 message =  "The study has not been saved."
                 message += " Please review the errors and try again: "+str(inst.args[0])
                 messageType = "negative"
                 fs = utils.get_formsets_by_id(id)
+                # Make sure these lists of items have already been processed at
+                # least once, i.e. are not being loaded from DB right now!
+                for gt in old_Genotypes: gt.save()
+                for pt in old_Phenotypes: pt.save()
+                for p in old_Panels: p.save()
+                for i in old_Interactions: i.save() 
                 return render(request, 'domain_views/study_editing.html', 
                     {'formset' : fs['study'], 
                      'formsetGenotype' : fs['genotype'],
@@ -204,12 +220,16 @@ def study_update(request, id):
             print '\nc)',inst.args[0][0]      
             print '\nd)',inst.args[0][1]
             
-            
             # Exception while reading or writing the study-related objects
+            # Make sure these lists of items have already been processed at
+            # least once, i.e. are not being loaded from DB right now!
+            for gt in old_Genotypes: gt.save()
+            for pt in old_Phenotypes: pt.save()
+            for p in old_Panels: p.save()
+            for i in old_Interactions: i.save() 
             message =  "The study has not been saved."
             message += " Please review the errors and try again."+str(inst.args[0][0])
             messageType = "negative"
-
             return render(request, 'domain_views/study_editing.html', 
                 {'formset' : inst.args[0][1]['formset'], 
                  'formsetGenotype' : inst.args[0][1]['formsetGenotype'],
@@ -245,12 +265,6 @@ def study_view(request, id):
     messageType = ""
     try:
         fs = utils.get_formsets_by_id(id)
-    except Study.DoesNotExist:
-        return render(request, 'domain_views/study_list.html', 
-            {'message' : "The requested study does not exist.",
-             'messageType' : "negative",
-             'study_list' : Study.objects.all()[:50],})
-    finally:
         return render(request, 'domain_views/study_view.html', 
             {'formset' : fs['study'], 
                  'formsetGenotype' : fs['genotype'],
@@ -258,17 +272,22 @@ def study_view(request, id):
                  'formsetPanel' :  fs['panel'],
                  'formsetInteraction' :  fs['interaction'],
              'message' : message,
-             'messageType' : messageType,})           
+             'messageType' : messageType,})         
+    except Study.DoesNotExist:
+        return render(request, 'domain_views/study_list.html', 
+            {'message' : "The requested study does not exist.",
+             'messageType' : "negative",
+             'study_list' : Study.objects.all()[:50],})  
          
 def study_remove(request, id):
     message = ""
     messageType = ""
     try:
         study = Study.objects.get(pk=id)
-        a = Interaction.objects.filter(study_id=id)
-        b = Phenotype.objects.filter(study_id=id)
-        c = Panel.objects.filter(study_id=id)
-        d = Genotype.objects.filter(study_id=study.id)
+        a = Interaction.objects.filter(study=id)
+        b = Phenotype.objects.filter(study=id)
+        c = Panel.objects.filter(study=id)
+        d = Genotype.objects.filter(study=study.id)
         items = chain(a,b,c,d)
         study.delete()
         for item in items:

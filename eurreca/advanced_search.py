@@ -64,13 +64,13 @@ def locate_fields(search_terms_by_number):
             'user_readable_field_name'] = search_terms_by_number[number]['field']
     
         # What type of model object?
-        type = utils.get_model_type_from_term(
+        type = utils.get_model_from_search_term(
                     search_terms_by_number[number]['field']
                 )
         search_terms_by_number[number]['type'] = type
         
         # In this model object, what field?
-        field = utils.get_field_name_from_term(
+        field = utils.get_field_from_search_term(
                     search_terms_by_number[number]['field']
                 )
         search_terms_by_number[number]['field'] = field

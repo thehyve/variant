@@ -24,7 +24,7 @@ class Study(models.Model):
         return self.study_id
                 
 class Phenotype(models.Model):
-    study_id = models.ForeignKey(Study)
+    study = models.ForeignKey(Study)
     phenotype_name = models.CharField(max_length=200, blank=True)
     environmental_factor = models.CharField(max_length=200, blank=True)
     type = models.CharField(max_length=200, blank=True)
@@ -40,7 +40,7 @@ class Genotype(models.Model):
         ('W', 'Wildtype'),
         ('U', 'Unknown'),
     )
-    study_id = models.ForeignKey(Study)
+    study = models.ForeignKey(Study)
     gene = models.CharField(max_length=200, blank=True)
     snp_ref = models.CharField(max_length=200, blank=True)
     snp_variant = models.CharField(max_length=200, blank=True)
@@ -65,7 +65,7 @@ class Panel(models.Model):
         ('X', 'Mixed'),
         ('U', 'Unknown'),
     )
-    study_id = models.ForeignKey(Study)
+    study = models.ForeignKey(Study)
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, blank=True, null=True)
     number_of_participants = models.IntegerField(max_length=9, blank=True, null=True)
     mean_age = models.FloatField(max_length=10, null=True, blank=True)
@@ -79,7 +79,7 @@ class Interaction(models.Model):
         ('X', 'Mixed'),
         ('U', 'Unknown'),
     )
-    study_id = models.ForeignKey(Study)
+    study = models.ForeignKey(Study)
     genotypes = models.ManyToManyField(Genotype, null=True, blank=True)
     phenotypes = models.ManyToManyField(Phenotype, null=True, blank=True)
     panels = models.ManyToManyField(Panel, null=True, blank=True)

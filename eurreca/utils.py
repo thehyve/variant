@@ -5,35 +5,33 @@ import operator
 from django.db.models import Q
 from django.shortcuts import render
 
-def hello():
-    print "Oh hai there."
-    
 def process_clientside_studydata(jason, study, study_formset, request):
     saved_objects = {'genotype':[],'phenotype':[],'panel':[]}
     interactionValues = {}
     try:
         # Non-interaction fields first, so that all necessary primary keys can be known
-        forms = add_non_interaction_forms(jason, study.id)
-        invalid_forms = {'genotype':[],'phenotype':[],'panel':[]}
+        #print 'starting add_non_interaction_forms'
+        forms = add_non_interaction_forms(jason, study)
+        #print 'finished add_non_interaction_forms'
         error_messages = []
         for key in forms:
             for form in forms[key]:
+                #print 'About to validate form'
                 if not form.is_valid():
-                    print 'Encountered invalid non-interaction form'
-                    print "errors:",form.errors.items()
                     error_messages.append(form.errors.items())
+                    #print 'Form wasn\'t valid:',form.errors.items()
                     #raise ValueError('Some of the forms did not validate. '+errors_to_string(form.errors.items()))
                 else:
+                    #print 'About to save form'
                     obj = form.save()    
                     saved_objects[key].append(obj)
+                    #print 'Form was saved:',obj,'   errors:',form.errors.items()
                 
-        # Interaction fields
-        print "\nAbout to form interaction forms\n"
-            
+        # Interaction fields            
         forms['interaction'] = []
-        forms = add_interaction_forms(jason, study.id, saved_objects, forms)
-        print '\n',forms['interaction'],'\n'
-        #saved_objects['interaction'] = []
+        #print 'about to set interaction forms'
+        forms = add_interaction_forms(jason, study, saved_objects, forms)
+        saved_objects['interaction'] = []
         count = 0
         for form in forms['interaction']:
             interactionValues[str(count + 1)] = get_interaction_values(count, forms, jason['interactionRelations'][str(count)]) 
@@ -42,23 +40,24 @@ def process_clientside_studydata(jason, study, study_formset, request):
         count = 0
         for form in forms['interaction']:
             if not form.is_valid():
-                print '\nEncountered invalid interaction form'
-                print "\nerrors:",form.errors.items()
                 error_messages.append(form.errors.items())
                 #raise ValueError('Some of the forms did not validate. '+errors_to_string(form.errors.items()))
             else:
                 obj = form.save(commit=False) 
                 obj.save()
-                print '\ntestingtesting', count, ' ',jason['interactionRelations']
                 if count < len(jason['interactionRelations']):
                     obj = set_interaction_relations(obj, saved_objects, jason['interactionRelations'][str(count)])
                     obj.save()
-                    print '\n       saved!'
-                print '\npassed testing'
-                    
+                    saved_objects['interaction'].append(obj)
+                #print 'Form was saved:',obj,'   errors:',form.errors.items()    
                 count += 1
-                #saved_objects['interaction'].append(obj)
-        
+                
+        print 'Saved the following objects:'
+        for key in saved_objects:
+            print key,':'
+            for item in saved_objects[key]:
+                print '\t',item,'with study',item.study
+                
         if not len(error_messages) == 0:
             raise ValueError('Some of the forms did not validate. {0}'.format(error_messages))
             
@@ -114,7 +113,7 @@ def get_interaction_values(count, forms, relations_lists):
         return_map['panel_description'] = forms['panel'][relations_lists['panel']].data['panel_description']
     return return_map
     
-def add_non_interaction_forms(jason, id):
+def add_non_interaction_forms(jason, study):
     # Fully functional
     forms = {'genotype':[],'phenotype':[],'panel':[]}
     for key1 in jason:
@@ -129,7 +128,7 @@ def add_non_interaction_forms(jason, id):
             if key1 == 'panel':
                 form = PanelForm(Panel.objects.none())
             if not form == None:
-                form.data['study_id'] = id
+                form.data['study'] = study.id
                 for field in form:
                     if jason[key1][key2].has_key(field.name):
                         form.data[field.name] = jason[key1][key2][field.name]
@@ -138,12 +137,12 @@ def add_non_interaction_forms(jason, id):
                 forms[key1].append(form)
     return forms
     
-def add_interaction_forms(jason, study_id, saved_objects, forms):
+def add_interaction_forms(jason, study, saved_objects, forms):
     # Does not set all fields yet
     forms['interaction'] = []
     for key1 in jason['interaction']:
         form = InteractionForm(Interaction.objects.none())
-        form.data['study_id'] = study_id
+        form.data['study'] = study.id
         for field in form:
             if field.name == 'ratio':
                 form.data[field.name] = jason['interaction'][key1]
@@ -155,30 +154,51 @@ def add_interaction_forms(jason, study_id, saved_objects, forms):
 def errors_to_string(errors):
     returnMessage = ''
     for item in errors:
-        print 'item',item[0],item.__class__()
+        #print 'item',item[0],item.__class__()
         returnMessage += "Field '"+item[0]+"': "
         for error in item[1]:
-            print '\terror',error,error.__class__()
+            #print '\terror',error,error.__class__()
             returnMessage += error+" "
         returnMessage += ' '    
     return returnMessage
     
 def get_formsets_by_id(id):
-    formset = StudyFormSet(
-        queryset=Study.objects.filter(pk=id), 
-        prefix="study")
-    formsetGenotype = GenotypeFormSet(
-        queryset=Genotype.objects.filter(study_id=id), 
-        prefix="genotype")
-    formsetPhenotype = PhenotypeFormSet(
-        queryset=Phenotype.objects.filter(study_id=id), 
-        prefix="phenotype")
-    formsetPanel = PanelFormSet(
-        queryset=Panel.objects.filter(study_id=id), 
-        prefix="panel")
-    formsetInteraction = InteractionFormSet(
-        queryset=Interaction.objects.filter(study_id=id), 
-        prefix="interaction")
+    qs = Study.objects.filter(pk=id)     
+    formset = []
+    key = id
+    if not len(qs) == 0:
+        formset = StudyFormSet(
+            queryset=qs,
+            prefix="study")
+        
+    qs = Genotype.objects.filter(study=key)        
+    formsetGenotype = []
+    if not len(qs) == 0:
+        formsetGenotype = GenotypeFormSet(
+            queryset=qs, 
+            prefix="genotype")
+    
+    qs = Phenotype.objects.filter(study=key)       
+    formsetPhenotype = []
+    if not len(qs) == 0:
+        formsetPhenotype = PhenotypeFormSet(
+            queryset=qs, 
+            prefix="phenotype")
+        
+    qs = Panel.objects.filter(study=key)    
+    formsetPanel = []
+    if not len(qs) == 0:
+        formsetPanel = PanelFormSet(
+            queryset=qs, 
+            prefix="panel")
+        
+    qs = Interaction.objects.filter(study=key)   
+    formsetInteraction = []
+    if not len(qs) == 0:
+        formsetInteraction = InteractionFormSet(
+            queryset=qs, 
+            prefix="interaction")
+        
     formSets = {'study':formset,'genotype':formsetGenotype,
         'phenotype':formsetPhenotype,'panel':formsetPanel,
         'interaction':formsetInteraction}
@@ -263,7 +283,7 @@ def get_formsets_from_q_objects(q_objects):
                 formSets_1[key] = formSets_0[key]
     return formSets_1
     
-def get_model_type_from_term(field_name):
+def get_model_from_search_term(field_name):
     from_term_to_model_type = {
         "Study id":"study",
         "Pubmed id":"study",
@@ -274,20 +294,20 @@ def get_model_type_from_term(field_name):
         "Phenotype name":"phenotype",
         "SNP variant":"genotype"
     }
-    #print 'get_model_type_from_term', field_name, '->', from_term_to_model_type[field_name]
+    #print 'get_model_from_search_term', field_name, '->', from_term_to_model_type[field_name]
     return from_term_to_model_type[field_name]
     
 
-def get_field_name_from_term(field_name):
+def get_field_from_search_term(field_name):
     from_string_to_proper_field_name = {
-        "Study id":"study_id",
+        "Study id":"study",
         "Pubmed id":"pubmed_id",
         "Year of publication":"year_of_publication",
         "Micronutrient":"micronutrient",
-        "Gene":"geno",
+        "Gene":"gene",
         "SNP ref":"snp_ref",
         "Phenotype name":"phenotype_name",
         "SNP variant":"snp_variant"
     }
-    #print 'get_field_name_from_term', field_name, '->', from_string_to_proper_field_name[field_name]
+    #print 'get_field_from_search_term', field_name, '->', from_string_to_proper_field_name[field_name]
     return from_string_to_proper_field_name[field_name]

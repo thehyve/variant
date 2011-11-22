@@ -53,9 +53,6 @@
 {% endblock %}
 
 {% block body %}
-    {% if interactionValues %}
-        {{ interactionValues }}
-    {% endif %}
     <div id="studylist">
         {% for form in formset %}
             {% if form.id.value == null or form.id.value == '' or form.id.value == None %}
