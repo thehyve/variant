@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load contains %}
+{% load getsearchresultsize %}
 
 {% block extraScripts %}
     <script type="text/javascript" 
@@ -97,8 +98,11 @@
             <input type="submit" value="Submit" />
         </form> 
     {% endif %}
+    
+    {% comment %}
+    This commented out!
     {% if searchTerms %}
-        <div class="searchTerms">
+        <span class="searchTerms">
             The search result is based on 
             the following search term{{ searchTerms|pluralize }}:
             {% for term in searchTerms %}
@@ -109,10 +113,15 @@
                     ,
                 {% endif %}
             {% endfor %}    
-        </div>
+        </span>
     {% endif %}
+    End of comment!
+    {% endcomment %}
+    
     {% if formSets %}
-        <div class="resultCounts">
+        {% comment %}
+        This commented out!
+        <span class="resultCounts">
             The search resulted in 
             {% if formSets.study|length == '' %} no studies, {% endif %}
             {% if formSets.study|length == '1' %} 1 study, {% endif %}
@@ -127,23 +136,120 @@
             {{ formSets.phenotype|length }} phenotype{{ formSets.phenotype|pluralize }} and 
             {% if formSets.panel|length == '' %} no {% endif %}
             {{ formSets.panel|length }} panel{{ formSets.panel|pluralize }}.
-        </div>
-        <ul class="searchResults">
-            {% for form in formSets.study %}
-                {% include 'search_result.html' with title="Study" class="contentItem" filtered="True" %}
-            {% endfor %}
-            {% for form in formSets.interaction %}
-                {% include 'search_result.html' with title="Interaction" class="contentItem" filtered="True" %}
-            {% endfor %}
-            {% for form in formSets.genotype %}
-                {% include 'search_result.html' with title="Genotype" class="contentItem" filtered="True" %}
-            {% endfor %}
-            {% for form in formSets.phenotype %}
-                {% include 'search_result.html' with title="Phenotype" class="contentItem" filtered="True" %}
-            {% endfor %}
-            {% for form in formSets.panel %}
-                {% include 'search_result.html' with title="Panel" class="contentItem" filtered="True" %}
-            {% endfor %}
-        <ul>
+        </span>
+        End of comment!
+        {% endcomment %}
+        
+        <div id="pagetabs" class="withcontextmenu">
+            <ul>
+                <li>
+                    <a href="#tabs-0">
+                        <img alt="View" 
+                            src="{{ STATIC_URL }}images/paper_40x40.png"/>
+                        <span>        
+                            All items ({{formSets|getsearchresultsize}})
+                        </span> 
+                    </a>
+                </li>
+                <li>
+                    <a href="#tabs-1">
+                        <img alt="View" 
+                            src="{{ STATIC_URL }}images/paper_40x40.png"/>
+                        <span>        
+                            Studies ({{formSets.study|length}})
+                        </span> 
+                    </a>
+                </li>
+                <li>
+                    <a href="#tabs-2">
+                        <img alt="View" 
+                            src="{{ STATIC_URL }}images/interaction_40x40.png"/>
+                        <span>      
+                            Interactions ({{formSets.interaction|length}})
+                        </span> 
+                    </a>
+                </li>
+                <li>
+                    <a href="#tabs-3">
+                        <img alt="View" 
+                            src="{{ STATIC_URL }}images/genotype_40x40.png"/>
+                        <span>        
+                            Genotypes ({{formSets.genotype|length}})
+                        </span> 
+                    </a>
+                </li>
+                <li>
+                    <a href="#tabs-4">
+                        <img alt="View" 
+                            src="{{ STATIC_URL }}images/micronutrient_40x40.png"/>
+                        <span>        
+                            Phenotypes ({{formSets.phenotype|length}})
+                        </span> 
+                    </a>
+                </li>
+                <li>
+                    <a href="#tabs-5">
+                        <img alt="View" 
+                            src="{{ STATIC_URL }}images/panel_40x40.png"/>
+                        <span>        
+                            Panels ({{formSets.panel|length}})
+                        </span> 
+                    </a>
+                </li>
+            </ul>
+            <div id="tabs-0">
+                <ul class="searchResults">
+                    {% for form in formSets.study %}
+                        {% include 'search_result.html' with title="Study" class="contentItem" filtered="True" %}
+                    {% endfor %}
+                    {% for form in formSets.interaction %}
+                        {% include 'search_result.html' with title="Interaction" class="contentItem" filtered="True" %}
+                    {% endfor %}
+                    {% for form in formSets.genotype %}
+                        {% include 'search_result.html' with title="Genotype" class="contentItem" filtered="True" %}
+                    {% endfor %}
+                    {% for form in formSets.phenotype %}
+                        {% include 'search_result.html' with title="Phenotype" class="contentItem" filtered="True" %}
+                    {% endfor %}
+                    {% for form in formSets.panel %}
+                        {% include 'search_result.html' with title="Panel" class="contentItem" filtered="True" %}
+                    {% endfor %}
+                <ul>
+            </div>
+            <div id="tabs-1">
+                <ul class="searchResults">
+                    {% for form in formSets.study %}
+                        {% include 'search_result.html' with title="Study" class="contentItem" filtered="True" %}
+                    {% endfor %}
+                <ul>
+            </div>
+            <div id="tabs-2">
+                <ul class="searchResults">
+                    {% for form in formSets.interaction %}
+                        {% include 'search_result.html' with title="Interaction" class="contentItem" filtered="True" %}
+                    {% endfor %}
+                <ul>
+            </div>
+            <div id="tabs-3">
+                <ul class="searchResults">
+                    {% for form in formSets.genotype %}
+                        {% include 'search_result.html' with title="Genotype" class="contentItem" filtered="True" %}
+                    {% endfor %}
+                <ul>      
+            </div>
+            <div id="tabs-4">
+                <ul class="searchResults">
+                    {% for form in formSets.phenotype %}
+                        {% include 'search_result.html' with title="Phenotype" class="contentItem" filtered="True" %}
+                    {% endfor %}
+                <ul>          
+            </div>
+            <div id="tabs-5">
+                <ul class="searchResults">
+                    {% for form in formSets.panel %}
+                        {% include 'search_result.html' with title="Panel" class="contentItem" filtered="True" %}
+                    {% endfor %}
+                <ul>        
+            </div>
     {% endif %}
 {% endblock body %}

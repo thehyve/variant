@@ -217,8 +217,6 @@ def study_update(request, id):
                      'formsetInteraction' :  fs['interaction'],
                      'message' : message,
                      'messageType' : messageType,})  
-            print '\nc)',inst.args[0][0]      
-            print '\nd)',inst.args[0][1]
             
             # Exception while reading or writing the study-related objects
             # Make sure these lists of items have already been processed at

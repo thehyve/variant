@@ -6,52 +6,63 @@
         {% if title == "Study" %}
             <span class="button">
                 <a href="/studies/view/{{ form.id.value }}">
+                    {% if not form.paper_title.value == '' %}
+                        {% if filtered == "True" and form.study_id.value|containedin:matchedValues %} 
+                            '<b>{{ form.paper_title.value|truncatechars:20 }}</b>'
+                        {% else %}
+                            '{{ form.paper_title.value|truncatechars:20 }}'
+                        {% endif %}  
+                    {% endif %}
                     {% if filtered == "True" and form.study_id.value|containedin:matchedValues %} 
-                        Study <b>{{ form.study_id.value }}</b>
+                        (<b>{{ form.study_id.value }}</b>)
                     {% else %}
-                        Study {{ form.study_id.value }}
+                        ({{ form.study_id.value }})
                     {% endif %}
                     <img alt="View" src="{{ STATIC_URL }}images/icons/page.png">
                 </a>    
             </span> 
             <br/>
             <span>
-                Pubmed: 
-                {% if filtered == "True" and form.pubmed_id.value|containedin:matchedValues %} 
-                    <b>
-                        {{ form.pubmed_id.value }} 
-                    </b>
-                {% else %}
-                    {{ form.pubmed_id.value }} 
+                {% if not form.authors.value == '' %}
+                    {% if filtered == "True" and form.authors.value|containedin:matchedValues %} 
+                        <b>
+                            {{ form.authors.value|truncatechars:20 }} 
+                        </b>
+                    {% else %}
+                        {{ form.authors.value|truncatechars:20 }} 
+                    {% endif %}
+                    &nbsp;|&nbsp;
                 {% endif %}
-                &nbsp;|&nbsp;
-                Micronutrient: 
-                {% if filtered == "True" and form.micronutrient.value|containedin:matchedValues %} 
-                    <b>
-                        {{ form.micronutrient.value }} 
-                    </b>
-                {% else %}
-                    {{ form.micronutrient.value }} 
+                {% if not form.year_of_publication.value == '' %}
+                    {% if filtered == "True" and form.year_of_publication.value|containedin:matchedValues %} 
+                        <b>
+                            {{ form.year_of_publication.value }} 
+                        </b>
+                    {% else %}
+                        {{ form.year_of_publication.value }} 
+                    {% endif %}
+                    &nbsp;|&nbsp;
                 {% endif %}
-                &nbsp;|&nbsp;
-                Endpoint:
-                {% if filtered == "True" and form.endpoint.value|containedin:matchedValues %} 
-                    <b>
-                        {{ form.endpoint.value }} 
-                    </b>
-                {% else %}
-                    {{ form.endpoint.value }} 
+                {% if not form.journal_title.value == '' %}
+                    {% if filtered == "True" and form.journal_title.value|containedin:matchedValues %} 
+                        <b>
+                            {{ form.journal_title.value|truncatechars:20 }} 
+                        </b>
+                    {% else %}
+                        {{ form.journal_title.value|truncatechars:20 }} 
+                    {% endif %}
+                    &nbsp;|&nbsp;
+                {% endif %}
+                {% if not form.endpoint.value == '' %}
+                    {% if filtered == "True" and form.endpoint.value|containedin:matchedValues %} 
+                        <b>
+                            {{ form.endpoint.value|truncatechars:20 }} 
+                        </b>
+                    {% else %}
+                        {{ form.endpoint.value|truncatechars:20 }} 
+                    {% endif %}
                 {% endif %}
             </span>
-            {% if not form.paper_title.value == '' %}
-                <br/>
-                <span>
-                    {{ form.paper_title.value|truncatechars:20 }}
-                    {% if not form.journal_title.value == '' %}
-                        in {{ form.journal_title.value }}
-                    {% endif %}
-                </span>
-            {% endif %}
         {% endif %}
         
         {% if title == "Genotype" %}
