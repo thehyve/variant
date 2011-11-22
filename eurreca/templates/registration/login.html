@@ -36,12 +36,7 @@ Login page to authenticate users.
 
                 <input type="submit" value="login" />
                 <input type="hidden" name="next" 
-                    value="{% if next %}
-                                {{ next }}
-                           {% else %}
-                                /index/
-                           {% endif %}" 
-                />
+                    value="{% if next %}{{next}}{% else %}/index/{% endif %}"/>
             </form>
         </div>
     </div>
