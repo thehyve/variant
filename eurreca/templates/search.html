@@ -89,6 +89,8 @@
             <input type="submit" value="search" />
         </form>
     {% else %}
+        {% comment %}
+        This commented out!
         <form name="input" action="/search/" method="post">
             Search: <input type="text" name="search_terms" 
                 {% if previousSearchString %} 
@@ -97,6 +99,8 @@
             />
             <input type="submit" value="Submit" />
         </form> 
+        End of comment!
+        {% endcomment %}
     {% endif %}
     
     {% comment %}
@@ -140,7 +144,7 @@
         End of comment!
         {% endcomment %}
         
-        <div id="pagetabs" class="withcontextmenu">
+        <div id="pagetabs">
             <ul>
                 <li>
                     <a href="#tabs-0">
