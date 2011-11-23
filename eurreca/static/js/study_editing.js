@@ -113,7 +113,6 @@ function removeRow(id, that) {
         new_key = 0
         for(var key in interactCache){
             if(key>iRowNr){
-                alert(key+'->'+new_key);
                 // This key comes after the removed tr's key
                 // This means that the key no longer matches it's tr's index
                 newCache[new_key] = interactCache[key]
@@ -122,7 +121,12 @@ function removeRow(id, that) {
             }
             new_key++
         }
-        interactCache = newCache
+        for(var key in interactCache){
+            delete interactCache[key];
+        }
+        for(var key in newCache){
+            interactCache[key] = newCache[key]
+        }
     } else {
         iRowNr = $(that).parents('tr').index();
         // Update relevant interaction rows
@@ -149,12 +153,10 @@ function removeRow(id, that) {
 
 function submitData() {
     genotypes = '"genotype":'+submitDataHelper('genotype');
-
     phenotypes = '"phenotype":'+submitDataHelper('phenotype');
-    
     panels =  '"panel":'+submitDataHelper('panel');
+    returnObject =  '{' + genotypes + "," + phenotypes + "," + panels + ",";
     
-    //interactions = '"interaction":'+submitDataHelper('interaction');
     interactions = '"interaction":{';
     count = 0;
     coll = $('#interaction tr td:nth-child(5)');
@@ -169,8 +171,8 @@ function submitData() {
     interactions = interactions + '}'
     
     interactionRelations = '"interactionRelations":'+retrieve_interaction_relations();
-
-    returnObject =  '{' + genotypes + "," + phenotypes + "," + panels + ",";
+    alert('interactionRelations: '+interactionRelations);
+    
     returnObject += interactions + ',' + interactionRelations + '}'; 
     
     form = $('form[name=study_editing]');
@@ -181,7 +183,6 @@ function submitData() {
 
 function retrieve_interaction_relations(){
     ret = '{';
-    
     for(i=0;i<interactCache.length;i++){
         if(interactCache[i]!=undefined){
             if(ret.length>1) {
