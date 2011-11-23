@@ -180,7 +180,7 @@ def study_update(request, id):
             if formset[0].is_valid():
                 study = formset[0].save()
             else: 
-                raise ValueError('Some of the forms did not validate. {0}'.format(errors_to_string(formset[0].errors.items())))    
+                raise ValueError('Some of the forms did not validate. {0}'.format(utils.errors_to_string(formset[0].errors.items())))    
                 
             # Study has been saved, return to study list
             message = "The study has been saved."

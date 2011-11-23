@@ -215,7 +215,7 @@
                                     {% endif %}
                                 <td>{% if form.ratio.value %}{{ form.ratio.value }}{% endif %}</td>
                                 <td>
-                                    <a onclick="editRow('interaction',this); return false;" href="#">edit</a>
+                                    <a onclick="editRow('interaction',this); return false;" href="#">edit</a>&nbsp;<a href="#" onClick="removeRow('interaction',this); return false;">remove</a>
                                 </td>
                                 </tr>
                             {% endfor %}
@@ -241,7 +241,7 @@
                                     <td>{% if form.snp_variant.value %}{{ form.snp_variant.value }}{% endif %}</td>
                                     <td>{% if form.mutation.value %}{{ form.mutation.value }}{% endif %}</td>
                                     <td>
-                                        <a onclick="editRow('genotype',this); return false;" href="#">edit</a>
+                                        <a onclick="editRow('genotype',this); return false;" href="#">edit</a>&nbsp;<a href="#" onClick="removeRow('genotype',this); return false;">remove</a>
                                     </td>
                                 </tr>
                             {% endfor %}
@@ -263,7 +263,7 @@
                                     <td>{% if form.phenotype_name.value %}{{ form.phenotype_name.value }}{% endif %}</td>
                                     <td>{% if form.environmental_factor.value %}{{ form.environmental_factor.value }}{% endif %}</td>
                                     <td>
-                                        <a onclick="editRow('phenotype',this); return false;" href="#">edit</a>
+                                        <a onclick="editRow('phenotype',this); return false;" href="#">edit</a>&nbsp;<a href="#" onClick="removeRow('phenotype',this); return false;">remove</a>
                                     </td>
                                 </tr>
                             {% endfor %}
@@ -287,7 +287,7 @@
                                     <td>{% if form.number_of_participants.value %}{{ form.number_of_participants.value }}{% endif %}</td>
                                     <td>{% if form.gender.value %}{{ form.gender.value }}{% endif %}</td>
                                     <td>
-                                        <a onclick="editRow('panel',this); return false;" href="#">edit</a>
+                                        <a onclick="editRow('panel',this); return false;" href="#">edit</a>&nbsp;<a href="#" onClick="removeRow('panel',this); return false;">remove</a>
                                     </td>
                                 </tr>
                             {% endfor %}
