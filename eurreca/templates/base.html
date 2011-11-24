@@ -23,7 +23,7 @@
 		<div id="container">
 			<div id="header">
 				<h1 id="logo">
-					<img src="{{ STATIC_URL }}images/eurreca_klein.png">
+					<a href="/"><img src="{{ STATIC_URL }}images/eurreca_klein.png"></a>
 				</h1>
                 {% if user.is_authenticated %}
                     <form id="logout" name="logout" action="{% url do_logout %}" method="post">
