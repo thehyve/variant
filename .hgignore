@@ -14,3 +14,7 @@ syntax: regexp
 ^eggs$
 syntax: glob
 *.pyc
+syntax: regexp
+^eggs$
+syntax: regexp
+^eurreca/eurreca\.db$
