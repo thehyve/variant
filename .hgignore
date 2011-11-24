@@ -10,3 +10,7 @@ syntax: glob
 
 syntax: regexp
 ^\.project$
+syntax: regexp
+^eggs$
+syntax: glob
+*.pyc
