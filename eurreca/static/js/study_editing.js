@@ -86,50 +86,66 @@ function saveRow(id, that) {
 }
 
 function saveInteractionRow() {
+    var returnMap = new Array();
     iGenotype = null;
-    $('#genotype tr').each(function() {
-        if($(this).children('td:nth-child(1)').html()==$('#input_genotype-gene').val() && $(this).children('td:nth-child(2)').html()==$('#input_genotype-snp_ref').val() && $(this).children('td:nth-child(3)').html()==$('#input_genotype-snp_variant').val() ) {
-            iGenotype = $(this).index();
+    if( !($('#input_genotype-gene').val()=='' && $('#input_genotype-snp_ref').val()=='' && $('#input_genotype-snp_variant').val()=='') ) {
+        $('#genotype tr').each(function() {
+            if($(this).children('td:nth-child(1)').html()==$('#input_genotype-gene').val() && $(this).children('td:nth-child(2)').html()==$('#input_genotype-snp_ref').val() && $(this).children('td:nth-child(3)').html()==$('#input_genotype-snp_variant').val() ) {
+                iGenotype = $(this).index();
+            }
+        });
+        if(iGenotype==null) {      
+            addRow( "genotype", [
+                                 $('#input_genotype-gene').val(),
+                                 $('#input_genotype-snp_ref').val(),
+                                 $('#input_genotype-snp_variant').val(), 
+            ], false );
+            iGenotype = $("#genotype").find("tr").length-1;
         }
-    });
-    if(iGenotype==null) {      
-    	addRow( "genotype", [
-    	                     $('#input_genotype-gene').val(),
-    	                     $('#input_genotype-snp_ref').val(),
-    	                     $('#input_genotype-snp_variant').val(), 
-    	], false );
-        iGenotype = $("#genotype").find("tr").length-1;
+    }
+    if(iGenotype!=null){
+        returnMap["genotypeNrs"] = iGenotype;
     }
     
     iPhenotype = null;
-    $('#phenotype tr').each(function() {
-        if($(this).children('td:nth-child(1)').html()==$('#input_phenotype-phenotype_name').val() && $(this).children('td:nth-child(2)').html()==$('#input_phenotype-environmental_factor').val() && $(this).children('td:nth-child(3)').html()==$('#input_phenotype-type').val()) {
-            iPhenotype = $(this).index();
+    if( !($('#input_phenotype-phenotype_name').val()=='' && $('#input_phenotype-environmental_factor').val()=='' && $('#input_phenotype-type').val()=='') ) {
+        $('#phenotype tr').each(function() {
+            if($(this).children('td:nth-child(1)').html()==$('#input_phenotype-phenotype_name').val() && $(this).children('td:nth-child(2)').html()==$('#input_phenotype-environmental_factor').val() && $(this).children('td:nth-child(3)').html()==$('#input_phenotype-type').val()) {
+                iPhenotype = $(this).index();
+            }
+        });
+        if(iPhenotype==null) {                
+            addRow( "phenotype", [
+                                 $('#input_phenotype-phenotype_name').val(),
+                                 $('#input_phenotype-environmental_factor').val(),
+                                 $('#input_phenotype-type').val(),
+            ], false );
+            iPhenotype = $("#phenotype").find("tr").length-1;
         }
-    });
-    if(iPhenotype==null) {                
-    	addRow( "phenotype", [
-    	                     $('#input_phenotype-phenotype_name').val(),
-    	                     $('#input_phenotype-environmental_factor').val(),
-    	                     $('#input_phenotype-type').val(),
-    	], false );
-        iPhenotype = $("#phenotype").find("tr").length-1;
+    }
+    if(iPhenotype!=null){
+        returnMap["phenotypeNrs"] = iPhenotype;
     }
     
     iPanel = null;
-    $('#panel tr').each(function() {
-        if($(this).children('td:nth-child(1)').html()==$('#input_panel-panel_description').val()) {
-            iPanel = $(this).index();
-        }
-    });
-    if(iPanel==null) {                
-    	addRow( "panel", [
+    if( !($('#input_panel-panel_description').val()=='')) {
+        $('#panel tr').each(function() {
+            if($(this).children('td:nth-child(1)').html()==$('#input_panel-panel_description').val()) {
+                iPanel = $(this).index();
+            }
+        });
+        if(iPanel==null) {                
+            addRow( "panel", [
      	                     $('#input_panel-panel_description').val()
-     	], false );
-        iPanel = $("#panel").find("tr").length-1;
-    }				
+            ], false );
+            iPanel = $("#panel").find("tr").length-1;
+        }				
+    }
+    if(iPanel!=null){
+        returnMap["panelNrs"] = iPanel;
+    }
     
-    return {"genotypeNrs":iGenotype, "phenotypeNrs":iPhenotype, "panelNrs":iPanel};
+    return returnMap;
 }
 
 function editRow(id, that) {

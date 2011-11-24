@@ -28,8 +28,9 @@ def process_clientside_studydata(jason, study, study_formset, request):
         saved_objects['interaction'] = []
         count = 0
         for form in forms['interaction']:
-            interactionValues[str(count + 1)] = get_interaction_values(count, forms, jason['interactionRelations'][str(count)]) 
-            count += 1
+            if jason['interactionRelations'].has_key(str(count)):
+                interactionValues[str(count + 1)] = get_interaction_values(count, forms, jason['interactionRelations'][str(count)]) 
+            count += 1    
         count = 0
         for form in forms['interaction']:
             if not form.is_valid():
@@ -38,11 +39,12 @@ def process_clientside_studydata(jason, study, study_formset, request):
                 obj = form.save(commit=False) 
                 obj.save()
                 if count < len(jason['interactionRelations']):
-                    obj = set_interaction_relations(obj, saved_objects, jason['interactionRelations'][str(count)])
+                    if jason['interactionRelations'].has_key(str(count)):
+                        obj = set_interaction_relations(obj, saved_objects, jason['interactionRelations'][str(count)])
                     obj.save()
                     saved_objects['interaction'].append(obj)
                 count += 1
-                
+
         '''print 'Saved the following objects:'
         for key in saved_objects:
             print key,':'
@@ -54,7 +56,7 @@ def process_clientside_studydata(jason, study, study_formset, request):
             
         return forms
     except Exception as inst:
-        print "\nin eurrecca.utils: ",inst
+        print "\nin eurrecca.utils: ",inst,inst.args
         exception = []
         if forms.has_key('interaction'):
             print '\n\ninteraction key found\n\n'
@@ -80,11 +82,11 @@ def set_interaction_relations(obj, saved_objects, relations_lists):
     for gt in relations_lists['genotype']:
         interaction.genotypes.add(saved_objects['genotype'][gt])
     '''
-    if relations_lists['genotype']  < len(saved_objects['genotype']):
+    if not relations_lists['genotype'] == -1:
         obj.genotypes.add(saved_objects['genotype'][relations_lists['genotype']])
-    if relations_lists['phenotype'] < len(saved_objects['phenotype']):
+    if not relations_lists['phenotype'] == -1:
         obj.phenotypes.add(saved_objects['phenotype'][relations_lists['phenotype']])
-    if relations_lists['panel']     < len(saved_objects['panel']):
+    if not relations_lists['panel'] == -1:
         obj.panels.add(saved_objects['panel'][relations_lists['panel']])
     return obj
 
@@ -95,12 +97,12 @@ def get_interaction_values(count, forms, relations_lists):
         interaction.genotypes.add(saved_objects['genotype'][gt])
     '''
     return_map = {}
-    if relations_lists['genotype']  < len(forms['genotype']):
+    if not relations_lists['genotype'] == -1:
         return_map['gene'] = forms['genotype'][relations_lists['genotype']].data['gene']
         return_map['snp_ref'] = forms['genotype'][relations_lists['genotype']].data['snp_ref']
-    if relations_lists['phenotype'] < len(forms['phenotype']):
+    if not relations_lists['phenotype'] == -1:
         return_map['phenotype_name'] = forms['phenotype'][relations_lists['phenotype']].data['phenotype_name']
-    if relations_lists['panel']     < len(forms['panel']):
+    if not relations_lists['panel'] == -1:
         return_map['panel_description'] = forms['panel'][relations_lists['panel']].data['panel_description']
     return return_map
     
