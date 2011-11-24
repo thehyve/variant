@@ -25,9 +25,9 @@ class Study(models.Model):
                 
 class Phenotype(models.Model):
     study = models.ForeignKey(Study)
-    phenotype_name = models.CharField(max_length=200, blank=True)
-    environmental_factor = models.CharField(max_length=200, blank=True)
-    type = models.CharField(max_length=200, blank=True)
+    phenotype_name = models.CharField(max_length=200)
+    environmental_factor = models.CharField(max_length=200)
+    type = models.CharField(max_length=200)
     intake_data = models.CharField(max_length=200, blank=True)
     
     def __unicode__(self):
@@ -70,7 +70,7 @@ class Panel(models.Model):
     number_of_participants = models.IntegerField(max_length=9, blank=True, null=True)
     mean_age = models.FloatField(max_length=10, null=True, blank=True)
     additional_age_description = models.CharField(max_length=200, blank=True)
-    panel_description = models.CharField(max_length=200, blank=True)
+    panel_description = models.CharField(max_length=200)
     
 class Interaction(models.Model):
     RATIO_TYPE_CHOICES = (
