@@ -1,2 +1,27 @@
-{% extends "portal.html" %}
+{% extends "base.html" %}
 
+{% block body %}
+    <div>
+        Welcome to the EURRECA Variant database
+
+        The Variant database is an online repository that stores information on genotype, phenotype and micronutrient interactions.
+
+        You can use the database to
+
+        <ul>
+            <li>store studies that describe genotype, phenotype, micronutrient interaction data</li>
+            <li>search for known micronutrient-phenotype, interactions</li>
+            <li>explore which biological processes micronutrients are involved in</li>
+        </ul>
+    </div>
+    <br/>
+    <div id="studylist">
+        <b>Studies</b>
+        <p>There are {{ study_list|length }} studies.</p>
+        <ul class="searchResults">
+            {% for form in study_list %}
+                {% include 'search_result.html' with title="Study" class="contentItem" filtered="False" %}
+            {% endfor %}            
+        </ul>
+    </div>
+{% endblock body %}

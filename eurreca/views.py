@@ -21,9 +21,19 @@ import advanced_search
 from itertools import chain
 
 def index(request):
-    user_list = User.objects.all()[:50]
+    qs = Study.objects.all()
+    study_list = []
+    if not len(qs) == 0:
+        study_list = StudyFormSet(queryset=qs, prefix="study")
     t = loader.get_template('index.html')
-    c = RequestContext(request, {})
+    c = RequestContext( 
+        request,
+        {
+            'study_list' : study_list,
+            'logged_in' : request.user.is_authenticated(),
+            'user' : request.user,
+        }
+    )
     return HttpResponse(t.render(c))
 
 def do_logout(request):
@@ -91,19 +101,28 @@ def study_create(request):
             forms = utils.process_clientside_studydata(
                 json.loads(request.POST['returnObject']), study, None, request)
   
-            # Study has been saved, return to study list
+            # Study has been saved, show study
             message = "The study has been saved."
-            messageType = "positive"
-            print "The study has been saved."  
-            # Building the study list
-            qs = Study.objects.all()
-            study_list = []
-            if not len(qs) == 0:
-                study_list = StudyFormSet(queryset=qs, prefix="study")
-            return render(request, 'domain_views/study_list.html', 
-                {'message' : message,
-                 'messageType' : messageType,
-                 'study_list' : study_list,})
+            messageType = "positive"                
+            try:
+                fs = utils.get_formsets_by_id(id)
+                return render(request, 'domain_views/study_view.html', 
+                    {'formset' : fs['study'], 
+                     'formsetGenotype' : fs['genotype'],
+                     'formsetPhenotype' :  fs['phenotype'],
+                     'formsetPanel' :  fs['panel'],
+                     'formsetInteraction' :  fs['interaction'],
+                     'message' : message,
+                     'messageType' : messageType,})         
+            except Study.DoesNotExist:
+                qs = Study.objects.all()
+                study_list = []
+                if not len(qs) == 0:
+                    study_list = StudyFormSet(queryset=qs, prefix="study")
+                return render(request, 'domain_views/study_list.html', 
+                    {'message' : "The requested study does not exist.",
+                     'messageType' : "negative",
+                     'study_list' : study_list,})  
         except Exception as inst:
             print "\nin study create view"
             print '\na)',type(inst)     # the exception instance
@@ -182,19 +201,28 @@ def study_update(request, id):
             else: 
                 raise ValueError('Some of the forms did not validate. {0}'.format(utils.errors_to_string(formset[0].errors.items())))    
                 
-            # Study has been saved, return to study list
+            # Study has been saved, show study
             message = "The study has been saved."
             messageType = "positive"                
-            # Building the study list
-            qs = Study.objects.all()
-            study_list = []
-            if not len(qs) == 0:
-                study_list = StudyFormSet(queryset=qs, prefix="study")
-            print "The study has been saved."                
-            return render(request, 'domain_views/study_list.html', 
-                {'message' : message,
-                 'messageType' : messageType,
-                 'study_list' : study_list,})
+            try:
+                fs = utils.get_formsets_by_id(id)
+                return render(request, 'domain_views/study_view.html', 
+                    {'formset' : fs['study'], 
+                     'formsetGenotype' : fs['genotype'],
+                     'formsetPhenotype' :  fs['phenotype'],
+                     'formsetPanel' :  fs['panel'],
+                     'formsetInteraction' :  fs['interaction'],
+                     'message' : message,
+                     'messageType' : messageType,})         
+            except Study.DoesNotExist:
+                qs = Study.objects.all()
+                study_list = []
+                if not len(qs) == 0:
+                    study_list = StudyFormSet(queryset=qs, prefix="study")
+                return render(request, 'domain_views/study_list.html', 
+                    {'message' : "The requested study does not exist.",
+                     'messageType' : "negative",
+                     'study_list' : study_list,})  
         except Exception as inst:
             print "\nin study update view"
             print '\na)',type(inst)     # the exception instance
@@ -271,10 +299,10 @@ def study_view(request, id):
         fs = utils.get_formsets_by_id(id)
         return render(request, 'domain_views/study_view.html', 
             {'formset' : fs['study'], 
-                 'formsetGenotype' : fs['genotype'],
-                 'formsetPhenotype' :  fs['phenotype'],
-                 'formsetPanel' :  fs['panel'],
-                 'formsetInteraction' :  fs['interaction'],
+             'formsetGenotype' : fs['genotype'],
+             'formsetPhenotype' :  fs['phenotype'],
+             'formsetPanel' :  fs['panel'],
+             'formsetInteraction' :  fs['interaction'],
              'message' : message,
              'messageType' : messageType,})         
     except Study.DoesNotExist:
