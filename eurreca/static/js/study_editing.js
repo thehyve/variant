@@ -68,7 +68,7 @@ function saveRow(id, that) {
                     $(this).children('td:nth-child(6)').html($(that).parents('tr').children('td:nth-child(3)').find('input.newVal').val());
                 }
                 if(id=='panel'){
-                    $(this).children('td:nth-child(4)').html($(that).parents('tr').children('td:nth-child(1)').find('input.newVal').val());
+                    $(this).children('td:nth-child(7)').html($(that).parents('tr').children('td:nth-child(1)').find('input.newVal').val());
                 }
             }
         });
