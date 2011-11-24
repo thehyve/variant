@@ -105,7 +105,7 @@ def study_create(request):
             message = "The study has been saved."
             messageType = "positive"                
             try:
-                fs = utils.get_formsets_by_id(id)
+                fs = utils.get_formsets_by_id(study.id)
                 return render(request, 'domain_views/study_view.html', 
                     {'formset' : fs['study'], 
                      'formsetGenotype' : fs['genotype'],
