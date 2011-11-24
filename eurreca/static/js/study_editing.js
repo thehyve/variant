@@ -56,7 +56,6 @@ function saveRow(id, that) {
         $('#interaction tr').each(function() {
             arrIndex = interactCache[$(this).index()];
             if(arrIndex != undefined && iRowNr==arrIndex[id+'Nrs']) {
-                delete arrIndex[id+'Nrs'];
                 if(id=='genotype'){
                     $(this).children('td:nth-child(1)').html($(that).parents('tr').children('td:nth-child(1)').find('input.newVal').val());
                     $(this).children('td:nth-child(2)').html($(that).parents('tr').children('td:nth-child(2)').find('input.newVal').val());
