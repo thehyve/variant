@@ -251,7 +251,6 @@ function submitData() {
     interactions = interactions + '}'
     
     interactionRelations = '"interactionRelations":'+retrieve_interaction_relations();
-    alert('interactionRelations: '+interactionRelations);
     
     returnObject += interactions + ',' + interactionRelations + '}'; 
     

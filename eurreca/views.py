@@ -96,7 +96,6 @@ def study_create(request):
         formset = StudyFormSet(request.POST, prefix="study")
         try:
             study = formset[0].save()
-            
             # Fill forms to get new items, save the forms
             forms = utils.process_clientside_studydata(
                 json.loads(request.POST['returnObject']), study, None, request)

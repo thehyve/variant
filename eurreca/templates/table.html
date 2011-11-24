@@ -6,8 +6,7 @@
     {% endif %}
     <table>
         {% for field in form %}
-            {#{% if not title == "Study" and not field.name == 'study' and not field.name == 'id' or not field.name == 'id' %}#}
-            {% if not title == "Study" and not field.name == 'study' %}
+            {% if not title == "Study" and not field.name == 'study' and not field.name == 'id' or not field.name == 'id' %}
                 {% if filtered == "True" %} 
                     {% if field.value|containedin:matchedValues %}
                         <tr class = "formfield {{ field.name }}">

@@ -160,7 +160,7 @@ def get_formsets_by_id(id):
             queryset=qs,
             prefix="study")
         
-    qs = Genotype.objects.filter(study=key).order_by('id')        
+    qs = Genotype.objects.filter(study=key).order_by('id')       
     formsetGenotype = []
     if not len(qs) == 0:
         formsetGenotype = GenotypeFormSet(
