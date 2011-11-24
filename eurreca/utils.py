@@ -100,8 +100,11 @@ def get_interaction_values(count, forms, relations_lists):
     if not relations_lists['genotype'] == -1:
         return_map['gene'] = forms['genotype'][relations_lists['genotype']].data['gene']
         return_map['snp_ref'] = forms['genotype'][relations_lists['genotype']].data['snp_ref']
+        return_map['snp_variant'] = forms['genotype'][relations_lists['genotype']].data['snp_variant']
     if not relations_lists['phenotype'] == -1:
         return_map['phenotype_name'] = forms['phenotype'][relations_lists['phenotype']].data['phenotype_name']
+        return_map['environmental_factor'] = forms['phenotype'][relations_lists['phenotype']].data['environmental_factor']
+        return_map['type'] = forms['phenotype'][relations_lists['phenotype']].data['type']
     if not relations_lists['panel'] == -1:
         return_map['panel_description'] = forms['panel'][relations_lists['panel']].data['panel_description']
     return return_map
