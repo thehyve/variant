@@ -71,3 +71,13 @@ ul.ui-autocomplete { display: block; left: 56px; top: 41px; width: 151px; z-inde
 /* User feedback messages */
 div.positiveMessage { display: inline; background: url("/static/images/icons/accept.png") no-repeat scroll 0px 0px #F8FFF0; padding: 0px 0px 0px 20px; text-align: center; }
 div.negativeMessage { display: inline; background: url("/static/images/icons/error.png") no-repeat scroll 0px 0px #ffcccc; padding: 0px 0px 0px 20px; text-align: center; }
+
+/* Interaction form */
+table.interactions { width: 100%; border-collapse: collapse; }
+table.interactions caption { font-weight: bold; }
+table.interactions tr.header { background-color: #ADC376; border-top-width: 0; }
+table.interactions tr { border-top: 1px solid #aaa; }
+table.interactions th { border-right: 1px solid white; }
+table.interactions th, table.interactions td { text-align: left; margin: 0; padding: 2px 6px; }
+table.interactions td.buttons { width: 50px; }
+table.interactions input.newVal { width: 100%; }

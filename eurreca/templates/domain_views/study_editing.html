@@ -48,29 +48,7 @@
         $tabs.tabs('select', tabNum);        
     };
   </script>
-  <STYLE type="text/css">
-    table #interactionTable {
-      border: #006dba solid 1px;
 
-    }
-    caption #interactionTable {
-      font-size: 16pt;
-    }
-    td #interactionTable {
-      border-width: 1px;
-      border-style: dotted;
-      padding: 10px;
-    }
-    th #interactionTable {
-      border-bottom: black dashed 1px;
-      border-left: black dashed 1px;
-      padding: 10px;
-    }
-    a #interactionTable {
-      background-color: yellow;
-      text-decoration: none;
-    }
-  </STYLE>
 {% endblock %}
 
 {% block body %}
@@ -145,10 +123,10 @@
                     </table>
                 </div>
                 <div id="tabs-2">
-                    <table>
+                    <table id="interactionTable" class="interactions">
                         <thead>
                             <caption>Interaction</caption>
-                            <tr id="interaction_row">
+                            <tr class="header" id="interaction_row">
                                 <th id="genotype-gene">Genotype_name</th>
                                 <th id="genotype-snp_ref">SNP_ref</th>
                                 <th id="phenotype-phenotype_name">Phenotype_name</th>
@@ -223,10 +201,10 @@
                     </table>
                     <a href="#" onClick="addRow('interaction'); return false;">+</a>
 
-                    <table>
+                    <table id="genotypeTable" class="interactions">
                         <thead>
                             <caption>Genotype</caption>
-                            <tr id="genotype_row">
+                            <tr class="header" id="genotype_row">
                                 <th id="gene">Name</th>
                                 <th id="snp_ref">SNP_ref</th>
                                 <th id="snp_variant">SNP_variant</th>
@@ -249,10 +227,10 @@
                     </table>
                     <a href="#" onClick="addRow('genotype'); return false;">+</a>
 
-                    <table>
+                    <table id="phenotypeTable" class="interactions">
                         <thead>
                             <caption>Phenotype</caption>
-                            <tr id="phenotype_row">
+                            <tr class="header" id="phenotype_row">
                                 <th id="phenotype_name">Name</th>
                                 <th id="environmental_factor">Environmental_Factor</th>
                             </tr>
@@ -271,10 +249,10 @@
                     </table>
                     <a href="#" onClick="addRow('phenotype'); return false;">+</a>
 
-                    <table>
+                    <table id="panelTable" class="interactions">
                         <thead>
                             <caption>Panel</caption>
-                            <tr id="panel_row">
+                            <tr class="header" id="panel_row">
                                 <th id="panel_description">Panel description</th>
                                 <th id="number_of_participants">No_of_participants</th>
                                 <th id="gender">Gender</th>
