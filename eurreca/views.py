@@ -378,4 +378,16 @@ def advanced_search_view(request):
     return render(request, 'search.html', 
             {'message' : message,
              'messageType' : messageType,
-             'advancedSearch' : True})               
+             'advancedSearch' : True})     
+
+def all(request):
+    message = ""
+    messageType = ""
+        
+    # Perform search    
+    search_output = simple_search.search([''])
+
+    return render(request, 'search.html', 
+        {'message' : message,
+         'messageType' : messageType,
+         'formSets' : search_output['results']})             

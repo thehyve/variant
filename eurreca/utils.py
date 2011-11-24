@@ -12,38 +12,28 @@ def process_clientside_studydata(jason, study, study_formset, request):
     interactionValues = {}
     try:
         # Non-interaction fields first, so that all necessary primary keys can be known
-        #print 'starting add_non_interaction_forms'
         forms = add_non_interaction_forms(jason, study)
-        #print 'finished add_non_interaction_forms'
         error_messages = []
         for key in forms:
             for form in forms[key]:
-                #print 'About to validate form'
                 if not form.is_valid():
                     error_messages.append(form.errors.items())
-                    #print 'Form wasn\'t valid:',form.errors.items()
-                    #raise ValueError('Some of the forms did not validate. '+errors_to_string(form.errors.items()))
                 else:
-                    #print 'About to save form'
                     obj = form.save()    
                     saved_objects[key].append(obj)
-                    #print 'Form was saved:',obj,'   errors:',form.errors.items()
                 
         # Interaction fields            
         forms['interaction'] = []
-        #print 'about to set interaction forms'
         forms = add_interaction_forms(jason, study, saved_objects, forms)
         saved_objects['interaction'] = []
         count = 0
         for form in forms['interaction']:
             interactionValues[str(count + 1)] = get_interaction_values(count, forms, jason['interactionRelations'][str(count)]) 
-            # use key str(count + 1) for compatibility with the template language
             count += 1
         count = 0
         for form in forms['interaction']:
             if not form.is_valid():
                 error_messages.append(form.errors.items())
-                #raise ValueError('Some of the forms did not validate. '+errors_to_string(form.errors.items()))
             else:
                 obj = form.save(commit=False) 
                 obj.save()
@@ -51,14 +41,13 @@ def process_clientside_studydata(jason, study, study_formset, request):
                     obj = set_interaction_relations(obj, saved_objects, jason['interactionRelations'][str(count)])
                     obj.save()
                     saved_objects['interaction'].append(obj)
-                #print 'Form was saved:',obj,'   errors:',form.errors.items()    
                 count += 1
                 
-        print 'Saved the following objects:'
+        '''print 'Saved the following objects:'
         for key in saved_objects:
             print key,':'
             for item in saved_objects[key]:
-                print '\t',item,'with study',item.study
+                print '\t',item,'with study',item.study'''
                 
         if not len(error_messages) == 0:
             raise ValueError('Some of the forms did not validate. {0}'.format(error_messages))
@@ -156,10 +145,8 @@ def add_interaction_forms(jason, study, saved_objects, forms):
 def errors_to_string(errors):
     returnMessage = ''
     for item in errors:
-        #print 'item',item[0],item.__class__()
         returnMessage += "Field '"+item[0]+"': "
         for error in item[1]:
-            #print '\terror',error,error.__class__()
             returnMessage += error+" "
         returnMessage += ' '    
     return returnMessage
@@ -173,28 +160,28 @@ def get_formsets_by_id(id):
             queryset=qs,
             prefix="study")
         
-    qs = Genotype.objects.filter(study=key)        
+    qs = Genotype.objects.filter(study=key).order_by('id')        
     formsetGenotype = []
     if not len(qs) == 0:
         formsetGenotype = GenotypeFormSet(
             queryset=qs, 
             prefix="genotype")
     
-    qs = Phenotype.objects.filter(study=key)       
+    qs = Phenotype.objects.filter(study=key).order_by('id')       
     formsetPhenotype = []
     if not len(qs) == 0:
         formsetPhenotype = PhenotypeFormSet(
             queryset=qs, 
             prefix="phenotype")
         
-    qs = Panel.objects.filter(study=key)    
+    qs = Panel.objects.filter(study=key).order_by('id')    
     formsetPanel = []
     if not len(qs) == 0:
         formsetPanel = PanelFormSet(
             queryset=qs, 
             prefix="panel")
         
-    qs = Interaction.objects.filter(study=key)   
+    qs = Interaction.objects.filter(study=key).order_by('id')   
     formsetInteraction = []
     if not len(qs) == 0:
         formsetInteraction = InteractionFormSet(
@@ -296,7 +283,6 @@ def get_model_from_search_term(field_name):
         "Phenotype name":"phenotype",
         "SNP variant":"genotype"
     }
-    #print 'get_model_from_search_term', field_name, '->', from_term_to_model_type[field_name]
     return from_term_to_model_type[field_name]
     
 
@@ -311,7 +297,6 @@ def get_field_from_search_term(field_name):
         "Phenotype name":"phenotype_name",
         "SNP variant":"snp_variant"
     }
-    #print 'get_field_from_search_term', field_name, '->', from_string_to_proper_field_name[field_name]
     return from_string_to_proper_field_name[field_name]
     
 def get_year_list():
