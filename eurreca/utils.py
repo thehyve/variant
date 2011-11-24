@@ -135,10 +135,12 @@ def add_interaction_forms(jason, study, saved_objects, forms):
         form = InteractionForm(Interaction.objects.none())
         form.data['study'] = study.id
         for field in form:
-            if field.name == 'ratio':
-                form.data[field.name] = jason['interaction'][key1]
             if field.name == 'genotypes' or field.name == 'phenotypes' or field.name == 'panels':
                 continue
+            if jason['interaction'][key1].has_key(field.name):
+                form.data[field.name] = jason['interaction'][key1][field.name]
+                if form.data[field.name] == 'null':
+                    form.data[field.name] = None
         forms['interaction'].append(form)         
     return forms
     

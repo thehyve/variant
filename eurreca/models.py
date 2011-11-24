@@ -7,15 +7,15 @@ class Study(models.Model):
         ('X', 'Mixed'),
         ('U', 'Unknown'),
     )
-    study_id = models.CharField(max_length=50, blank=True)
-    pubmed_id = models.IntegerField(max_length=9, blank=True, null=True)
+    study_id = models.CharField(max_length=50)
+    pubmed_id = models.IntegerField(max_length=9)
     year_of_publication = models.CharField(max_length=4)
-    authors = models.CharField(max_length=200, blank=True)
+    authors = models.CharField(max_length=200)
     micronutrient = models.CharField(max_length=200, blank=True)
     population = models.CharField(max_length=200, blank=True)
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, blank=True, null=True)
     endpoint = models.CharField(max_length=200, blank=True)
-    paper_title = models.CharField(max_length=200, blank=True)
+    paper_title = models.CharField(max_length=200)
     journal_title = models.CharField(max_length=200, blank=True)
     study_type = models.CharField(max_length=200, blank=True)
     number_of_participants = models.IntegerField(max_length=9, blank=True, null=True)
@@ -41,9 +41,9 @@ class Genotype(models.Model):
         ('U', 'Unknown'),
     )
     study = models.ForeignKey(Study)
-    gene = models.CharField(max_length=200, blank=True)
-    snp_ref = models.CharField(max_length=200, blank=True)
-    snp_variant = models.CharField(max_length=200, blank=True)
+    gene = models.CharField(max_length=200)
+    snp_ref = models.CharField(max_length=200)
+    snp_variant = models.CharField(max_length=200)
     snp_name = models.CharField(max_length=200, blank=True)
     allele = models.CharField(max_length=200, blank=True)
     mutation = models.CharField(max_length=200, blank=True)
@@ -74,16 +74,16 @@ class Panel(models.Model):
     
 class Interaction(models.Model):
     RATIO_TYPE_CHOICES = (
-        ('F', 'Female'),
-        ('M', 'Male'),
-        ('X', 'Mixed'),
-        ('U', 'Unknown'),
+        ('H', 'Hazard ratio'),
+        ('O', 'Odds ratio'),
+        ('R', 'Relative risk'),
     )
     study = models.ForeignKey(Study)
     genotypes = models.ManyToManyField(Genotype, null=True, blank=True)
     phenotypes = models.ManyToManyField(Phenotype, null=True, blank=True)
     panels = models.ManyToManyField(Panel, null=True, blank=True)
-    statistical_model = models.CharField(max_length=200, blank=True)
+    statistical_model = models.CharField(max_length=200)
+    p_value = models.FloatField(max_length=10, null=True, blank=True)
     ratio_type = models.CharField(max_length=1, choices = RATIO_TYPE_CHOICES, blank=True)
     ratio = models.FloatField(max_length=10, null=True, blank=True)
     ci_lower = models.FloatField(max_length=10, null=True, blank=True)

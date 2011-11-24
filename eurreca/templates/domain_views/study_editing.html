@@ -100,7 +100,12 @@
                                     <tr class = "formfield {{ field.name }}">
                                     <td class= "formspacer"></td>
                                 {% endif %}
-                                    <td>{{ field.label_tag }}</td> 
+                                    {% if field.field.required %}
+                                        <td><span class="required">
+                                    {% else %}
+                                        <td>
+                                    {% endif %}
+                                        {{ field.label_tag }}</td> 
                                     <td>
                                         {% if field.name == 'year_of_publication' %}
                                             <div class="ui-widget">
@@ -109,7 +114,11 @@
                                         {% else %}
                                             {{ field }}
                                         {% endif %}
-                                    </td>
+                                    {% if field.field.required %}
+                                        </span></td>
+                                    {% else %}
+                                        </td>
+                                    {% endif %}
                                     <td>
                                         {% if field.errors %}
                                             {% for error in field.errors %}
@@ -127,11 +136,20 @@
                         <thead>
                             <caption>Interaction</caption>
                             <tr class="header" id="interaction_row">
-                                <th id="genotype-gene">Genotype_name</th>
-                                <th id="genotype-snp_ref">SNP_ref</th>
-                                <th id="phenotype-phenotype_name">Phenotype_name</th>
+                                <th id="genotype-gene">Gene</th>
+                                <th id="genotype-snp_ref">SNP ref</th>
+                                <th id="genotype-snp_variant">SNP variant</th>
+                                <th id="phenotype-phenotype_name">Phenotype name</th>
+                                <th id="phenotype-environmental_factor">Environmental factor</th>
+                                <th id="phenotype-type">Phenotype type</th>
                                 <th id="panel-panel_description">Panel description</th>
+                                <th id="statistical_model"><span class='required'>Statistical model</span></th>
+                                <th id="p_value">p value</th>
+                                <th id="ratio_type">ratio_type</th>
                                 <th id="ratio">Ratio</th>
+                                <th id="ci_lower">95% CI lower</th>
+                                <th id="ci_upper">95% CI upper</th>
+                                <th id="significant_associations">significant associations</th>
                             </tr>
                         </thead>
                         <tbody id="interaction">
@@ -142,6 +160,7 @@
                                             {% if gf.id.value == form.genotypes.value.0 %}
                                                 <td class="editable">{{gf.gene.value}}</td>
                                                 <td class="editable">{{gf.snp_ref.value}}</td>
+                                                <td class="editable">{{gf.snp_variant.value}}</td>
                                             {% endif %} 
                                         {% endfor %}
                                     {% else %}
@@ -150,9 +169,11 @@
                                                 {% ifequal forloop.parentloop.counter forloop.counter %}
                                                     <td class="editable">{{value.gene}}</td>
                                                     <td class="editable">{{value.snp_ref}}</td>
+                                                    <td class="editable">{{value.snp_variant}}</td>
                                                 {% endifequal %}
                                             {% endfor %}
                                         {% else %}
+                                            <td class="editable"></td>
                                             <td class="editable"></td>
                                             <td class="editable"></td>
                                         {% endif %}
@@ -161,6 +182,8 @@
                                         {% for pf in formsetPhenotype %}
                                             {% if pf.id.value == form.phenotypes.value.0 %}
                                                 <td class="editable">{{pf.phenotype_name.value}}</td>
+                                                <td class="editable">{{pf.environmental_factor.value}}</td>
+                                                <td class="editable">{{pf.type.value}}</td>
                                             {% endif %} 
                                         {% endfor %}   
                                     {% else %}
@@ -168,9 +191,13 @@
                                             {% for item, value in interactionValues.items %}
                                                 {% ifequal forloop.parentloop.counter forloop.counter %}
                                                     <td class="editable">{{value.phenotype_name}}</td>
+                                                    <td class="editable">{{value.environmental_factor}}</td>
+                                                    <td class="editable">{{value.type}}</td>
                                                 {% endifequal %}
                                             {% endfor %}
                                         {% else %}
+                                            <td class="editable"></td>
+                                            <td class="editable"></td>
                                             <td class="editable"></td>
                                         {% endif %}
                                     {% endif %}     
@@ -191,7 +218,13 @@
                                             <td class="editable"></td>
                                         {% endif %}
                                     {% endif %}
+                                <td class="editable">{% if form.statistical_model.value %}{{ form.statistical_model.value }}{% endif %}</td>
+                                <td class="editable">{% if form.p_value.value %}{{ form.p_value.value }}{% endif %}</td>
+                                <td class="editable">{% if form.ratio_type.value %}{{ form.ratio_type.value }}{% endif %}</td>
                                 <td class="editable">{% if form.ratio.value %}{{ form.ratio.value }}{% endif %}</td>
+                                <td class="editable">{% if form.ci_lower.value %}{{ form.ci_lower.value }}{% endif %}</td>
+                                <td class="editable">{% if form.ci_upper.value %}{{ form.ci_upper.value }}{% endif %}</td>
+                                <td class="editable">{% if form.significant_associations.value %}{{ form.significant_associations.value }}{% endif %}</td>
                                 <td class="buttons">
                                     <a onclick="editRow('interaction',this); return false;" href="#">edit</a>&nbsp;<a href="#" onClick="removeRow('interaction',this); return false;">remove</a>
                                 </td>
@@ -208,7 +241,10 @@
                                 <th id="gene">Name</th>
                                 <th id="snp_ref">SNP_ref</th>
                                 <th id="snp_variant">SNP_variant</th>
+                                <th id="snp_name">SNP name</th>
+                                <th id="allele">Allele</th>
                                 <th id="mutation">Mutation</th>
+                                <th id="zygosity">Zygosity</th>
                             </tr>
                         </thead>
                         <tbody id="genotype">
@@ -217,7 +253,10 @@
                                     <td class="editable">{% if form.gene.value %}{{ form.gene.value }}{% endif %}</td>
                                     <td class="editable">{% if form.snp_ref.value %}{{ form.snp_ref.value }}{% endif %}</td>
                                     <td class="editable">{% if form.snp_variant.value %}{{ form.snp_variant.value }}{% endif %}</td>
+                                    <td class="editable">{% if form.snp_name.value %}{{ form.snp_name.value }}{% endif %}</td>
+                                    <td class="editable">{% if form.allele.value %}{{ form.allele.value }}{% endif %}</td>
                                     <td class="editable">{% if form.mutation.value %}{{ form.mutation.value }}{% endif %}</td>
+                                    <td class="editable">{% if form.zygosity.value %}{{ form.zygosity.value }}{% endif %}</td>
                                     <td class="buttons">
                                         <a onclick="editRow('genotype',this); return false;" href="#">edit</a>&nbsp;<a href="#" onClick="removeRow('genotype',this); return false;">remove</a>
                                     </td>
@@ -232,7 +271,9 @@
                             <caption>Phenotype</caption>
                             <tr class="header" id="phenotype_row">
                                 <th id="phenotype_name">Name</th>
-                                <th id="environmental_factor">Environmental_Factor</th>
+                                <th id="environmental_factor">Environmental Factor</th>
+                                <th id="type">Type</th>
+                                <th id="intake_data">Intake data</th>
                             </tr>
                         </thead>
                         <tbody id="phenotype">
@@ -240,6 +281,8 @@
                                 <tr>
                                     <td class="editable">{% if form.phenotype_name.value %}{{ form.phenotype_name.value }}{% endif %}</td>
                                     <td class="editable">{% if form.environmental_factor.value %}{{ form.environmental_factor.value }}{% endif %}</td>
+                                    <td class="editable">{% if form.type.value %}{{ form.type.value }}{% endif %}</td>
+                                    <td class="editable">{% if form.intake_data.value %}{{ form.intake_data.value }}{% endif %}</td>
                                     <td class="buttons">
                                         <a onclick="editRow('phenotype',this); return false;" href="#">edit</a>&nbsp;<a href="#" onClick="removeRow('phenotype',this); return false;">remove</a>
                                     </td>
@@ -254,8 +297,10 @@
                             <caption>Panel</caption>
                             <tr class="header" id="panel_row">
                                 <th id="panel_description">Panel description</th>
-                                <th id="number_of_participants">No_of_participants</th>
+                                <th id="number_of_participants"># of participants</th>
                                 <th id="gender">Gender</th>
+                                <th id="mean_age">Mean age</th>
+                                <th id="additional_age_description">Additional age description</th>
                             </tr>
                         </thead>
                         <tbody id="panel">
@@ -264,6 +309,8 @@
                                     <td class="editable">{% if form.panel_description.value %}{{ form.panel_description.value }}{% endif %}</td>
                                     <td class="editable">{% if form.number_of_participants.value %}{{ form.number_of_participants.value }}{% endif %}</td>
                                     <td class="editable">{% if form.gender.value %}{{ form.gender.value }}{% endif %}</td>
+                                    <td class="editable">{% if form.mean_age.value %}{{ form.mean_age.value }}{% endif %}</td>
+                                    <td class="editable">{% if form.additional_age_description.value %}{{ form.additional_age_description.value }}{% endif %}</td>
                                     <td class="buttons">
                                         <a onclick="editRow('panel',this); return false;" href="#">edit</a>&nbsp;<a href="#" onClick="removeRow('panel',this); return false;">remove</a>
                                     </td>

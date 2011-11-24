@@ -60,9 +60,12 @@ function saveRow(id, that) {
                 if(id=='genotype'){
                     $(this).children('td:nth-child(1)').html($(that).parents('tr').children('td:nth-child(1)').find('input.newVal').val());
                     $(this).children('td:nth-child(2)').html($(that).parents('tr').children('td:nth-child(2)').find('input.newVal').val());
+                    $(this).children('td:nth-child(3)').html($(that).parents('tr').children('td:nth-child(3)').find('input.newVal').val());
                 }
                 if(id=='phenotype'){
-                    $(this).children('td:nth-child(3)').html($(that).parents('tr').children('td:nth-child(1)').find('input.newVal').val());
+                    $(this).children('td:nth-child(4)').html($(that).parents('tr').children('td:nth-child(1)').find('input.newVal').val());
+                    $(this).children('td:nth-child(5)').html($(that).parents('tr').children('td:nth-child(2)').find('input.newVal').val());
+                    $(this).children('td:nth-child(6)').html($(that).parents('tr').children('td:nth-child(3)').find('input.newVal').val());
                 }
                 if(id=='panel'){
                     $(this).children('td:nth-child(4)').html($(that).parents('tr').children('td:nth-child(1)').find('input.newVal').val());
@@ -85,7 +88,7 @@ function saveRow(id, that) {
 function saveInteractionRow() {
     iGenotype = null;
     $('#genotype tr').each(function() {
-        if($(this).children('td:nth-child(1)').html()==$('#input_genotype-gene').val() && $(this).children('td:nth-child(2)').html()==$('#input_genotype-snp_ref').val() ) {
+        if($(this).children('td:nth-child(1)').html()==$('#input_genotype-gene').val() && $(this).children('td:nth-child(2)').html()==$('#input_genotype-snp_ref').val() && $(this).children('td:nth-child(3)').html()==$('#input_genotype-snp_variant').val() ) {
             iGenotype = $(this).index();
         }
     });
@@ -93,20 +96,22 @@ function saveInteractionRow() {
     	addRow( "genotype", [
     	                     $('#input_genotype-gene').val(),
     	                     $('#input_genotype-snp_ref').val(),
-    	                     
+    	                     $('#input_genotype-snp_variant').val(), 
     	], false );
         iGenotype = $("#genotype").find("tr").length-1;
     }
     
     iPhenotype = null;
     $('#phenotype tr').each(function() {
-        if($(this).children('td:nth-child(1)').html()==$('#input_phenotype-phenotype_name').val()) {
+        if($(this).children('td:nth-child(1)').html()==$('#input_phenotype-phenotype_name').val() && $(this).children('td:nth-child(2)').html()==$('#input_phenotype-environmental_factor').val() && $(this).children('td:nth-child(3)').html()==$('#input_phenotype-type').val()) {
             iPhenotype = $(this).index();
         }
     });
     if(iPhenotype==null) {                
     	addRow( "phenotype", [
-    	                     $('#input_phenotype-phenotype_name').val()
+    	                     $('#input_phenotype-phenotype_name').val(),
+    	                     $('#input_phenotype-environmental_factor').val(),
+    	                     $('#input_phenotype-type').val(),
     	], false );
         iPhenotype = $("#phenotype").find("tr").length-1;
     }
@@ -213,12 +218,15 @@ function removeRow(id, that) {
 	                if(id=='genotype'){
 	                    $(this).children('td:nth-child(1)').html('');
 	                    $(this).children('td:nth-child(2)').html('');
-	                }
-	                if(id=='phenotype'){
 	                    $(this).children('td:nth-child(3)').html('');
 	                }
-	                if(id=='panel'){
+	                if(id=='phenotype'){
 	                    $(this).children('td:nth-child(4)').html('');
+	                    $(this).children('td:nth-child(5)').html('');
+	                    $(this).children('td:nth-child(6)').html('');
+	                }
+	                if(id=='panel'){
+	                    $(this).children('td:nth-child(7)').html('');
 	                }
                 } else if( iRowNr < arrIndex[id+'Nrs'] ) {
                 	// If the entity to remove is in the list before the entity in the interaction
@@ -239,10 +247,34 @@ function submitData() {
     
     interactions = '"interaction":{';
     count = 0;
-    coll = $('#interaction tr td:nth-child(5)');
+    coll = $('#interaction tr');
     coll.each(function() {
-        rij = this;
-        interactions = interactions + '"'+count+'":"'+$(rij).html()+'"';
+        rij = '{'
+        
+        coll2 = $(this).children('td:not(:last-child)');
+        coll2.each(function() {
+            i = $(this).index();
+            if(i>6){
+                title = '';
+                postfix = '';
+                if(i==7){title = 'statistical_model'; postfix = ',';}
+                if(i==8){title = 'p_value'; postfix = ',';}
+                if(i==9){title = 'ratio_type'; postfix = ',';}
+                if(i==10){title = 'ratio'; postfix = ',';}
+                if(i==11){title = 'ci_lower'; postfix = ',';}
+                if(i==12){title = 'ci_upper'; postfix = ',';}
+                if(i==13){title = 'significant_associations';}
+                item = $(this).html();
+                if(item==''){ item = 'null'; }
+                rij += '"'+title+'":"'+item+'"'+postfix;
+                //console.log('i:'+i+'\ntitle:'+title+'\nitem:'+item+'\ncount2'+count2+'\nsso far:'+rij);
+            }
+        });
+        
+        rij += '}'
+        
+        interactions = interactions + '"'+count+'":'+rij;
+        
         count = count + 1;
         if(count!=coll.length){
             interactions = interactions + ',';
