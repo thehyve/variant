@@ -74,6 +74,15 @@
 .ui-state-active a, .ui-state-active a:link, .ui-state-active a:visited { color: #738f2d; text-decoration: none; }
 .ui-widget :active { outline: none; }
 
+.ui-tabs-nav .ui-state-default { background: #fafaf4 url(images/ui-bg_highlight-hard_100_fafaf4_1x100.png) 50% 50% repeat-x; border-color: #d4ccb0;  }
+.ui-tabs-nav .ui-state-default a { color: #738f2d; }
+.ui-tabs-nav .ui-state-active { background: #adc376 url(images/ui-bg_highlight-hard_15_adc376_1x100.png) 50% 50% repeat-x; border-color: #327e04; }
+.ui-tabs-nav .ui-state-active a { color: white; }
+
+.ui-tabs-nav .ui-state-hover { border: 1px solid #327e04; background: #8ba54a url(images/ui-bg_highlight-soft_25_8ba54a_1x100.png) 50% 50% repeat-x; font-weight: bold; color: #ffffff; }
+.ui-tabs-nav .ui-state-hover a, .ui-tabs-nav .ui-state-hover a:hover { color: #ffffff; text-decoration: none; }
+
+
 /* Interaction Cues
 ----------------------------------*/
 .ui-state-highlight, .ui-widget-content .ui-state-highlight, .ui-widget-header .ui-state-highlight  {border: 1px solid #e8e1b5; background: #d3e1b0 url(images/ui-bg_glass_55_d3e1b0_1x400.png) 50% 50% repeat-x; color: #363636; }
