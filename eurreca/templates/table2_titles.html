@@ -1,0 +1,40 @@
+﻿<tr class="formfield {{ field.name }}">
+    {% if title == "Phenotype" %}
+        <td>Phenotype name</td>
+        <td>Environmental factor</td>
+        <td>Type</td>
+        <td>Intake data</td>
+    {% endif %}
+    {% if title == "Genotype" %}
+        <td>Gene</td>
+        <td>Snp ref</td>
+        <td>Snp variant</td>
+        <td>Snp name</td>
+        <td>Allele</td>
+        <td>Mutation</td>
+        <td>Zygosity</td>
+    {% endif %}
+    {% if title == "Panel" %}
+        <td>Panel description</td>
+        <td>Number of participants</td>
+        <td>Gender</td>
+        <td>Mean age</td>
+        <td>Additional age description</td>
+    {% endif %}
+    {% if title == "Interaction" %}
+        <td>Gene</td>
+        <td>Snp ref</td>
+        <td>Snp variant</td>
+        <td>Gene</td>
+        <td>Snp ref</td>
+        <td>Snp variant</td>
+        <td>Panel Description</td>
+        <td>Statistical model</td>
+        <td>p Value</td>
+        <td>Ratio type</td>
+        <td>Ratio</td>
+        <td>95% CI lower</td>
+        <td>95% CI upper</td>
+        <td>Significant associations</td>
+    {% endif %}                
+</tr>

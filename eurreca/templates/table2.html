@@ -1,0 +1,10 @@
+﻿{% load contains %}
+
+{% if not tmp_formset|length == '' %}
+    <div class="{{ class }}"><table><tr>
+        {% include 'table2_titles.html' %}                   
+        {% for form in tmp_formset %}
+            {% include 'table2_values.html' %}
+        {% endfor %}
+    </table></div>
+{% endif %}

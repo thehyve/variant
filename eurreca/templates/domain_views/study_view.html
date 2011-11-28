@@ -81,24 +81,16 @@
                 {% endfor %}
             </div>
             <div id="tabs-2">
-                {% for form in formsetInteraction %}
-                    {% include 'table.html' with title="Interaction" class="contentItem" filtered="False" %}
-                {% endfor %}
+                {% include 'table2.html' with tmp_formset=formsetInteraction title="Interaction" class="contentItem" filtered="False" %}
             </div>
             <div id="tabs-3">
-                {% for form in formsetGenotype %}
-                    {% include 'table.html' with title="Genotype" class="contentItem" filtered="False" %}
-                {% endfor %}        
+                {% include 'table2.html' with tmp_formset=formsetGenotype title="Genotype" class="contentItem" filtered="False" %}
             </div>
             <div id="tabs-4">
-                {% for form in formsetPhenotype %}
-                    {% include 'table.html' with title="Phenotype" class="contentItem" filtered="False" %}
-                {% endfor %}            
+                {% include 'table2.html' with tmp_formset=formsetPhenotype title="Phenotype" class="contentItem" filtered="False" %}
             </div>
-            <div id="tabs-5">
-                {% for form in formsetPanel %}
-                    {% include 'table.html' with title="Panel" class="contentItem" filtered="False" %}
-                {% endfor %}          
+            <div id="tabs-5">         
+                {% include 'table2.html' with tmp_formset=formsetPanel title="Panel" class="contentItem" filtered="False" %}
             </div>
         </div>
     </div>
