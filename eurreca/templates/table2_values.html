@@ -1,0 +1,35 @@
+﻿{% load contains %}
+
+<tr class="formfield {{ field.name }}">
+    {% if title == "Phenotype" %}
+        {% include 'table2_value.html' with field=form.phenotype_name %}
+        {% include 'table2_value.html' with field=form.environmental_factor %}
+        {% include 'table2_value.html' with field=form.type %}
+        {% include 'table2_value.html' with field=form.intake_data %}
+    {% endif %}
+    {% if title == "Genotype" %}
+        {% include 'table2_value.html' with field=form.gene %}
+        {% include 'table2_value.html' with field=form.snp_ref %}
+        {% include 'table2_value.html' with field=form.snp_variant %}
+        {% include 'table2_value.html' with field=form.snp_name %}
+        {% include 'table2_value.html' with field=form.allele %}
+        {% include 'table2_value.html' with field=form.mutation %}
+        {% include 'table2_value.html' with field=form.zygosity %}
+    {% endif %}
+    {% if title == "Panel" %}
+        {% include 'table2_value.html' with field=form.panel_description %}
+        {% include 'table2_value.html' with field=form.number_of_participants %}
+        {% include 'table2_value.html' with field=form.gender %}
+        {% include 'table2_value.html' with field=form.mean_age %}
+        {% include 'table2_value.html' with field=form.additional_age_description %}
+    {% endif %}
+    {% if title == "Interaction" %}
+        {% include 'table2_interaction_geno_pheno_panel.html' %}
+        {% include 'table2_value.html' with field=form.statistical_model %}
+        {% include 'table2_value.html' with field=form.p_value %}
+        {% include 'table2_value.html' with field=form.ratio_type %}
+        {% include 'table2_value.html' with field=form.ratio %}
+        {% include 'table2_value.html' with field=form.ci_lower %}
+        {% include 'table2_value.html' with field=form.ci_upper %}
+    {% endif %}    
+</tr>
