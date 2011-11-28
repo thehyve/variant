@@ -66,25 +66,7 @@
             {{ formsetGenotype.management_form }}
             {% for hid in form.hidden_fields %} {{hid}} {% endfor %}
             
-            <div id="contextmenu">
-                <div class="header roundedcorners">Control panel</div>
-                <ul>
-                    <li><a href="#" onClick="submitData(); return false;">Submit Data</a></li>
-                    <li><a href="#tabs-2" onClick="switchToTab(1); addRow('interaction'); return false;">Add an interaction</a></li>
-                    <li><a href="#tabs-2" onClick="switchToTab(1); addRow('genotype'); return false;">Add a genotype</a></li>
-                    <li><a href="#tabs-2" onClick="switchToTab(1); addRow('phenotype'); return false;">Add a phenotype</a></li>
-                    <li><a href="#tabs-2" onClick="switchToTab(1); addRow('panel'); return false;">Add a panel</a></li>
-                    {% if not form.id.value == null and not form.id.value == '' and not form.id.value == None %}
-                    <li><a class="interactionTable" href="/studies/remove/{{ form.id.value }}">
-                            <img alt="Remove" src="{{ STATIC_URL }}images/icons/delete.png">
-                            Remove this study.
-                        </a>
-                    </li>
-                    {% endif %}
-                </ul>
-            </div>          
-            
-            <div id="pagetabs" class="withcontextmenu">
+            <div id="pagetabs">
                 <ul>
                     <li><a href="#tabs-1">Study information</a></li>
                     <li><a href="#tabs-2">Study related items</a></li>
@@ -324,4 +306,20 @@
           {% endfor %}
         </form>
     </div>
+    <div id="contextmenu">
+        <ul>
+            <li><a href="#" onClick="submitData(); return false;">Update</a></li>
+            <li>{% if not formset.0.id.value == null and not formset.0.id.value == '' and not formset.0.id.value == None %}
+                    <a href="/studies/view/{{ formset.0.id.value }}">
+                        Cancel
+                    </a>
+                {% else %}
+                    <a href="/studies/">
+                        Cancel
+                    </a>
+                {% endif %}
+            </li>
+        </ul>
+    </div>
+
 {% endblock body %}
