@@ -21,25 +21,27 @@ import advanced_search
 from itertools import chain
 
 def index(request):
-    qs = Study.objects.all()
+    '''qs = Study.objects.all()
     study_list = []
     if not len(qs) == 0:
-        study_list = StudyFormSet(queryset=qs, prefix="study")
+        study_list = StudyFormSet(queryset=qs, prefix="study")'''
     t = loader.get_template('index.html')
     c = RequestContext( 
         request,
         {
-            'study_list' : study_list,
+            #'study_list' : study_list,
             'logged_in' : request.user.is_authenticated(),
             'user' : request.user,
         }
     )
     return HttpResponse(t.render(c))
 
+@login_required   
 def do_logout(request):
     logout(request)
     return HttpResponseRedirect('/')
 
+@login_required   
 def do_login(request):
     message = ""
     messageType = ""
@@ -71,7 +73,8 @@ def do_login(request):
     return render(request, 'index.html', 
         {'message' : message,
          'messageType' : messageType}) 
-        
+ 
+@login_required          
 def study_list(request):
     qs = Study.objects.all()
     study_list = []
@@ -291,6 +294,7 @@ def study_update(request, id):
                  'messageType' : "negative",
                  'study_list' : study_list,})  
 
+@login_required   
 def study_view(request, id):
     message = ""
     messageType = ""
@@ -309,7 +313,8 @@ def study_view(request, id):
             {'message' : "The requested study does not exist.",
              'messageType' : "negative",
              'study_list' : Study.objects.all()[:50],})  
-         
+    
+@login_required        
 def study_remove(request, id):
     message = ""
     messageType = ""
@@ -339,7 +344,8 @@ def study_remove(request, id):
             {'message' : message,
              'messageType' : messageType,
              'study_list' : study_list,})  
-             
+ 
+@login_required               
 def search_view(request):
     message = ""
     messageType = ""
@@ -398,7 +404,8 @@ def search_view(request):
     return render(request, 'search.html', 
             {'message' : message,
              'messageType' : messageType})  
-             
+   
+@login_required             
 def advanced_search_view(request):
     message = ""
     messageType = ""
@@ -407,6 +414,7 @@ def advanced_search_view(request):
              'messageType' : messageType,
              'advancedSearch' : True})     
 
+@login_required   
 def all(request):
     message = ""
     messageType = ""

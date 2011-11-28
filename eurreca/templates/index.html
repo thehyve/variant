@@ -15,13 +15,4 @@
         </p>
     </div>
     <br/>
-    <div id="studylist">
-        <b>Studies</b>
-        <p>There are {{ study_list|length }} studies.</p>
-        <ul class="searchResults">
-            {% for form in study_list %}
-                {% include 'search_result.html' with title="Study" class="contentItem" filtered="False" %}
-            {% endfor %}            
-        </ul>
-    </div>
 {% endblock body %}
