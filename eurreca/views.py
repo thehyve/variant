@@ -389,7 +389,7 @@ def search_view(request):
             search_terms = simple_search.parse_terms(search_terms_string)
                 
             # Perform search    
-            search_output = simple_search.search(search_terms)
+            search_output = simple_search.search_by_interaction(search_terms)
         
         return render(request, 'search.html', 
             {'message' : message,

@@ -1,0 +1,19 @@
+﻿{% for g_form in formSets.genotype %}
+    {% if form.genotypes.value.0 == g_form.id.value %}
+        {% include 'table2_value.html' with field=g_form.gene %}
+        {% include 'table2_value.html' with field=g_form.snp_ref %}
+        {% include 'table2_value.html' with field=g_form.snp_variant %}
+    {% endif %}
+{% endfor %}
+{% for p_form in formSets.phenotype %}
+    {% if form.phenotypes.value.0 == p_form.id.value %}
+        {% include 'table2_value.html' with field=p_form.phenotype_name %}
+        {% include 'table2_value.html' with field=p_form.environmental_factor %}
+        {% include 'table2_value.html' with field=p_form.type %}
+    {% endif %}
+{% endfor %}
+{% for p_form in formSets.panel %}
+    {% if form.panels.value.0 == p_form.id.value %}
+        {% include 'table2_value.html' with field=p_form.panel_description %}
+    {% endif %}
+{% endfor %}

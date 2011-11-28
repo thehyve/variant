@@ -31,5 +31,19 @@
         {% include 'table2_value.html' with field=form.ratio %}
         {% include 'table2_value.html' with field=form.ci_lower %}
         {% include 'table2_value.html' with field=form.ci_upper %}
-    {% endif %}    
+    {% endif %}   
+    {% if title == "Study" %}
+        {% include 'table2_value.html' with field=form.study_id %}
+        {% include 'table2_value.html' with field=form.pubmed_id %}
+        {% include 'table2_value.html' with field=form.year_of_publication %}
+        {% include 'table2_value.html' with field=form.authors %}
+        {% include 'table2_value.html' with field=form.micronutrient %}
+        {% include 'table2_value.html' with field=form.population %}
+        {% include 'table2_value.html' with field=form.gender %}
+        {% include 'table2_value.html' with field=form.endpoint %}
+        {% include 'table2_value.html' with field=form.paper_title %}
+        {% include 'table2_value.html' with field=form.journal_title %}
+        {% include 'table2_value.html' with field=form.study_type %}
+        {% include 'table2_value.html' with field=form.number_of_participants %}
+    {% endif %}
 </tr>

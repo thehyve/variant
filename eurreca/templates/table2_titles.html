@@ -25,9 +25,9 @@
         <td>Gene</td>
         <td>Snp ref</td>
         <td>Snp variant</td>
-        <td>Gene</td>
-        <td>Snp ref</td>
-        <td>Snp variant</td>
+        <td>Phenotype name</td>
+        <td>Environmental factor</td>
+        <td>Type</td>
         <td>Panel Description</td>
         <td>Statistical model</td>
         <td>p Value</td>
@@ -36,5 +36,19 @@
         <td>95% CI lower</td>
         <td>95% CI upper</td>
         <td>Significant associations</td>
+    {% endif %}                
+    {% if title == "Study" %}
+        <td>Study id</td>
+        <td>Pubmed id</td>
+        <td>Year of publication</td>
+        <td>Authors</td>
+        <td>Micronutrient</td>
+        <td>Population</td>
+        <td>Gender</td>
+        <td>Endpoint</td>
+        <td>Paper title</td>
+        <td>Journal title</td>
+        <td>Study type</td>
+        <td>Number of participants</td>
     {% endif %}                
 </tr>

@@ -1,0 +1,24 @@
+﻿{% load contains %}
+{% load truncatechars %}
+
+<div>
+    <span class="button">
+        <a href="/studies/view/{{ form.id.value }}">
+            Study <img alt="View" src="{{ STATIC_URL }}images/icons/page.png">
+        </a>    
+    </span>
+    <table>
+        {% include 'table2_titles.html' with title="Study" %}  
+        {% include 'table2_values.html' with title="Study" class="contentItem" filtered="True" %}
+    </table>
+    <br/>
+    Interactions:
+    <table>
+        {% include 'table2_titles.html' with title="Interaction" %}  
+        {% for form2 in formSets.interaction %}
+            {% if form.id.value == form2.study.value %}
+                {% include 'search_result2_values.html' with form=form2 title="Interaction" class="contentItem" filtered="True" %}
+            {% endif %}
+        {% endfor %}
+    </table>
+</div>
