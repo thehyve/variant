@@ -36,12 +36,10 @@ def index(request):
     )
     return HttpResponse(t.render(c))
 
-@login_required   
 def do_logout(request):
     logout(request)
     return HttpResponseRedirect('/')
 
-@login_required   
 def do_login(request):
     message = ""
     messageType = ""
