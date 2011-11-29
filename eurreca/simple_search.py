@@ -48,123 +48,188 @@ def search_by_interaction(search_terms):
             b) every study where one of the fields is a match to 
         a search term
         
-        Right now works with one study, phenotype, genotype and panel.
+        Right now works with one study, phenotype, genotype and panel. 
     '''
     
-    # Find all objects that need to be inspected
+    # Search through studies
     studies = Study.objects.all()
+    output = add_each_matching_item_to_results(studies, search_terms)
+    results = list(set(output['results']))
+    matches = list(set(output['matches']))
+    
+    
+    # Search through interactions
     interactions = Interaction.objects.all()
-    interaction_mappings = {}
-    for item in interactions:
-        interaction_mappings[item.id] = {}
-        if len(item.phenotypes.all())!=0:
-            interaction_mappings[item.id]['phenotypes'
-                ] = item.phenotypes.all()[0]
-        if len(item.genotypes.all())!=0:
-            interaction_mappings[item.id]['genotypes'] = item.genotypes.all()[0]
-        if len(item.panels.all())!=0:
-            interaction_mappings[item.id]['panels'] = item.panels.all()[0]
-       
-    # Gather model objects based on search terms
-    output = add_each_mathing_item_to_results(interactions, search_terms, 
+    ''' 'interaction_mappings' is constructed to avoid having to deal with the
+        Django 'ManyRelatedManager' at other moments. Also, having that dict 
+        saves a couple for-loops later on in the template.'''
+    interaction_mappings = create_interaction_mappings(interactions)
+    
+    '''
+        We keep unpacking/overwriting 'output', this is because of memory 
+        considerations. Should processing speed be considered more important, 
+        different variables could be used. These could then perhaps be 
+        added/'uniqued'/etc in one go.
+        Because the 'output' variable keeps being overwritten, the ordering of 
+        statements in the following sections can be significant. '''
+    output = add_each_matching_item_to_results(interactions, search_terms, 
         interaction_mappings)
-    results = output['results']
-    matches = output['matches']
-    studies_to_be_added = output['studies_to_be_added']
-    phenotypes_to_be_added = output['phenotypes_to_be_added']
-    genotypes_to_be_added = output['genotypes_to_be_added']
-    panels_to_be_added = output['panels_to_be_added']
+        
+        
+    # Additional searches, not based on previously matched items
+    ''' The following items must be searched through.
+        This is done because these items may be search results, even though
+        the interaction they are related to is not. '''
+    studies_to_be_checked = list(set(output['studies_to_be_checked']))
+    phenotypes_to_be_checked = list(set(output['phenotypes_to_be_checked']))
+    genotypes_to_be_checked = list(set(output['genotypes_to_be_checked']))
+    panels_to_be_checked = list(set(output['panels_to_be_checked']))
+    ''' 'study_id_to_interaction_id_mapping' is filled when searching through 
+        interactions. 
+        Having that dict saves a for-loop later on in the template. '''
     study_id_to_interaction_id_mapping = output[
         'study_id_to_interaction_id_mapping']
+    ''' Take the results from the interaction search, and add the
+        interactions and their related studies, panels, phenotypes and genotypes 
+        to the results.
+        This is done because these items are all search results. ''' 
+    results += list(set(output['results']))
+    matches += list(set(output['matches']))
     
-    output = add_each_mathing_item_to_results(studies, search_terms)
-    results += output['results']
-    matches += output['matches']
+       
+       
+    # Additional searches, based on previously matched items
+    ''' Search through all items referenced by all interactions that are not
+        considered a search result. Those items may be relevant regardless
+        of their interaction's relevance. Those items that match the search are 
+        added to the overall search results.
     
-    # Add all items referneced by the interactions with matches
-    output = add_each_item_to_results(list(set(studies_to_be_added)), 
-        search_terms)
-    results += output['results']
-    matches += output['matches']
+        Add to our overall search results, those interactions that match the 
+        newly added items, but not those that are already matches in and out of 
+        themselves. '''
+    to_be_checked = [[studies_to_be_checked, 'studies'],
+         [phenotypes_to_be_checked, 'phenotypes'],
+         [genotypes_to_be_checked, 'genotypes'],
+         [panels_to_be_checked, 'panels']
+        ]
+    interactions_to_be_added = [] 
+    for items, key in to_be_checked:
+        output = add_each_matching_item_to_results(items, 
+            search_terms)
+        results += list(set(output['results']))
+        matches += list(set(output['matches']))
+        interactions_to_be_added += interactions_to_be_added_helper(
+            output['results'], interactions, interaction_mappings, key, results)
+    # Add all interactions that need to be displayed because of the items
+    # they reference, to the search results
+    output = add_each_item_to_results(interactions_to_be_added, search_terms)
+    results += list(set(output['results']))
+    matches += list(set(output['matches']))
     
-    output = add_each_item_to_results(list(set(phenotypes_to_be_added)), 
-        search_terms)
-    results += output['results']
-    matches += output['matches']
-    
-    output = add_each_item_to_results(list(set(genotypes_to_be_added)), 
-        search_terms)
-    results += output['results']
-    matches += output['matches']
-    
-    output = add_each_item_to_results(list(set(panels_to_be_added)), 
-        search_terms)
-    results += output['results']
-    matches += output['matches']
-    
-    
-    # Create formSets from model objects
-    formSets = utils.get_formsets_from_model_objects(results)
-    
+    # Compile final results
     results = list(set(results))
     matches = list(set(matches))
-    
+    formSets = utils.get_formsets_from_model_objects(results)
+    ''' Remove all mappings from study_id_to_interaction_id_mapping,
+        that lead to interactions not present in the results.
+        This way, the interactions header and column values only get printed if 
+        one or more interactions will be printed afterward.
+        
+        This needs to be done in such a manner because, due to the strictness 
+        of Django template language, it is not possible/easy to check whether 
+        an item is present in a list or dict, when in a template. '''
+    approved_interaction_ids = []    
+    for item in results:
+        if type(item) == Interaction:
+            approved_interaction_ids.append(item.id)
+    for study_id in study_id_to_interaction_id_mapping:
+        for interaction_id in study_id_to_interaction_id_mapping[study_id]:
+            if not interaction_id in approved_interaction_ids:
+                study_id_to_interaction_id_mapping[study_id].remove(
+                    interaction_id)            
+
+    # Return final results
     return {'results': formSets, 'matches': matches, 
         'study_id_to_interaction_id_mapping': 
-        study_id_to_interaction_id_mapping}
+        study_id_to_interaction_id_mapping,
+        'interaction_mappings': interaction_mappings}
     
-def add_each_mathing_item_to_results(items, search_terms, 
-    interaction_mappings = None):
+def add_each_matching_item_to_results(items, search_terms, 
+    interaction_mappings = {}):
+    ''' Will add each item with a field value that matches a search term to the
+        results, and will add the matched values to the matches 
+    '''
     results = []
     matches = []
-    studies_to_be_added = []
-    phenotypes_to_be_added = []
-    genotypes_to_be_added = []
-    panels_to_be_added = []
-    study_id_to_interaction_id_mapping = {}
+    studies_to_be_checked = []
+    phenotypes_to_be_checked = []
+    genotypes_to_be_checked = []
+    panels_to_be_checked = []
+    ''' 'study_id_to_interaction_id_mapping' is filled when searching through 
+        interactions. 
+        Having that dict saves a for-loop later on in the template. '''
+    study_id_to_interaction_id_mapping = {} 
+    
     for item in items:
+        
+        if type(item) == Interaction:
+            ''' Make sure every item referenced by the interaction is checked
+                to see if it should be included in the search result
+            '''
+            studies_to_be_checked.append(item.study)
+            if not study_id_to_interaction_id_mapping.has_key(item.study.id):
+                study_id_to_interaction_id_mapping[item.study.id] = []
+            study_id_to_interaction_id_mapping[item.study.id].append(item.id)
+            phenotypes_to_be_checked.append(
+                interaction_mappings[item.id]['phenotypes'])
+            genotypes_to_be_checked.append(
+                interaction_mappings[item.id]['genotypes'])
+            panels_to_be_checked.append(
+                interaction_mappings[item.id]['panels'])   
+
+        # Group field names and values together
         list_of_name_value_pairs = [
             (field.name, getattr(item,field.name)) 
             for field in item._meta.fields]
+
         for li in list_of_name_value_pairs:
             if not (li[0]=='id' or li[0]=='study'):
                 val = str(li[1]).lower()
                 for term in search_terms:
                     if term in val:
+                        # A search term has been found in the field value
                         results.append(item)
                         matches.append(val)
-                        if not interaction_mappings == None:
-                            ''' If one of the fields of an interaction is a 
-                                match to a search term, make sure every item 
-                                referenced by the interaction is added
-                            '''
-                            studies_to_be_added.append(item.study)
-                            if not study_id_to_interaction_id_mapping.has_key(item.study.id):
-                                study_id_to_interaction_id_mapping[item.study.id] = []
-                            study_id_to_interaction_id_mapping[item.study.id].append(item.id)
-                            if interaction_mappings[item.id].has_key(
-                                'phenotypes'):
-                                phenotypes_to_be_added.append(
-                                    interaction_mappings[item.id]['phenotypes']
-                                )
-                            if interaction_mappings[item.id].has_key('genotypes'):
-                                genotypes_to_be_added.append(
-                                    interaction_mappings[item.id]['genotypes']
-                                )
-                            if interaction_mappings[item.id].has_key('panels'):
-                                panels_to_be_added.append(
-                                    interaction_mappings[item.id]['panels']
-                                )    
-    return {'results': results, 'matches': matches, 'studies_to_be_added': 
-        studies_to_be_added, 'phenotypes_to_be_added': phenotypes_to_be_added, 
-        'genotypes_to_be_added': genotypes_to_be_added, 'panels_to_be_added': 
-        panels_to_be_added, 'study_id_to_interaction_id_mapping': 
-        study_id_to_interaction_id_mapping}
+                        if type(item) == Interaction:
+                            ''' Add the study, genotype, phenotype and 
+                                panel related to this interaction '''
+                            if item.study != None:
+                                results.append(item.study)
+                            if len(item.phenotypes.all())!=0:
+                                results.append(item.phenotypes.all()[0])
+                            if len(item.genotypes.all())!=0:
+                                results.append(item.genotypes.all()[0])
+                            if len(item.panels.all())!=0:
+                                results.append(item.panels.all()[0])
+    return {'results': results, 
+            'matches': matches, 
+            'studies_to_be_checked': utils.clean_list(
+                studies_to_be_checked), 
+            'phenotypes_to_be_checked': utils.clean_list(
+                phenotypes_to_be_checked), 
+            'genotypes_to_be_checked': utils.clean_list(
+                genotypes_to_be_checked), 
+            'panels_to_be_checked': utils.clean_list(panels_to_be_checked), 
+            'study_id_to_interaction_id_mapping': 
+                study_id_to_interaction_id_mapping
+    }
     
     
 def add_each_item_to_results(items, search_terms):
     ''' Will add each item to the results, and will add the matched values
-        (if any) to the matches
+        (if any) to the matches. If the item in question is an interaction,
+        the related genotype, phenotype and panel (if the interaction has any
+        such relation) are also added
     '''
     results = []
     matches = []
@@ -173,6 +238,19 @@ def add_each_item_to_results(items, search_terms):
         list_of_name_value_pairs = [
             (field.name, getattr(item,field.name)) 
             for field in item._meta.fields]
+          
+        if type(item) == Interaction:
+            ''' Add the study, genotype, phenotype and 
+                panel related to this interaction '''
+            if item.study != None:
+                results.append(item.study)
+            if len(item.phenotypes.all())!=0:
+                results.append(item.phenotypes.all()[0])
+            if len(item.genotypes.all())!=0:
+                results.append(item.genotypes.all()[0])
+            if len(item.panels.all())!=0:
+                results.append(item.panels.all()[0])
+            
         for li in list_of_name_value_pairs:
             if not (li[0]=='id' or li[0]=='study'):
                 val = str(li[1]).lower()
@@ -180,3 +258,53 @@ def add_each_item_to_results(items, search_terms):
                     if term in val:
                         matches.append(val)
     return {'results': results, 'matches': matches}
+    
+def interactions_to_be_added_helper(input, interactions, interaction_mappings, key, results):
+    if len(input) != 0:
+        if key == 'studies':
+            '''# Add the interactions that belong to newly-added items
+            output = [interaction for interaction in interactions if 
+                interaction.study in input and 
+                not interaction in results]
+            return output '''
+            
+            ''' This no longer return the related interactions.
+                Just because a study is relevant to the search, does not make
+                each of that study's interactions relevant. '''
+            return []
+        else:
+            # Add the interactions that belong to newly-added items
+            output = [interaction for interaction in interactions if 
+                interaction_mappings[interaction.id][key] in 
+                input and not interaction in results]
+            return output
+    else:
+        return []
+        
+def create_interaction_mappings(interactions):
+    ''' 'interaction_mappings' is constructed to avoid having to deal with the
+        Django 'ManyRelatedManager' at other moments. Also, having that dict 
+        saves a couple for-loops later on in the template.'''
+    interaction_mappings = {}
+    
+    ''' Make sure to clean each list that gets built based on the
+        'interaction_mappings' var. We are about to fill it, 
+        and we may put 'None' values in it.
+        By cleaning the list afterward, with utils.clean_list/1,
+        you avoid needing to do 'if not X == None'-like checks. '''
+    for item in interactions:
+        interaction_mappings[item.id] = {}
+        if len(item.phenotypes.all())!=0:
+            interaction_mappings[item.id]['phenotypes'
+                ] = item.phenotypes.all()[0]
+        else:
+            interaction_mappings[item.id]['phenotypes'] = None
+        if len(item.genotypes.all())!=0:
+            interaction_mappings[item.id]['genotypes'] = item.genotypes.all()[0]
+        else:
+            interaction_mappings[item.id]['genotypes'] = None
+        if len(item.panels.all())!=0:
+            interaction_mappings[item.id]['panels'] = item.panels.all()[0]
+        else:
+            interaction_mappings[item.id]['panels'] = None        
+    return interaction_mappings;

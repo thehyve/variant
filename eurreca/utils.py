@@ -104,9 +104,11 @@ def get_interaction_values(count, forms, relations_lists):
     if not relations_lists['phenotype'] == -1:
         return_map['phenotype_name'] = forms['phenotype'][relations_lists['phenotype']].data['phenotype_name']
         return_map['environmental_factor'] = forms['phenotype'][relations_lists['phenotype']].data['environmental_factor']
-        return_map['type'] = forms['phenotype'][relations_lists['phenotype']].data['type']
+        return_map['type'] = forms['phenotype'][relations_lists[
+            'phenotype']].data['type']
     if not relations_lists['panel'] == -1:
-        return_map['panel_description'] = forms['panel'][relations_lists['panel']].data['panel_description']
+        return_map['panel_description'] = forms['panel'][relations_lists[
+            'panel']].data['panel_description']
     return return_map
     
 def add_non_interaction_forms(jason, study):
@@ -140,7 +142,8 @@ def add_interaction_forms(jason, study, saved_objects, forms):
         form = InteractionForm(Interaction.objects.none())
         form.data['study'] = study.id
         for field in form:
-            if field.name == 'genotypes' or field.name == 'phenotypes' or field.name == 'panels':
+            if (field.name == 'genotypes' or field.name == 'phenotypes' 
+                or field.name == 'panels'):
                 continue
             if jason['interaction'][key1].has_key(field.name):
                 form.data[field.name] = jason['interaction'][key1][field.name]
@@ -319,3 +322,18 @@ def get_year_list():
     for n in range(year_list_length): 
         year_list.append(now.tm_year - n + 1)
     return year_list    
+    
+def clean_list(list, dirty_bits = []):
+    ''' Returns it's list argument cleaned of 'None's, or cleaned of whichever
+        items were listed in 'dirty_bits'.
+    '''
+    if dirty_bits == []:
+        return [item for item in list if item != None]
+    else:
+        return [item for item in list if not item in dirty_bits]
+        
+def substract_list_from_list(list1, list2):
+    ''' Returns a new list that contains all the items in list1 that are not
+        present in list2
+    '''
+    return [a for a in list1 if not a in list2]

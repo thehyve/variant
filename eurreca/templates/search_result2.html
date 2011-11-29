@@ -12,6 +12,8 @@
         {% include 'table2_values.html' with title="Study" class="contentItem" filtered="True" %}
     </table>
     <br/>
+    {# Unfortunately, Django template language does not support actual dicts... #}
+    {# This is a work-around, of sorts #}
     {% for id, ids in study_id_to_interaction_id_mapping.items %}
         {% if form.id.value == id and not ids|length == '' %}
             Interactions:

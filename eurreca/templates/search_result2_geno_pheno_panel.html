@@ -1,4 +1,6 @@
-﻿{% for g_form in formSets.genotype %}
+﻿{# Unfortunately, Django template language does not support actual dicts... #}
+{# This is a work-around, of sorts #}
+{% for g_form in formSets.genotype %}
     {% if form.genotypes.value.0 == g_form.id.value %}
         {% include 'table2_value.html' with field=g_form.gene %}
         {% include 'table2_value.html' with field=g_form.snp_ref %}
