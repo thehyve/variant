@@ -399,6 +399,8 @@ def search_view(request):
              'searchFields' : search_fields,
              'previousSearchString' : search_terms_string,
              'formSets' : search_output['results'],
+             'study_id_to_interaction_id_mapping' : search_output[
+                'study_id_to_interaction_id_mapping'],
              'advancedSearch' : advancedSearch})  
     
     return render(request, 'search.html', 

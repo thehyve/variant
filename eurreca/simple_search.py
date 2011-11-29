@@ -42,46 +42,90 @@ def search(search_terms):
     return {'results':formSets,'matches':matches}
     
 def search_by_interaction(search_terms):
-    ''' Will return every interaction where one of the fields is a match to 
+    ''' Will return 
+            a) every interaction where one of the fields is a match to 
         a search term, and every item referenced by such an interaction
+            b) every study where one of the fields is a match to 
+        a search term
+        
+        Right now works with one study, phenotype, genotype and panel.
     '''
-    print 'entered search_by_interaction'
-    # Right now works with one study, phenotype, genotype and panel.
+    
+    # Find all objects that need to be inspected
+    studies = Study.objects.all()
     interactions = Interaction.objects.all()
     interaction_mappings = {}
     for item in interactions:
         interaction_mappings[item.id] = {}
         if len(item.phenotypes.all())!=0:
-            #print '\n\na)',item.phenotypes.all()
-            #print 'b)',item.phenotypes.all()[0].id,'\n\n'
-            interaction_mappings[item.id]['phenotypes'] = item.phenotypes.all()[0]
+            interaction_mappings[item.id]['phenotypes'
+                ] = item.phenotypes.all()[0]
         if len(item.genotypes.all())!=0:
-            #print '\n\na)',item.genotypes.all()
-            #print 'b)',item.genotypes.all()[0].id,'\n\n'
             interaction_mappings[item.id]['genotypes'] = item.genotypes.all()[0]
         if len(item.panels.all())!=0:
-            #print '\n\na)',item.panels.all()
-            #print 'b)',item.panels.all()[0].id,'\n\n'
             interaction_mappings[item.id]['panels'] = item.panels.all()[0]
        
-    # Create model objects from search terms
+    # Gather model objects based on search terms
+    output = add_each_mathing_item_to_results(interactions, search_terms, 
+        interaction_mappings)
+    results = output['results']
+    matches = output['matches']
+    studies_to_be_added = output['studies_to_be_added']
+    phenotypes_to_be_added = output['phenotypes_to_be_added']
+    genotypes_to_be_added = output['genotypes_to_be_added']
+    panels_to_be_added = output['panels_to_be_added']
+    study_id_to_interaction_id_mapping = output[
+        'study_id_to_interaction_id_mapping']
+    
+    output = add_each_mathing_item_to_results(studies, search_terms)
+    results += output['results']
+    matches += output['matches']
+    
+    # Add all items referneced by the interactions with matches
+    output = add_each_item_to_results(list(set(studies_to_be_added)), 
+        search_terms)
+    results += output['results']
+    matches += output['matches']
+    
+    output = add_each_item_to_results(list(set(phenotypes_to_be_added)), 
+        search_terms)
+    results += output['results']
+    matches += output['matches']
+    
+    output = add_each_item_to_results(list(set(genotypes_to_be_added)), 
+        search_terms)
+    results += output['results']
+    matches += output['matches']
+    
+    output = add_each_item_to_results(list(set(panels_to_be_added)), 
+        search_terms)
+    results += output['results']
+    matches += output['matches']
+    
+    
+    # Create formSets from model objects
+    formSets = utils.get_formsets_from_model_objects(results)
+    
+    results = list(set(results))
+    matches = list(set(matches))
+    
+    return {'results': formSets, 'matches': matches, 
+        'study_id_to_interaction_id_mapping': 
+        study_id_to_interaction_id_mapping}
+    
+def add_each_mathing_item_to_results(items, search_terms, 
+    interaction_mappings = None):
     results = []
     matches = []
     studies_to_be_added = []
     phenotypes_to_be_added = []
     genotypes_to_be_added = []
     panels_to_be_added = []
-    
-    for item in interactions:
-        t = type(item)
-        #print '\n\n',t,':',item,'with id',item.id,
-        
+    study_id_to_interaction_id_mapping = {}
+    for item in items:
         list_of_name_value_pairs = [
             (field.name, getattr(item,field.name)) 
             for field in item._meta.fields]
-        
-        #print '\n\tlist_of_name_value_pairs:',list_of_name_value_pairs,
-            
         for li in list_of_name_value_pairs:
             if not (li[0]=='id' or li[0]=='study'):
                 val = str(li[1]).lower()
@@ -89,52 +133,36 @@ def search_by_interaction(search_terms):
                     if term in val:
                         results.append(item)
                         matches.append(val)
-                        ''' If one of the fields of an interaction is a match to 
-                            a search term, make sure every item referenced by 
-                            the interaction is added
-                        '''
-                        studies_to_be_added.append(item.study)
-                        print 'added study',item.study
-                        if interaction_mappings[item.id].has_key('phenotypes'):
-                            phenotypes_to_be_added.append(
-                                interaction_mappings[item.id]['phenotypes']
-                            )
-                        if interaction_mappings[item.id].has_key('genotypes'):
-                            genotypes_to_be_added.append(
-                                interaction_mappings[item.id]['genotypes']
-                            )
-                        if interaction_mappings[item.id].has_key('panels'):
-                            panels_to_be_added.append(
-                                interaction_mappings[item.id]['panels']
-                            )
-
-    studies_to_be_added = list(set(studies_to_be_added))
-    phenotypes_to_be_added = list(set(phenotypes_to_be_added))
-    genotypes_to_be_added = list(set(genotypes_to_be_added))
-    panels_to_be_added = list(set(panels_to_be_added))
-    output = search_by_interaction_helper(studies_to_be_added, search_terms)
-    results += output['results']
-    matches += output['matches']
-    output = search_by_interaction_helper(phenotypes_to_be_added, search_terms)
-    results += output['results']
-    matches += output['matches']
-    output = search_by_interaction_helper(genotypes_to_be_added, search_terms)
-    results += output['results']
-    matches += output['matches']
-    output = search_by_interaction_helper(panels_to_be_added, search_terms)
-    results += output['results']
-    matches += output['matches']
-    results = list(set(results))
+                        if not interaction_mappings == None:
+                            ''' If one of the fields of an interaction is a 
+                                match to a search term, make sure every item 
+                                referenced by the interaction is added
+                            '''
+                            studies_to_be_added.append(item.study)
+                            if not study_id_to_interaction_id_mapping.has_key(item.study.id):
+                                study_id_to_interaction_id_mapping[item.study.id] = []
+                            study_id_to_interaction_id_mapping[item.study.id].append(item.id)
+                            if interaction_mappings[item.id].has_key(
+                                'phenotypes'):
+                                phenotypes_to_be_added.append(
+                                    interaction_mappings[item.id]['phenotypes']
+                                )
+                            if interaction_mappings[item.id].has_key('genotypes'):
+                                genotypes_to_be_added.append(
+                                    interaction_mappings[item.id]['genotypes']
+                                )
+                            if interaction_mappings[item.id].has_key('panels'):
+                                panels_to_be_added.append(
+                                    interaction_mappings[item.id]['panels']
+                                )    
+    return {'results': results, 'matches': matches, 'studies_to_be_added': 
+        studies_to_be_added, 'phenotypes_to_be_added': phenotypes_to_be_added, 
+        'genotypes_to_be_added': genotypes_to_be_added, 'panels_to_be_added': 
+        panels_to_be_added, 'study_id_to_interaction_id_mapping': 
+        study_id_to_interaction_id_mapping}
     
-    # Create formSets from model objects
-    formSets = utils.get_formsets_from_model_objects(results)
     
-    matches = list(set(matches))
-    
-    print 'leaving search_by_interaction'
-    return {'results':formSets,'matches':matches}
-    
-def search_by_interaction_helper(items, search_terms):
+def add_each_item_to_results(items, search_terms):
     ''' Will add each item to the results, and will add the matched values
         (if any) to the matches
     '''
