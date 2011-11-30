@@ -70,7 +70,7 @@
                         {% else %}
                             class = "negativeMessage"
                         {% endif %}
-                    > {{ message }}
+                    > {{ message|safe }}
                     </div>
                 {% endif %}
                 {% block body %}{% endblock body %}

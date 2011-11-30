@@ -1,10 +1,9 @@
 from eurreca.models import Study, Genotype, Phenotype, Panel, Interaction
 from eurreca.forms import StudyFormSet, StudyForm, GenotypeFormSet, GenotypeForm, PhenotypeFormSet, PhenotypeForm, PanelForm, PanelFormSet, InteractionForm, InteractionFormSet
 from itertools import chain
-import operator
+import operator, time, urllib2
 from django.db.models import Q
 from django.shortcuts import render
-import time
 from django.conf import settings
 
 def process_clientside_studydata(jason, study, study_formset, request):
@@ -337,3 +336,31 @@ def substract_list_from_list(list1, list2):
         present in list2
     '''
     return [a for a in list1 if not a in list2]
+    
+def call_entrez(snp_ref):
+    search_url = 'http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=snp&id={0}&report=GENB'.format(snp_ref)
+    requested_url = 'http://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?searchType=adhoc_search&type=rs&rs=rs{0}'.format(snp_ref)
+    #479341
+    str1 = 'Nothing happened'
+    error = False
+    error_code = ''
+    try:
+        try:
+            fileHandle = urllib2.urlopen(search_url)
+            str1 = fileHandle.read()
+            fileHandle.close()
+        except urllib2.HTTPError, e:
+            error = True
+            error_code = e.code
+            print e.code
+            print e.read()
+    except IOError:
+        print 'Cannot open URL %s for reading' % search_url
+        str1 = 'error!'
+    #print str1    
+    if error:
+        print 'Error occurred:', error_code
+        return {'message': 'No such snp ref could be found in dbSnp.', 'messageType': 'negative'}
+    else:
+        print 'search succesful'
+        return {'message': 'Requested URL: <a href="{0}">{0}</a>'.format(requested_url), 'messageType': 'positive'}

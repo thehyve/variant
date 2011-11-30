@@ -426,3 +426,22 @@ def all(request):
         {'message' : message,
          'messageType' : messageType,
          'formSets' : search_output['results']})             
+         
+def snp_search(request, ref):
+    message = utils.call_entrez(ref)
+    '''qs = Study.objects.all()
+    study_list = []
+    if not len(qs) == 0:
+        study_list = StudyFormSet(queryset=qs, prefix="study")'''
+    t = loader.get_template('index.html')
+    c = RequestContext( 
+        request,
+        {
+            #'study_list' : study_list,
+            'logged_in' : request.user.is_authenticated(),
+            'user' : request.user,
+            'message' : message['message'],
+            'messageType' : message['messageType'],
+        }
+    )
+    return HttpResponse(t.render(c))
