@@ -15,6 +15,10 @@
         {% include 'table2_value.html' with field=form.allele %}
         {% include 'table2_value.html' with field=form.mutation %}
         {% include 'table2_value.html' with field=form.zygosity %}
+        {% include 'table2_value.html' with field=form.number_of_people_with_genotype %}
+        {% include 'table2_value.html' with field=form.genotype_frequency %}
+        {% include 'table2_value.html' with field=form.estimated_overal_frequency %}
+        {% include 'table2_value.html' with field=form.genotype_details %}
     {% endif %}
     {% if title == "Panel" %}
         {% include 'table2_value.html' with field=form.panel_description %}
