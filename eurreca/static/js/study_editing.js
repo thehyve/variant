@@ -254,8 +254,7 @@ function getFieldsToUpdate() {
 	 		],
 	 		"phenotype": [
 	 		    "input[name=phenotype-phenotype_name]",
-	 	 	    "input[name=phenotype-environmental_factor]",
-	 	 	    "input[name=phenotype-type]"
+	 	 	    "input[name=phenotype-intake_data]",
 	 	 	],
 	 	 	"panel": [
 	 	 	    "input[name=panel-panel_description]"
