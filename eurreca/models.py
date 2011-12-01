@@ -72,7 +72,7 @@ class Panel(models.Model):
     study = models.ForeignKey(Study)
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, blank=True, null=True)
     number_of_participants = models.IntegerField(max_length=9, blank=True, null=True)
-    mean_age = models.FloatField(max_length=10, null=True, blank=True)
+    mean_age = models.CharField(max_length=10, null=True, blank=True)
     additional_age_description = models.CharField(max_length=200, blank=True)
     panel_description = models.CharField(max_length=200)
     
