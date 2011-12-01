@@ -49,8 +49,8 @@ class Genotype(models.Model):
     mutation = models.CharField(max_length=200, blank=True)
     zygosity = models.CharField(max_length=1, choices=TYPE_CHOICES, blank=True)
     number_of_people_with_genotype = models.IntegerField(max_length=9, blank=True, null=True)
-    genotype_frequency = models.FloatField(max_length=10, null=True, blank=True)
-    estimated_overal_frequency = models.FloatField(max_length=10, null=True, blank=True)
+    genotype_frequency = models.CharField(max_length=10, null=True, blank=True)
+    estimated_overal_frequency = models.CharField(max_length=10, null=True, blank=True)
     genotype_details = models.CharField(max_length=20, blank=True)
     
     def __unicode__(self):
@@ -87,11 +87,11 @@ class Interaction(models.Model):
     phenotypes = models.ManyToManyField(Phenotype, null=True, blank=True)
     panels = models.ManyToManyField(Panel, null=True, blank=True)
     statistical_model = models.CharField(max_length=200)
-    p_value = models.FloatField(max_length=10, null=True, blank=True)
+    p_value = models.CharField(max_length=10, null=True, blank=True)
     ratio_type = models.CharField(max_length=1, choices = RATIO_TYPE_CHOICES, blank=True)
-    ratio = models.FloatField(max_length=10, null=True, blank=True)
-    ci_lower = models.FloatField(max_length=10, null=True, blank=True)
-    ci_upper = models.FloatField(max_length=10, null=True, blank=True)
+    ratio = models.CharField(max_length=10, null=True, blank=True)
+    ci_lower = models.CharField(max_length=10, null=True, blank=True)
+    ci_upper = models.CharField(max_length=10, null=True, blank=True)
     significant_associations = models.CharField(max_length=500, blank=True)
     
 class Link_to_dbSNP(models.Model):
