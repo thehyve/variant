@@ -273,6 +273,8 @@ def study_update(request, id):
     else:
         try:
             fs = utils.get_formsets_by_id(id)
+            interactionDictionary = utils.get_interactionValues_from_formsets(fs)
+            
             return render(request, 'domain_views/study_editing.html', 
                 {'formset' : fs['study'], 
                  'formsetGenotype' : fs['genotype'],
@@ -281,6 +283,7 @@ def study_update(request, id):
                  'formsetInteraction' :  fs['interaction'],
                  'message' : message,
                  'messageType' : messageType,
+                 'interactionDictionary' : interactionDictionary,
                  'year_list': utils.get_year_list(),})
         except Study.DoesNotExist:
             qs = Study.objects.all()
@@ -429,6 +432,15 @@ def all(request):
          
 def snp_search(request, ref):
     message = utils.call_entrez(ref)
+    list_of_snp_refs = []
+    gts = Genotype.objects.all()
+    for gt in gts:
+        list_of_snp_refs.append(gt)
+    results = utils.get_snp_ref_to_dbSNP_url_dict([ref])
+    edited_message = message['message']
+    edited_message += ' Also'
+    for r in results:
+        edited_message += ', <a href="{0}">{1}</a>'.format(results[r], r)
     '''qs = Study.objects.all()
     study_list = []
     if not len(qs) == 0:
@@ -440,7 +452,7 @@ def snp_search(request, ref):
             #'study_list' : study_list,
             'logged_in' : request.user.is_authenticated(),
             'user' : request.user,
-            'message' : message['message'],
+            'message' : edited_message,
             'messageType' : message['messageType'],
         }
     )

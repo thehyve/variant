@@ -1,4 +1,4 @@
-from eurreca.models import Study, Genotype, Phenotype, Panel, Interaction
+from eurreca.models import Study, Genotype, Phenotype, Panel, Interaction, Link_to_dbSNP
 from eurreca.forms import StudyFormSet, StudyForm, GenotypeFormSet, GenotypeForm, PhenotypeFormSet, PhenotypeForm, PanelForm, PanelFormSet, InteractionForm, InteractionFormSet
 from itertools import chain
 import operator, time, urllib2
@@ -159,7 +159,38 @@ def errors_to_string(errors):
             returnMessage += error+" "
         returnMessage += ' '    
     return returnMessage
+
+def get_interactionValues_from_formsets(fs):
+    interactionValues = {}
+    for form in fs['interaction']:
+        id = form['id'].value()
+        interactionValues[id] = {}
+        for f in fs['genotype']:
+            if len(form['genotypes'].value()) > 0 and f['id'].value() == form['genotypes'].value()[0]:
+                interactionValues[id]['gene'] = f['gene'].value()
+                interactionValues[id][
+                    'snp_ref'] = f['snp_ref'].value()
+                interactionValues[id][
+                    'snp_variant'] = f['snp_variant'].value()
+                break
+        for f in fs['phenotype']:
+            if len(form['phenotypes'].value()) > 0 and f['id'].value() == form['phenotypes'].value()[0]:
+                interactionValues[id][
+                    'phenotype_name'] = f['phenotype_name'].value()
+                interactionValues[id][
+                    'environmental_factor'] = f['environmental_factor'].value()
+                interactionValues[id][
+                    'type'] = f['type'].value()
+                break
+        for f in fs['panel']:
+            if len(form['panels'].value()) > 0 and f['id'].value() == form['panels'].value()[0]:
+                interactionValues[id][
+                    'panel_description'] = f['panel_description'].value()
+                break
+    return interactionValues
+        
     
+
 def get_formsets_by_id(id):
     qs = Study.objects.filter(pk=id)     
     formset = []
@@ -338,6 +369,8 @@ def substract_list_from_list(list1, list2):
     return [a for a in list1 if not a in list2]
     
 def call_entrez(snp_ref):
+    if snp_ref.startswith('rs'):
+        snp_ref = snp_ref.strip('rs')
     search_url = 'http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=snp&id={0}&report=GENB'.format(snp_ref)
     requested_url = 'http://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?searchType=adhoc_search&type=rs&rs=rs{0}'.format(snp_ref)
     #479341
@@ -357,10 +390,32 @@ def call_entrez(snp_ref):
     except IOError:
         print 'Cannot open URL %s for reading' % search_url
         str1 = 'error!'
+        return {'message': 'dbSNP Entrez service appears to be unavailable.', 'messageType': 'negative'}
     #print str1    
     if error:
         print 'Error occurred:', error_code
-        return {'message': 'No such snp ref could be found in dbSnp.', 'messageType': 'negative'}
+        if error_code==400:
+            return {'message': 'No such snp ref could be found in dbSNP.', 'messageType': 'negative'}
+        else:
+            return {'message': 'dbSNP Entrez service appears to be unavailable.', 'messageType': 'negative'}
     else:
         print 'search succesful'
+        l = Link_to_dbSNP(snp_ref=snp_ref, url=requested_url)
+        l.save()
         return {'message': 'Requested URL: <a href="{0}">{0}</a>'.format(requested_url), 'messageType': 'positive'}
+        
+def get_snp_ref_to_dbSNP_url_dict(list_of_snp_refs):
+    print 'get_snp_ref_to_dbSNP_url_dict:',list_of_snp_refs
+    q = []
+    for ref in list_of_snp_refs:
+        if ref.startswith('rs'):
+           ref = ref.strip('rs')
+        print 'about to look for ref',ref
+        q.append(Q(snp_ref = ref))
+    filter = reduce(operator.or_, [Q(*q)])    
+    print filter
+    items = Link_to_dbSNP.objects.filter(filter)
+    results = {}
+    for item in items:
+        results[item.snp_ref] = item.url
+    return results

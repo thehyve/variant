@@ -42,9 +42,9 @@ class Genotype(models.Model):
     )
     study = models.ForeignKey(Study)
     gene = models.CharField(max_length=200)
-    snp_ref = models.CharField(max_length=200)
-    snp_variant = models.CharField(max_length=200)
-    snp_name = models.CharField(max_length=200, blank=True)
+    snp_ref = models.CharField(max_length=200, blank=True, null=True)
+    snp_variant = models.CharField(max_length=200, blank=True, null=True)
+    snp_name = models.CharField(max_length=200, blank=True, null=True)
     allele = models.CharField(max_length=200, blank=True)
     mutation = models.CharField(max_length=200, blank=True)
     zygosity = models.CharField(max_length=1, choices=TYPE_CHOICES, blank=True)
@@ -93,3 +93,7 @@ class Interaction(models.Model):
     ci_lower = models.FloatField(max_length=10, null=True, blank=True)
     ci_upper = models.FloatField(max_length=10, null=True, blank=True)
     significant_associations = models.CharField(max_length=500, blank=True)
+    
+class Link_to_dbSNP(models.Model):
+    snp_ref = models.CharField(max_length=200)
+    url = models.CharField(max_length=300)

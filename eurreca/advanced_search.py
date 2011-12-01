@@ -27,7 +27,7 @@ def search(search_terms):
         if not len(q_dicts[type]) == 0: 
             # Only do 'non-empty' searches.
             # An 'empty' search will yield ALL objects.
-            print 'q_dicts[type] ->', q_dicts[type]
+            #print 'q_dicts[type] ->', q_dicts[type]
             
             # The following does not work!
             # q_objects[type] = [Q(**q_dicts[type])]
