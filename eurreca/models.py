@@ -19,6 +19,8 @@ class Study(models.Model):
     journal_title = models.CharField(max_length=200, blank=True)
     study_type = models.CharField(max_length=200, blank=True)
     number_of_participants = models.IntegerField(max_length=9, blank=True, null=True)
+    comments = models.CharField(max_length=500, blank=True, null=True)
+    environmental_factor = models.CharField(max_length=200, blank=True, null=True)
     
     def __unicode__(self):
         return self.study_id
@@ -26,8 +28,6 @@ class Study(models.Model):
 class Phenotype(models.Model):
     study = models.ForeignKey(Study)
     phenotype_name = models.CharField(max_length=200)
-    environmental_factor = models.CharField(max_length=200)
-    type = models.CharField(max_length=200)
     intake_data = models.CharField(max_length=200, blank=True)
     
     def __unicode__(self):

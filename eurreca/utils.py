@@ -1,7 +1,7 @@
 from eurreca.models import Study, Genotype, Phenotype, Panel, Interaction, Link_to_dbSNP
 from eurreca.forms import StudyFormSet, StudyForm, GenotypeFormSet, GenotypeForm, PhenotypeFormSet, PhenotypeForm, PanelForm, PanelFormSet, InteractionForm, InteractionFormSet
 from itertools import chain
-import operator, time, urllib2
+import operator, time, urllib2, sys
 from django.db.models import Q
 from django.shortcuts import render
 from django.conf import settings
@@ -25,24 +25,30 @@ def process_clientside_studydata(jason, study, study_formset, request):
         forms['interaction'] = []
         forms = add_interaction_forms(jason, study, saved_objects, forms)
         saved_objects['interaction'] = []
-        count = 0
+        count = sys.maxint
         for form in forms['interaction']:
-            if jason['interactionRelations'].has_key(str(count)):
-                interactionValues[str(count + 1)] = get_interaction_values(count, forms, jason['interactionRelations'][str(count)]) 
-            count += 1    
-        count = 0
+            idx = form.data['id']
+            if idx != None and idx != '' and idx != Undefined:
+                idx = count
+            if jason['interactionRelations'].has_key(idx):
+                interactionValues[idx] = get_interaction_values(idx, forms, jason['interactionRelations'][idx]) 
+            count -= 1
+        count = sys.maxint
         for form in forms['interaction']:
+            idx = form.data['id']
+            if idx != None and idx != '' and idx != Undefined:
+                idx = count
             if not form.is_valid():
                 error_messages.append(form.errors.items())
             else:
                 obj = form.save(commit=False) 
                 obj.save()
                 if count < len(jason['interactionRelations']):
-                    if jason['interactionRelations'].has_key(str(count)):
-                        obj = set_interaction_relations(obj, saved_objects, jason['interactionRelations'][str(count)])
+                    if jason['interactionRelations'].has_key(idx):
+                        obj = set_interaction_relations(obj, saved_objects, jason['interactionRelations'][idx])
                     obj.save()
                     saved_objects['interaction'].append(obj)
-                count += 1
+                count -= 1
 
         '''print 'Saved the following objects:'
         for key in saved_objects:
@@ -89,7 +95,7 @@ def set_interaction_relations(obj, saved_objects, relations_lists):
         obj.panels.add(saved_objects['panel'][relations_lists['panel']])
     return obj
 
-def get_interaction_values(count, forms, relations_lists):
+def get_interaction_values(idx, forms, relations_lists):
     # At this moment in time we are not yet dealing with lists, but single items
     ''' When dealing with lists it should probably be done like this:
     for gt in relations_lists['genotype']:
@@ -102,9 +108,6 @@ def get_interaction_values(count, forms, relations_lists):
         return_map['snp_variant'] = forms['genotype'][relations_lists['genotype']].data['snp_variant']
     if not relations_lists['phenotype'] == -1:
         return_map['phenotype_name'] = forms['phenotype'][relations_lists['phenotype']].data['phenotype_name']
-        return_map['environmental_factor'] = forms['phenotype'][relations_lists['phenotype']].data['environmental_factor']
-        return_map['type'] = forms['phenotype'][relations_lists[
-            'phenotype']].data['type']
     if not relations_lists['panel'] == -1:
         return_map['panel_description'] = forms['panel'][relations_lists[
             'panel']].data['panel_description']
@@ -177,10 +180,6 @@ def get_interactionValues_from_formsets(fs):
             if len(form['phenotypes'].value()) > 0 and f['id'].value() == form['phenotypes'].value()[0]:
                 interactionValues[id][
                     'phenotype_name'] = f['phenotype_name'].value()
-                interactionValues[id][
-                    'environmental_factor'] = f['environmental_factor'].value()
-                interactionValues[id][
-                    'type'] = f['type'].value()
                 break
         for f in fs['panel']:
             if len(form['panels'].value()) > 0 and f['id'].value() == form['panels'].value()[0]:

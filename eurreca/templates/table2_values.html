@@ -4,8 +4,6 @@
 <tr class="formfield {{ field.name }}">
     {% if title == "Phenotype" %}
         {% include 'table2_value.html' with field=form.phenotype_name %}
-        {% include 'table2_value.html' with field=form.environmental_factor %}
-        {% include 'table2_value.html' with field=form.type %}
         {% include 'table2_value.html' with field=form.intake_data %}
     {% endif %}
     {% if title == "Genotype" %}

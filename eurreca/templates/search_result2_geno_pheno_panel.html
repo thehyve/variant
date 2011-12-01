@@ -10,8 +10,6 @@
 {% for p_form in formSets.phenotype %}
     {% if form.phenotypes.value.0 == p_form.id.value %}
         {% include 'table2_value.html' with field=p_form.phenotype_name %}
-        {% include 'table2_value.html' with field=p_form.environmental_factor %}
-        {% include 'table2_value.html' with field=p_form.type %}
     {% endif %}
 {% endfor %}
 {% for p_form in formSets.panel %}
