@@ -302,7 +302,7 @@ def study_view(request, id):
     try:
         fs = utils.get_formsets_by_id(id)
         results = utils.get_snp_ref_to_dbSNP_url_dict(
-            get_list_of_snp_refs_from_formsets(fs))
+            utils.get_list_of_snp_refs_from_formsets(fs))
         for r in results:
             print r,' -> ',results[r]
         return render(request, 'domain_views/study_view.html', 
