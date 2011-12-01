@@ -412,7 +412,7 @@ def get_snp_ref_to_dbSNP_url_dict(list_of_snp_refs):
            ref = ref.strip('rs')
         print 'about to look for ref',ref
         q.append(Q(snp_ref = ref))
-    filter = reduce(operator.or_, [Q(*q)])    
+    filter = reduce(operator.or_, q)    
     print filter
     items = Link_to_dbSNP.objects.filter(filter)
     results = {}

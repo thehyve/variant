@@ -301,6 +301,13 @@ def study_view(request, id):
     messageType = ""
     try:
         fs = utils.get_formsets_by_id(id)
+        list_of_snp_refs = []
+        gts = Genotype.objects.all()
+        for f in fs['genotype']:
+            list_of_snp_refs.append(f['snp_ref'].value())
+        results = utils.get_snp_ref_to_dbSNP_url_dict(list_of_snp_refs)
+        for r in results:
+            print r,' -> ',results[r]
         return render(request, 'domain_views/study_view.html', 
             {'formset' : fs['study'], 
              'formsetGenotype' : fs['genotype'],
@@ -308,7 +315,8 @@ def study_view(request, id):
              'formsetPanel' :  fs['panel'],
              'formsetInteraction' :  fs['interaction'],
              'message' : message,
-             'messageType' : messageType,})         
+             'messageType' : messageType,
+             'dbSNP' : results,})         
     except Study.DoesNotExist:
         return render(request, 'domain_views/study_list.html', 
             {'message' : "The requested study does not exist.",
@@ -435,8 +443,8 @@ def snp_search(request, ref):
     list_of_snp_refs = []
     gts = Genotype.objects.all()
     for gt in gts:
-        list_of_snp_refs.append(gt)
-    results = utils.get_snp_ref_to_dbSNP_url_dict([ref])
+        list_of_snp_refs.append(gt.snp_ref)
+    results = utils.get_snp_ref_to_dbSNP_url_dict(list_of_snp_refs)
     edited_message = message['message']
     edited_message += ' Also'
     for r in results:

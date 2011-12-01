@@ -7,27 +7,22 @@ register = template.Library()
 """ 
 @register.filter()
 def contains(value, arg):
-    value = str(value)
-    arg = str(arg)
-    """
+    '''
     Usage:
     {% if text|contains:"http://" %}
     This is a link.
     {% else %}
     Not a link.
     {% endif %}
-    """
-     
+    '''
+    value = str(value)
+    arg = str(arg)
     return arg in value
     
     
 @register.filter()
 def containedin(value, arg):
-    #print '\nentered containedin'
-    #print "Value:",value
-    #print "Arg:",arg
     if value == None:
-        #print 'leaving containedin'
         return False
     v = str(value)
     a = []
@@ -36,11 +31,26 @@ def containedin(value, arg):
     v = v.lower()
     for item in a:
         i = item.lower()
-        #print i, 'in', v, '?'
         if i in v:
-            #print 'True'
-            #print 'leaving containedin'
             return True
-    #print 'False'
-    #print 'leaving containedin'
+    return False
+    
+    
+@register.filter()
+def snprefcontainedin(value, arg):
+    ''' Convenience function. Same effect could be reached by combining
+    'tosnpref' and 'containedin' filters. '''
+    if value == None:
+        return False
+    v = str(value)
+    if v.startswith('rs'):
+           v = v.strip('rs')
+    a = []
+    for item in arg:
+        a.append(str(item))
+    v = v.lower()
+    for item in a:
+        i = item.lower()
+        if i in v:
+            return True
     return False

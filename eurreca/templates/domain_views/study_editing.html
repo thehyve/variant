@@ -138,7 +138,7 @@
 														{{gf.gene.value}}, {{gf.snp_ref.value}}, {{gf.snp_variant.value}}
 													</a>
 													<div class="more_inputs">
-														<label>Gene</label><input class="label focus" type="text" name="genotype-gene" value="{{gf.gene.value}}"><br />
+														<label>Gene name</label><input class="label focus" type="text" name="genotype-gene" value="{{gf.gene.value}}"><br />
 														<label>SNP ref</label><input class="label" type="text" name="genotype-snp_ref" value="{{gf.snp_ref.value}}"><br />
 														<label>SNP variant</label><input class="label" type="text" name="genotype-snp_variant" value="{{gf.snp_variant.value}}">
 														<input type="button" onClick="hideFormByElement( this );" value="OK">
@@ -153,7 +153,7 @@
 															{{value.gene}}, {{value.snp_ref}}, {{value.snp_variant}}
 														</a>
 														<div class="more_inputs">
-															<label>Gene</label><input class="label focus" type="text" name="genotype-gene" value="{{value.gene}}"><br />
+															<label>Gene name</label><input class="label focus" type="text" name="genotype-gene" value="{{value.gene}}"><br />
 															<label>SNP ref</label><input class="label" type="text" name="genotype-snp_ref" value="{{value.snp_ref}}"><br />
 															<label>SNP variant</label><input class="label" type="text" name="genotype-snp_variant" value="{{value.snp_variant}}">
 															<input type="button" onClick="hideFormByElement( this );" value="OK">
@@ -165,7 +165,7 @@
 													
 												</a>
 												<div class="more_inputs">
-													<label>Gene</label><input class="label focus" type="text" name="genotype-gene" value=""><br />
+													<label>Gene name</label><input class="label focus" type="text" name="genotype-gene" value=""><br />
 													<label>SNP ref</label><input class="label" type="text" name="genotype-snp_ref" value=""><br />
 													<label>SNP variant</label><input class="label" type="text" name="genotype-snp_variant" value="">
 													<input type="button" onClick="hideFormByElement( this );" value="OK">
@@ -289,7 +289,7 @@
 									<td class="editable  editable_genotype">
 										<input class="all" type="text" onFocus="showFormByElement(this);"> 
 										<div class="more_inputs">
-											<label>Gene</label><input type="text" class="label focus" name="genotype-gene" value=""><br />
+											<label>Gene name</label><input type="text" class="label focus" name="genotype-gene" value=""><br />
 											<label>SNP ref</label><input type="text" class="label" name="genotype-snp_ref" value=""><br />
 											<label>SNP variant</label><input type="text" class="label" name="genotype-snp_variant" value="">
 											<input type="button" onClick="hideFormByElement( this );" value="OK">
@@ -346,13 +346,19 @@
 					<table id="genotypeTable" class="interactions">
 						<thead>
 							<tr class="header" id="genotype_row">
-								<th id="gene">Gene*</th>
-								<th id="snp_ref">SNP ref*</th>
-								<th id="snp_variant">SNP variant*</th>
+								<th id="gene">Gene name*</th>
+								<th id="snp_ref">SNP ref</th>
+								<th id="snp_variant">SNP variant</th>
 								<th id="snp_name">SNP name</th>
 								<th id="allele">Allele</th>
 								<th id="mutation">Mutation</th>
 								<th id="zygosity">Zygosity</th>
+                                <th id="number_of_people_with_genotype">
+                                    Number of people with genotype</th>
+                                <th id="genotype_frequency">Frequency</th>
+                                <th id="estimated_overal_frequency">
+                                    Estimated overall frequency</th>
+                                <th id="genotype_details">Genotype details</th>
 							</tr>
 						</thead>
 						<tbody id="genotype">
@@ -365,6 +371,12 @@
 									<td class="editable">{% if form.allele.value %}{{ form.allele.value }}{% endif %}</td>
 									<td class="editable">{% if form.mutation.value %}{{ form.mutation.value }}{% endif %}</td>
 									<td class="editable">{% if form.zygosity.value %}{{ form.zygosity.value }}{% endif %}</td>
+                                    
+									<td class="editable">{% if form.number_of_people_with_genotype.value %}{{ form.number_of_people_with_genotype.value }}{% endif %}</td>
+									<td class="editable">{% if form.genotype_frequency.value %}{{ form.genotype_frequency.value }}{% endif %}</td>
+									<td class="editable">{% if form.estimated_overal_frequency.value %}{{ form.estimated_overal_frequency.value }}{% endif %}</td>
+									<td class="editable">{% if form.genotype_details.value %}{{ form.genotype_details.value }}{% endif %}</td>
+                                    
 									<td class="buttons">
 										<a onclick="editRow('genotype',this); return false;" href="#">edit</a>&nbsp;<a href="#" onClick="removeRow('genotype',this); return false;">remove</a>
 										<input type="hidden" name="genotype_id" value="{{form.id.value}}">

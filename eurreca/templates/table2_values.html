@@ -1,4 +1,5 @@
 ﻿{% load contains %}
+{% load tosnpref %}
 
 <tr class="formfield {{ field.name }}">
     {% if title == "Phenotype" %}
@@ -9,7 +10,35 @@
     {% endif %}
     {% if title == "Genotype" %}
         {% include 'table2_value.html' with field=form.gene %}
-        {% include 'table2_value.html' with field=form.snp_ref %}
+        
+        {# Handle snp_ref #}
+        {% if form.snp_ref.value|snprefcontainedin:dbSNP %}
+
+            {# We have an url for this #}
+            
+            {% for ref, url in dbSNP.items %}
+                {% if ref == form.snp_ref.value|tosnpref %}
+                    {% if filtered == "True" and form.snp_ref.value|snprefcontainedin:matchedValues %}
+                        <td><b><a href="{{ url }}">{{ form.snp_ref.value }}</a></b></td>
+                    {% else %}
+                        <td><a href="{{ url }}">{{ form.snp_ref.value }}</a></td>
+                    {% endif %}     
+                {% endif %}     
+            {% endfor %}
+        {% else %}
+        
+            {% comment %}
+                We do not have an url for this or 
+                the dbSNP urls are not available in this context
+            {% endcomment %}
+            
+            {% if filtered == "True" and form.snp_ref.value|snprefcontainedin:matchedValues %}
+                <td><b>{{ form.snp_ref.value }}</b></td>
+            {% else %}
+                <td>{{ form.snp_ref.value }}</td>
+            {% endif %}     
+        {% endif %}     
+        
         {% include 'table2_value.html' with field=form.snp_variant %}
         {% include 'table2_value.html' with field=form.snp_name %}
         {% include 'table2_value.html' with field=form.allele %}
