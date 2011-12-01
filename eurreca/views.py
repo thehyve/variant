@@ -273,7 +273,7 @@ def study_update(request, id):
     else:
         try:
             fs = utils.get_formsets_by_id(id)
-            interactionDictionary = utils.get_interactionValues_from_formsets(fs)
+            interactionValues = utils.get_interactionValues_from_formsets(fs)
             
             return render(request, 'domain_views/study_editing.html', 
                 {'formset' : fs['study'], 
@@ -283,7 +283,7 @@ def study_update(request, id):
                  'formsetInteraction' :  fs['interaction'],
                  'message' : message,
                  'messageType' : messageType,
-                 'interactionDictionary' : interactionDictionary,
+                 'interactionValues' : interactionValues,
                  'year_list': utils.get_year_list(),})
         except Study.DoesNotExist:
             qs = Study.objects.all()
@@ -443,9 +443,9 @@ def snp_search(request, ref):
         list_of_snp_refs.append(gt.snp_ref)
     results = utils.get_snp_ref_to_dbSNP_url_dict(list_of_snp_refs)
     edited_message = message['message']
-    edited_message += ' Also'
+    edited_message += ' <br/>Also available:'
     for r in results:
-        edited_message += ', <a href="{0}">{1}</a>'.format(results[r], r)
+        edited_message += ' <a href="{0}">{1}</a> '.format(results[r], r)
     '''qs = Study.objects.all()
     study_list = []
     if not len(qs) == 0:
