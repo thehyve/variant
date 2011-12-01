@@ -412,12 +412,16 @@ def get_list_of_snp_refs_from_formsets(fs):
         
 def get_snp_ref_to_dbSNP_url_dict(list_of_snp_refs):
     print 'get_snp_ref_to_dbSNP_url_dict:',list_of_snp_refs
+    if list_of_snp_refs == []:
+        return {}
     q = []
     for ref in list_of_snp_refs:
         if ref.startswith('rs'):
            ref = ref.strip('rs')
         print 'about to look for ref',ref
         q.append(Q(snp_ref = ref))
+    if q == []:
+        return {}
     filter = reduce(operator.or_, q)    
     print filter
     items = Link_to_dbSNP.objects.filter(filter)
