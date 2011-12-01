@@ -80,5 +80,33 @@ table.interactions tr.header { background-color: #ADC376; border-top-width: 0; }
 table.interactions tr { border-top: 1px solid #aaa; }
 table.interactions th { border-right: 1px solid white; }
 table.interactions th, table.interactions td { text-align: left; margin: 0; padding: 2px 6px; }
-table.interactions td.buttons { width: 50px; }
+table.interactions td.buttons { width: 100px; }
 table.interactions input.newVal { width: 100%; }
+
+/* Small forms in study edit */
+.interactions td { position: relative; }
+td.form-active { background-color: #E4F7B2; }
+td.form-active .more_inputs { display: block; }
+.more_inputs { border: 1px solid black; display: none; padding: 5px; position: absolute; top: 32px; width: 350px; background-color: white; z-index: 10;  }
+.more_inputs label { display: inline-block; width: 150px; *display: inline; zoom: 1; }
+
+.more_inputs:before, .more_inputs:after {
+	content: ' ';
+	height: 0;
+	position: absolute;
+	width: 0;
+}
+.more_inputs:before {
+	top: -20px;
+	left: 4px;
+	border: 10px solid transparent;
+	border-bottom-color: black;
+}
+.more_inputs:after {
+	top: -18px;
+	left: 5px;
+	border: 9px solid transparent;
+	border-bottom-color: white;
+}
+
+.interactions a { text-decoration: none; display: block; min-height: 20px; }

@@ -1,8 +1,14 @@
 var interactCache = new Array();
 
+function switchToTab(tabNum){
+    // Counting starts at zero.
+    var $tabs = $('#pagetabs').tabs();
+    $tabs.tabs('select', tabNum);        
+};
+
 /**
- * Adds a new row to the given table
- * @param id		Type of table to edit
+ * Adds a new row to the given table for editing
+ * @param id		Type of table to edit	(genotype, phenotype or panel)
  * @param values	(optional) values to put in the input fields
  * @param editable	(optional) whether the row must be editable or not. Defaults to true
  */
@@ -42,111 +48,12 @@ function addRow(id, values, editable) {
     $("#"+id).append(row);
 }
 
-function saveRow(id, that) {
-    
-    iRowNr = $(that).parents('tr').index();
 
-    if(id=='interaction') {
-        arrIndex = saveInteractionRow();
-        interactCache[iRowNr] = arrIndex;
-    } else {
-        iRowNr = $(that).parents('tr').index();
-        // Update relevant interaction rows
-        // Right now only works with one object rather than with a list of objects
-        $('#interaction tr').each(function() {
-            arrIndex = interactCache[$(this).index()];
-            if(arrIndex != undefined && iRowNr==arrIndex[id+'Nrs']) {
-                if(id=='genotype'){
-                    $(this).children('td:nth-child(1)').html($(that).parents('tr').children('td:nth-child(1)').find('input.newVal').val());
-                    $(this).children('td:nth-child(2)').html($(that).parents('tr').children('td:nth-child(2)').find('input.newVal').val());
-                    $(this).children('td:nth-child(3)').html($(that).parents('tr').children('td:nth-child(3)').find('input.newVal').val());
-                }
-                if(id=='phenotype'){
-                    $(this).children('td:nth-child(4)').html($(that).parents('tr').children('td:nth-child(1)').find('input.newVal').val());
-                    $(this).children('td:nth-child(5)').html($(that).parents('tr').children('td:nth-child(2)').find('input.newVal').val());
-                    $(this).children('td:nth-child(6)').html($(that).parents('tr').children('td:nth-child(3)').find('input.newVal').val());
-                }
-                if(id=='panel'){
-                    $(this).children('td:nth-child(7)').html($(that).parents('tr').children('td:nth-child(1)').find('input.newVal').val());
-                }
-            }
-        });
-    }
-
-    // Now put all edited text into the td
-    strNewRow = '';
-    $(that).parents('tr').find( 'td.editable' ).each(function(){
-    	var newVal = $('input.newVal', $(this)).val();
-    	$(this).text( newVal );
-    });
-    
-    // Replace the buttons with the correct ones
-    $(that).parents('tr').find( "td.buttons" ).html( rowDefaultButtons( id ) );
-}
-
-function saveInteractionRow() {
-    var returnMap = new Array();
-    iGenotype = null;
-    if( !($('#input_genotype-gene').val()=='' && $('#input_genotype-snp_ref').val()=='' && $('#input_genotype-snp_variant').val()=='') ) {
-        $('#genotype tr').each(function() {
-            if($(this).children('td:nth-child(1)').html()==$('#input_genotype-gene').val() && $(this).children('td:nth-child(2)').html()==$('#input_genotype-snp_ref').val() && $(this).children('td:nth-child(3)').html()==$('#input_genotype-snp_variant').val() ) {
-                iGenotype = $(this).index();
-            }
-        });
-        if(iGenotype==null) {      
-            addRow( "genotype", [
-                                 $('#input_genotype-gene').val(),
-                                 $('#input_genotype-snp_ref').val(),
-                                 $('#input_genotype-snp_variant').val(), 
-            ], false );
-            iGenotype = $("#genotype").find("tr").length-1;
-        }
-    }
-    if(iGenotype!=null){
-        returnMap["genotypeNrs"] = iGenotype;
-    }
-    
-    iPhenotype = null;
-    if( !($('#input_phenotype-phenotype_name').val()=='' && $('#input_phenotype-environmental_factor').val()=='' && $('#input_phenotype-type').val()=='') ) {
-        $('#phenotype tr').each(function() {
-            if($(this).children('td:nth-child(1)').html()==$('#input_phenotype-phenotype_name').val() && $(this).children('td:nth-child(2)').html()==$('#input_phenotype-environmental_factor').val() && $(this).children('td:nth-child(3)').html()==$('#input_phenotype-type').val()) {
-                iPhenotype = $(this).index();
-            }
-        });
-        if(iPhenotype==null) {                
-            addRow( "phenotype", [
-                                 $('#input_phenotype-phenotype_name').val(),
-                                 $('#input_phenotype-environmental_factor').val(),
-                                 $('#input_phenotype-type').val(),
-            ], false );
-            iPhenotype = $("#phenotype").find("tr").length-1;
-        }
-    }
-    if(iPhenotype!=null){
-        returnMap["phenotypeNrs"] = iPhenotype;
-    }
-    
-    iPanel = null;
-    if( !($('#input_panel-panel_description').val()=='')) {
-        $('#panel tr').each(function() {
-            if($(this).children('td:nth-child(1)').html()==$('#input_panel-panel_description').val()) {
-                iPanel = $(this).index();
-            }
-        });
-        if(iPanel==null) {                
-            addRow( "panel", [
-     	                     $('#input_panel-panel_description').val()
-            ], false );
-            iPanel = $("#panel").find("tr").length-1;
-        }				
-    }
-    if(iPanel!=null){
-        returnMap["panelNrs"] = iPanel;
-    }
-    
-    return returnMap;
-}
-
+/**
+ * Starts editing a row with data in the given table
+ * @param id		Type of table to edit	(genotype, phenotype or panel)
+ * @param that		Reference to the link clicked (or any other element in the tr that is being edited
+ */
 function editRow(id, that) {
     lstHeaders = $('#'+id+'_row').find('th');
     iCounter = 0;
@@ -179,8 +86,56 @@ function editRow(id, that) {
 }
 
 /**
+ * Saves a row that has been edited in the given table
+ * @param id		Type of table to edit	(genotype, phenotype or panel)
+ * @param that		Reference to the link clicked (or any other element in the tr that is being edited)
+ */
+function saveRow(id, that) {
+    
+    iRowNr = $(that).parents('tr').index();
+
+    if(id=='interaction') {
+        arrIndex = saveInteractionRow();
+        interactCache[iRowNr] = arrIndex;
+    } else {
+        iRowNr = $(that).parents('tr').index();
+        
+        // List of fields to update if an object has been changed
+        var listToUpdate = getFieldsToUpdate();
+        
+        // Update relevant interaction rows
+        // Right now only works with one object rather than with a list of objects
+        $('#interaction tr').each(function() {
+            arrIndex = interactCache[$(this).index()];
+            if(arrIndex != undefined && iRowNr==arrIndex[id+'Nrs']) {
+
+            	// Update the fields in the interaction table
+            	var td = $("td.editable_" + id, this);
+            	
+            	var sourceTds = $(that).parents( "tr" ).children();
+            	for( i = 0; i < listToUpdate[ id ].length; i++ ) {
+            		var value = sourceTds.eq(i).find('input.newVal').val();
+            		$( listToUpdate[ id ][ i ], td ).val( value );
+            	}
+            	updateFields( td );
+            }
+        });
+        
+        // Now put all edited text into the td
+        strNewRow = '';
+        $(that).parents('tr').find( 'td.editable' ).each(function(){
+        	var newVal = $('input.newVal', $(this)).val();
+        	$(this).text( newVal );
+        });
+        
+        // Replace the buttons with the correct ones
+        $(that).parents('tr').find( "td.buttons" ).html( rowDefaultButtons( id ) );
+    }
+}
+
+/**
  * Cancels the edits the user made to the given row
- * @param id	type of row to edit ('genotype', 'phenotype', 'panel' or 'interaction'
+ * @param id	type of row to edit ('genotype', 'phenotype', 'panel' )
  * @param that	The link that is clicked on. (is used to retrieve the row we are editing)
  */
 function cancelEdit( id, that ) {
@@ -195,10 +150,16 @@ function cancelEdit( id, that ) {
     $(that).parents('tr').find( "td.buttons" ).html( rowDefaultButtons( id ) );
 }
 
+/**
+ * Removes a row from the table
+ * @param id		id of the table to remove a row from ('genotype', 'phenotype', 'panel' or 'interaction' )
+ * @param that		Reference to the link clicked (or any other element in the tr that is being edited)
+ */
 function removeRow(id, that) {
+    var iRowNr = $(that).parents('tr').index();
     if(id=='interaction'){
-        iRowNr = $(that).parents('tr').index();
         delete interactCache[iRowNr];
+        
         // Now the interactCache object keys no longer match the tr indexes...
         // Reorganise interactCache
         newCache = {}
@@ -213,14 +174,15 @@ function removeRow(id, that) {
             }
             new_key++
         }
+        
         for(var key in interactCache){
             delete interactCache[key];
         }
+        
         for(var key in newCache){
             interactCache[key] = newCache[key]
         }
     } else {
-        iRowNr = $(that).parents('tr').index();
         // Update relevant interaction rows
         
         // Right now only works with one object rather than with a list of objects
@@ -230,19 +192,10 @@ function removeRow(id, that) {
             	if( iRowNr == arrIndex[id+'Nrs']) {
                 	// If the entity to remove is part of an interaction, remove it from the interaction
 	                delete arrIndex[id+'Nrs'];
-	                if(id=='genotype'){
-	                    $(this).children('td:nth-child(1)').html('');
-	                    $(this).children('td:nth-child(2)').html('');
-	                    $(this).children('td:nth-child(3)').html('');
-	                }
-	                if(id=='phenotype'){
-	                    $(this).children('td:nth-child(4)').html('');
-	                    $(this).children('td:nth-child(5)').html('');
-	                    $(this).children('td:nth-child(6)').html('');
-	                }
-	                if(id=='panel'){
-	                    $(this).children('td:nth-child(7)').html('');
-	                }
+	                
+	                // Clear the fields in the interaction to reflect the deleted entity
+	                $( "td.editable_" + id , this).find( "input[type=text]" ).val( "" );
+	                $( "td.editable_" + id , this).find( "a.all" ).text( "" );
                 } else if( iRowNr < arrIndex[id+'Nrs'] ) {
                 	// If the entity to remove is in the list before the entity in the interaction
                 	// update the interaction to reflect the changes
@@ -251,7 +204,113 @@ function removeRow(id, that) {
             }
         });
     }
+    
+    // Actually remove the row 
     $(that).parents('tr').remove();
+}
+
+function saveInteractionRow() {
+	// Create a row with the newly added element above the 'addNew' row. Do so by copying 
+	// the addNew row and replacing the inputs with links
+	var addNewRow = $( "#interactionTable .addNew" );
+	var newRow = addNewRow.clone( true, true ).removeClass( "addNew" );
+	
+	// Replace the input.all elements with links
+	newRow.find( "input.all" ).each( function( idx, el ) {
+		// Create a new link
+		var link = $( "<a class='all' href='#'></a>" ).text( $(el).val() );
+		link.click( function(event) { 
+			showFormByElement( this ); return false; 
+		} );
+		
+		// Replace the input element with a link
+		$(el).before( link )
+		$(el).remove();
+	});
+	
+	// Replace the 'save' link with a 'remove' link
+	var buttonsCell = newRow.find( "td.buttons" );
+	buttonsCell.empty();
+	buttonsCell.append( 
+			$( "<a href='#'>remove</a>" ).click( function(event) { removeRow( 'interaction', this ); return false; } )
+	);
+	
+	// Insert the new row
+	addNewRow.before( newRow );
+	
+	// Clear the addNew row, so a new row can be inserted
+	$( "input", addNewRow ).not("[type=button]").val( "" );
+	
+	// Now update the interaction cache. To do that, check whether the inserted genotypes and phenotypes already exist.
+	return updateObjectsBasedOnInteraction( newRow );
+}
+
+function getFieldsToUpdate() {
+    return {
+			"genotype": [
+	 	 	    "input[name=genotype-gene]",
+	 		    "input[name=genotype-snp_ref]",
+	 		    "input[name=genotype-snp_variant]"
+	 		],
+	 		"phenotype": [
+	 		    "input[name=phenotype-phenotype_name]",
+	 	 	    "input[name=phenotype-environmental_factor]",
+	 	 	    "input[name=phenotype-type]"
+	 	 	],
+	 	 	"panel": [
+	 	 	    "input[name=panel-panel_description]"
+	 		]
+        };
+}
+
+function findOrAddMatchingObjects( objects ) {
+    var returnMap = new Array();
+	for( key in objects ) {
+		var iEl = findOrAddMatchingObject( key, objects[ key ] );
+		if( iEl != null )
+			returnMap[ key + "Nrs" ] = iEl;
+	}
+	
+	return returnMap;
+}
+
+function findOrAddMatchingObject( id, listToCheck ) {
+	var iElement = null;
+	
+	// If listToCheck is empty, don't add anything
+	var isEmpty = false;
+	for( i = 0; i < listToCheck.length; i++ ) {
+		if( listToCheck[ i ] == "" ) {
+			isEmpty = true;
+			break;
+		}
+	}
+	
+	if( isEmpty ) {
+		return null;
+	}
+	
+	// Loop through all existing objects
+    $('#' + id + ' tr').each(function() {
+    	var rowFound = true;
+    	var tds = $(this).children( "td" );
+    	for( i = 0; i < listToCheck.length; i++ ) {
+    		if( listToCheck[ i ] != tds.eq( i ).text() ) {
+    			rowFound = false;
+    			break;
+    		}
+    	}
+    	
+    	if( rowFound ) 
+    		iElement = $(this).index();
+    });
+	
+    if( iElement==null ) {      
+        addRow( id, listToCheck, false );
+        iElement = $( "#" + id ).find("tr").length-1;
+    }
+    
+    return iElement;
 }
 
 function submitData() {
@@ -260,43 +319,21 @@ function submitData() {
     panels =  '"panel":'+submitDataHelper('panel');
     returnObject =  '{' + genotypes + "," + phenotypes + "," + panels + ",";
     
-    interactions = '"interaction":{';
-    count = 0;
-    coll = $('#interaction tr');
-    coll.each(function() {
-        rij = '{'
-        
-        coll2 = $(this).children('td:not(:last-child)');
-        coll2.each(function() {
-            i = $(this).index();
-            if(i>6){
-                title = '';
-                postfix = '';
-                if(i==7){title = 'statistical_model'; postfix = ',';}
-                if(i==8){title = 'p_value'; postfix = ',';}
-                if(i==9){title = 'ratio_type'; postfix = ',';}
-                if(i==10){title = 'ratio'; postfix = ',';}
-                if(i==11){title = 'ci_lower'; postfix = ',';}
-                if(i==12){title = 'ci_upper'; postfix = ',';}
-                if(i==13){title = 'significant_associations';}
-                item = $(this).html();
-                if(item==''){ item = 'null'; }
-                rij += '"'+title+'":"'+item+'"'+postfix;
-                //console.log('i:'+i+'\ntitle:'+title+'\nitem:'+item+'\ncount2'+count2+'\nsso far:'+rij);
-            }
-        });
-        
-        rij += '}'
-        
-        interactions = interactions + '"'+count+'":'+rij;
-        
-        count = count + 1;
-        if(count!=coll.length){
-            interactions = interactions + ',';
-        }
+    var interactionsArray = {};
+    var interactionIdx = 0;
+    $( "#interaction tr" ).not( ".addNew" ).each( function(idx,row) {
+    	var interaction = {};
+    	
+    	// Loop through all input elements
+    	$( ".editable_ratios input[type=text]", $(row) ).not( ".all" ).each( function( idx, input ) {
+    		interaction[ $(input).attr( 'name' ) ] = $(input).val();
+    	});
+    	
+    	interactionsArray[ interactionIdx++ ] = interaction;
     });
-    interactions = interactions + '}'
     
+    interactions = '"interaction":' + JSON.stringify( interactionsArray );
+
     interactionRelations = '"interactionRelations":'+retrieve_interaction_relations();
     
     returnObject += interactions + ',' + interactionRelations + '}'; 
@@ -387,3 +424,108 @@ function rowEditingButtons( id, editing ) {
 	
 	return strHTML;
 }
+
+/*******************************************************************************
+ * 
+ * These methods are used for showing forms in each row
+ * 
+ *******************************************************************************/
+var formShown = false;
+
+function showFormByElement( element ) {
+	var parent = $(element).parent();
+	
+	while( parent.size() > 0 && parent.get(0).tagName.toLowerCase() != "td" ) {
+		parent = parent.parent();				
+	}
+	
+	showForm( parent );
+}
+function hideFormByElement( element ) {
+	var parent = $(element).parent();
+	
+	while( parent.size() > 0 && parent.get(0).tagName.toLowerCase() != "td" ) {
+		parent = parent.parent();				
+	}
+	
+	hideForm( parent );
+}
+
+function showForm(td) {
+	if( formShown ) {
+		hideForm( formShown );
+	}
+	
+	$(td).addClass( "form-active" );
+
+	var form = $( ".more_inputs", $(td) );
+	$( ".focus", form ).focus();
+	
+	formShown = td;
+}
+
+function hideForm(td) {
+	// Hide the form and remove the background color
+	$(td).removeClass( "form-active" );
+	
+	updateFields( td );
+	
+	// Check if this entry also exists in the interactCache list. If so
+	// also update attached objects
+	var tr = $(td).parents( "tr" );
+	
+	if( interactCache[ tr.index() ] != undefined ) {
+		interactCache[ tr.index() ] = updateObjectsBasedOnInteraction( tr );
+	}
+	
+	formShown = false;
+}
+
+function updateFields( td ) {
+	var form = $( ".more_inputs", $(td) );
+	
+	// Update the text in the field by combining all
+	// data from fields with class "label"
+	var label = "";
+	$( ".label", form ).each( function( idx, el ) {
+		if( $(el).val() != "" )
+			label += ( label == "" ? "" : ", " ) + $(el).val();
+	});
+	
+	$( "input.all", $(td) ).val( label );
+	$( "a.all", $(td) ).text( label );	
+}
+
+function updateObjectsBasedOnInteraction( row ) {
+	var fieldsToUpdate = getFieldsToUpdate();
+	var checkFields = {};
+	
+	for( type in fieldsToUpdate ) {
+		checkFields[ type ] = [];
+		for( i = 0; i < fieldsToUpdate[ type ].length; i++ ) {
+			checkFields[ type ][ i ] = $( fieldsToUpdate[ type ][ i ], row ).val();
+		}
+	}
+	
+	return findOrAddMatchingObjects( checkFields );
+}
+
+JSON.stringify = JSON.stringify || function (obj) {
+    var t = typeof (obj);
+    if (t != "object" || obj === null) {
+        // simple data type
+        if (t == "string") obj = '"'+obj+'"';
+        return String(obj);
+    }
+    else {
+        // recurse array or object
+        var n, v, json = [], arr = (obj && obj.constructor == Array);
+        for (n in obj) {
+            v = obj[n]; t = typeof(v);
+            if (t == "string") v = '"'+v+'"';
+            else if (t == "object" && v !== null) v = JSON.stringify(v);
+            json.push((arr ? "" : '"' + n + '":') + String(v));
+        }
+        return (arr ? "[" : "{") + String(json) + (arr ? "]" : "}");
+    }
+};
