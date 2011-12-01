@@ -301,11 +301,8 @@ def study_view(request, id):
     messageType = ""
     try:
         fs = utils.get_formsets_by_id(id)
-        list_of_snp_refs = []
-        gts = Genotype.objects.all()
-        for f in fs['genotype']:
-            list_of_snp_refs.append(f['snp_ref'].value())
-        results = utils.get_snp_ref_to_dbSNP_url_dict(list_of_snp_refs)
+        results = utils.get_snp_ref_to_dbSNP_url_dict(
+            get_list_of_snp_refs_from_formsets(fs))
         for r in results:
             print r,' -> ',results[r]
         return render(request, 'domain_views/study_view.html', 

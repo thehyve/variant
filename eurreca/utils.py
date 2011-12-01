@@ -404,6 +404,12 @@ def call_entrez(snp_ref):
         l.save()
         return {'message': 'Requested URL: <a href="{0}">{0}</a>'.format(requested_url), 'messageType': 'positive'}
         
+def get_list_of_snp_refs_from_formsets(fs):
+    list_of_snp_refs = []
+    for f in fs['genotype']:
+        list_of_snp_refs.append(f['snp_ref'].value())
+    return list_of_snp_refs
+        
 def get_snp_ref_to_dbSNP_url_dict(list_of_snp_refs):
     print 'get_snp_ref_to_dbSNP_url_dict:',list_of_snp_refs
     q = []
