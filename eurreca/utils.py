@@ -49,12 +49,6 @@ def process_clientside_studydata(jason, study, study_formset, request):
                     obj.save()
                     saved_objects['interaction'].append(obj)
                 count -= 1
-
-        '''print 'Saved the following objects:'
-        for key in saved_objects:
-            print key,':'
-            for item in saved_objects[key]:
-                print '\t',item,'with study',item.study'''
                 
         if not len(error_messages) == 0:
             raise ValueError('Some of the forms did not validate. {0}'.format(error_messages))
@@ -81,36 +75,37 @@ def process_clientside_studydata(jason, study, study_formset, request):
                 'formsetPanel' :  forms['panel']}]
         raise Exception(exception)
          
-def set_interaction_relations(obj, saved_objects, relations_lists):
+def set_interaction_relations(obj, saved_objects, relations_list):
     # At this moment in time we are not yet dealing with lists, but single items
-    ''' When dealing with lists it should probably be done like this:
-    for gt in relations_lists['genotype']:
-        interaction.genotypes.add(saved_objects['genotype'][gt])
-    '''
-    if not relations_lists['genotype'] == -1:
-        obj.genotypes.add(saved_objects['genotype'][relations_lists['genotype']])
-    if not relations_lists['phenotype'] == -1:
-        obj.phenotypes.add(saved_objects['phenotype'][relations_lists['phenotype']])
-    if not relations_lists['panel'] == -1:
-        obj.panels.add(saved_objects['panel'][relations_lists['panel']])
+    if not relations_list['genotype'] == -1:
+        obj.genotypes.add(saved_objects['genotype'][relations_list['genotype']])
+    if not relations_list['phenotype'] == -1:
+        obj.phenotypes.add(saved_objects['phenotype'][relations_list['phenotype']])
+    if not relations_list['panel'] == -1:
+        obj.panels.add(saved_objects['panel'][relations_list['panel']])
     return obj
 
-def get_interaction_values(idx, forms, relations_lists):
+def get_interaction_values(idx, forms, relations_list):
     # At this moment in time we are not yet dealing with lists, but single items
-    ''' When dealing with lists it should probably be done like this:
-    for gt in relations_lists['genotype']:
-        interaction.genotypes.add(saved_objects['genotype'][gt])
-    '''
     return_map = {}
-    if not relations_lists['genotype'] == -1:
-        return_map['gene'] = forms['genotype'][relations_lists['genotype']].data['gene']
-        return_map['snp_ref'] = forms['genotype'][relations_lists['genotype']].data['snp_ref']
-        return_map['snp_variant'] = forms['genotype'][relations_lists['genotype']].data['snp_variant']
-    if not relations_lists['phenotype'] == -1:
-        return_map['phenotype_name'] = forms['phenotype'][relations_lists['phenotype']].data['phenotype_name']
-    if not relations_lists['panel'] == -1:
-        return_map['panel_description'] = forms['panel'][relations_lists[
+    if not relations_list['genotype'] == -1:
+        return_map['gene'] = forms['genotype'][relations_list['genotype']].data['gene']
+        return_map['snp_ref'] = forms['genotype'][relations_list['genotype']].data['snp_ref']
+        return_map['snp_variant'] = forms['genotype'][relations_list['genotype']].data['snp_variant']
+    if not relations_list['phenotype'] == -1:
+        return_map['phenotype_name'] = forms['phenotype'][relations_list['phenotype']].data['phenotype_name']
+    if not relations_list['panel'] == -1:
+        return_map['panel_description'] = forms['panel'][relations_list[
             'panel']].data['panel_description']
+            
+    for form in fs['interaction']:
+        for field in form:
+            if field=='genotypes' or field=='phenotypes' or field=='panels': or
+                field=='id':
+                continue
+            else:
+                return_map[field] = form[field].value()  
+                
     return return_map
     
 def add_non_interaction_forms(jason, study):
@@ -168,24 +163,30 @@ def get_interactionValues_from_formsets(fs):
     for form in fs['interaction']:
         id = form['id'].value()
         interactionValues[id] = {}
-        for f in fs['genotype']:
-            if len(form['genotypes'].value()) > 0 and f['id'].value() == form['genotypes'].value()[0]:
-                interactionValues[id]['gene'] = f['gene'].value()
-                interactionValues[id][
-                    'snp_ref'] = f['snp_ref'].value()
-                interactionValues[id][
-                    'snp_variant'] = f['snp_variant'].value()
-                break
-        for f in fs['phenotype']:
-            if len(form['phenotypes'].value()) > 0 and f['id'].value() == form['phenotypes'].value()[0]:
-                interactionValues[id][
-                    'phenotype_name'] = f['phenotype_name'].value()
-                break
-        for f in fs['panel']:
-            if len(form['panels'].value()) > 0 and f['id'].value() == form['panels'].value()[0]:
-                interactionValues[id][
-                    'panel_description'] = f['panel_description'].value()
-                break
+        for field in form:
+            if field=='genotypes' or field=='phenotypes' or field=='panels':
+                for f in fs['genotype']:
+                    if len(form['genotypes'].value()) > 0 and f['id'].value() == form['genotypes'].value()[0]:
+                        interactionValues[id]['gene'] = f['gene'].value()
+                        interactionValues[id][
+                            'snp_ref'] = f['snp_ref'].value()
+                        interactionValues[id][
+                            'snp_variant'] = f['snp_variant'].value()
+                        break
+                for f in fs['phenotype']:
+                    if len(form['phenotypes'].value()) > 0 and f['id'].value() == form['phenotypes'].value()[0]:
+                        interactionValues[id][
+                            'phenotype_name'] = f['phenotype_name'].value()
+                        break
+                for f in fs['panel']:
+                    if len(form['panels'].value()) > 0 and f['id'].value() == form['panels'].value()[0]:
+                        interactionValues[id][
+                            'panel_description'] = f['panel_description'].value()
+                        break
+            if field=='id':
+                continue
+            else:
+                interactionValues[id][field] = form[field].value()
     return interactionValues
         
     
