@@ -12,6 +12,7 @@ from django.core.context_processors import csrf
 from django.shortcuts import render
 from django.http import Http404, HttpRequest
 from django.core import serializers
+from django.core.exceptions import ValidationError
 import json
 import pprint
 from django.utils import simplejson
@@ -123,10 +124,10 @@ def study_create(request):
                     {'message' : "The requested study does not exist.",
                      'messageType' : "negative",
                      'study_list' : study_list,})  
-        except Exception as inst:
+        except ValidationError as inst:
             print "\nin study create view"
             print '\na)',type(inst)     # the exception instance
-            print '\nb)',inst.args[0]
+            print '\nb)',inst
             
             if isinstance(inst.args[0], str):
                 # We received a string. So we did not receive a second 
@@ -223,10 +224,10 @@ def study_update(request, id):
                     {'message' : "The requested study does not exist.",
                      'messageType' : "negative",
                      'study_list' : study_list,})  
-        except Exception as inst:
+        except ValidationError as inst:
             print "\nin study update view"
             print '\na)',type(inst)     # the exception instance
-            print '\nb)',inst.args[0]
+            print '\nb)',inst
             if isinstance(inst.args[0], str):
                 # We received a string. So we did not receive a second 
                 # argument (which should be a map of lists of forms)
@@ -274,7 +275,12 @@ def study_update(request, id):
         try:
             fs = utils.get_formsets_by_id(id)
             interactionValues = utils.get_interactionValues_from_formsets(fs)
-            
+            '''print 'interactionValues:'
+            for something in interactionValues:
+                print '**', something, '** - '
+                for other_thingie in interactionValues[something]:
+                    print '\t$', other_thingie, '$ - @', interactionValues[something][other_thingie],'@'
+            '''    
             return render(request, 'domain_views/study_editing.html', 
                 {'formset' : fs['study'], 
                  'formsetGenotype' : fs['genotype'],

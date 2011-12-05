@@ -5,56 +5,68 @@ import operator, time, urllib2, sys
 from django.db.models import Q
 from django.shortcuts import render
 from django.conf import settings
+from django.core.exceptions import ValidationError
 
 def process_clientside_studydata(jason, study, study_formset, request):
-    saved_objects = {'genotype':[],'phenotype':[],'panel':[]}
+    saved_objects = {'genotype':{},'phenotype':{},'panel':{}}
     interactionValues = {}
     try:
         # Non-interaction fields first, so that all necessary primary keys can be known
+        ''' 'forms' layout is as follows: 
+                {
+                    'genotype':
+                        {
+                            '0': a form, 
+                            '1':, a second form, 
+                            ...
+                        },
+                    'phenotype':
+                        {
+                            '0':... 
+                        },
+                    ...
+                }
+            However, the 'interaction' entry that will
+            be added later, is a list...
+        '''
+        
         forms = add_non_interaction_forms(jason, study)
         error_messages = []
+        
         for key in forms:
-            for form in forms[key]:
+            for formnumber in forms[key]:
+                form = forms[key][formnumber]
                 if not form.is_valid():
                     error_messages.append(form.errors.items())
                 else:
                     obj = form.save()    
-                    saved_objects[key].append(obj)
+                    # for later use in 'set_interaction_relations'
+                    saved_objects[key][str(formnumber)] = obj
                 
-        # Interaction fields            
+        # Interaction fields   
+        
         forms['interaction'] = []
         forms = add_interaction_forms(jason, study, saved_objects, forms)
         saved_objects['interaction'] = []
-        count = sys.maxint
-        for form in forms['interaction']:
-            idx = form.data['id']
-            if idx != None and idx != '' and idx != Undefined:
-                idx = count
-            if jason['interactionRelations'].has_key(idx):
-                interactionValues[idx] = get_interaction_values(idx, forms, jason['interactionRelations'][idx]) 
-            count -= 1
-        count = sys.maxint
-        for form in forms['interaction']:
-            idx = form.data['id']
-            if idx != None and idx != '' and idx != Undefined:
-                idx = count
+        for count, form in enumerate(forms['interaction']):
+            interactionValues[count] = get_interaction_values(str(count), forms, jason['interactionRelations'], form) 
+        for count, form in enumerate(forms['interaction']):
             if not form.is_valid():
                 error_messages.append(form.errors.items())
             else:
                 obj = form.save(commit=False) 
                 obj.save()
                 if count < len(jason['interactionRelations']):
-                    if jason['interactionRelations'].has_key(idx):
-                        obj = set_interaction_relations(obj, saved_objects, jason['interactionRelations'][idx])
+                    if jason['interactionRelations'].has_key(str(count)):
+                        obj = set_interaction_relations(obj, saved_objects, interactionValues[count])
                     obj.save()
                     saved_objects['interaction'].append(obj)
-                count -= 1
                 
         if not len(error_messages) == 0:
-            raise ValueError('Some of the forms did not validate. {0}'.format(error_messages))
+            raise ValidationError('Some of the forms did not validate. {0}'.format(error_messages))
             
         return forms
-    except Exception as inst:
+    except ValidationError as inst:
         print "\nin eurrecca.utils: ",inst,inst.args
         exception = []
         if forms.has_key('interaction'):
@@ -73,48 +85,67 @@ def process_clientside_studydata(jason, study, study_formset, request):
                 'formsetGenotype' : forms['genotype'],
                 'formsetPhenotype' :  forms['phenotype'],
                 'formsetPanel' :  forms['panel']}]
-        raise Exception(exception)
-         
-def set_interaction_relations(obj, saved_objects, relations_list):
+        raise ValidationError(exception)
+        
+def set_interaction_relations(obj, saved_objects, interactionValuesMap):
     # At this moment in time we are not yet dealing with lists, but single items
-    if not relations_list['genotype'] == -1:
-        obj.genotypes.add(saved_objects['genotype'][relations_list['genotype']])
-    if not relations_list['phenotype'] == -1:
-        obj.phenotypes.add(saved_objects['phenotype'][relations_list['phenotype']])
-    if not relations_list['panel'] == -1:
-        obj.panels.add(saved_objects['panel'][relations_list['panel']])
+    print 'entered set_interaction_relations'
+    if interactionValuesMap['interactCache'].has_key('genotype'):
+        obj.genotypes.add(saved_objects['genotype'][interactionValuesMap['interactCache']['genotype']])
+    if interactionValuesMap['interactCache'].has_key('phenotype'):
+        obj.phenotypes.add(saved_objects['phenotype'][interactionValuesMap['interactCache']['phenotype']])
+    if interactionValuesMap['interactCache'].has_key('panel'):
+        obj.panels.add(saved_objects['panel'][interactionValuesMap['interactCache']['panel']])
+    print 'leaving set_interaction_relations'
     return obj
 
-def get_interaction_values(idx, forms, relations_list):
+def get_interaction_values(idx, forms, relations_lists, form):
     # At this moment in time we are not yet dealing with lists, but single items
+    relations_list = []
     return_map = {}
-    if not relations_list['genotype'] == -1:
-        return_map['gene'] = forms['genotype'][relations_list['genotype']].data['gene']
-        return_map['snp_ref'] = forms['genotype'][relations_list['genotype']].data['snp_ref']
-        return_map['snp_variant'] = forms['genotype'][relations_list['genotype']].data['snp_variant']
-    if not relations_list['phenotype'] == -1:
-        return_map['phenotype_name'] = forms['phenotype'][relations_list['phenotype']].data['phenotype_name']
-    if not relations_list['panel'] == -1:
-        return_map['panel_description'] = forms['panel'][relations_list[
-            'panel']].data['panel_description']
-            
-    for form in fs['interaction']:
-        for field in form:
-            if field=='genotypes' or field=='phenotypes' or field=='panels': or
-                field=='id':
-                continue
-            else:
-                return_map[field] = form[field].value()  
+    return_map['interactCache'] = {}
+    if relations_lists.has_key(str(idx)):
+        relations_list = relations_lists[str(idx)]
+        if not relations_list['genotype'] == -1:
+            index = str(relations_list['genotype'])
+            print idx, '->', index, ' (', forms['genotype'][index].data['gene'], ')'
+            return_map['interactCache']['genotype'] = index
+            return_map['gene'] = forms['genotype'][index].data['gene']
+            return_map['snp_ref'] = forms['genotype'][index].data['snp_ref']
+            return_map['snp_variant'] = forms['genotype'][index].data[
+                'snp_variant']
+        if not relations_list['phenotype'] == -1:
+            index = str(relations_list['phenotype'])
+            print idx, '->', index
+            return_map['interactCache']['phenotype'] = index
+            return_map['phenotype_name'] = forms['phenotype'][index].data[
+                'phenotype_name']
+        if not relations_list['panel'] == -1:
+            index = str(relations_list['panel'])
+            print idx, '->', index, ' (', forms['panel'][index].data['panel_description'], ')'
+            return_map['interactCache']['panel'] = index
+            return_map['panel_description'] = forms['panel'][index].data[
+                'panel_description']
                 
+    # Set regular interaction fields, even if it has no relations
+    for field in form:
+        if (field=='genotypes' or field=='phenotypes' or field=='panels' or
+            field=='id'):
+            continue
+        else:
+            return_map[field] = field.value()
     return return_map
     
 def add_non_interaction_forms(jason, study):
     # Fully functional
-    forms = {'genotype':[],'phenotype':[],'panel':[]}
+    forms = {'genotype':{},'phenotype':{},'panel':{}}
+    count = sys.maxint
     for key1 in jason:
         if not forms.has_key(key1):
+            # 'interaction' key is not yet present at this point
             continue
         for key2 in jason[key1]:
+            print key1, '->', key2
             form = None
             if key1 == 'genotype': 
                 form = GenotypeForm(Genotype.objects.none())
@@ -129,7 +160,8 @@ def add_non_interaction_forms(jason, study):
                         form.data[field.name] = jason[key1][key2][field.name]
                         if form.data[field.name] == 'null':
                             form.data[field.name] = None
-                forms[key1].append(form)
+                forms[key1][key2] = form
+            count -= 1
     return forms
     
 def add_interaction_forms(jason, study, saved_objects, forms):
@@ -163,10 +195,13 @@ def get_interactionValues_from_formsets(fs):
     for form in fs['interaction']:
         id = form['id'].value()
         interactionValues[id] = {}
+        interactionValues[id]['interactCache'] = {}
         for field in form:
             if field=='genotypes' or field=='phenotypes' or field=='panels':
                 for f in fs['genotype']:
                     if len(form['genotypes'].value()) > 0 and f['id'].value() == form['genotypes'].value()[0]:
+                        interactionValues[id]['interactCache'][
+                            'genotypes'] = f['id'].value()
                         interactionValues[id]['gene'] = f['gene'].value()
                         interactionValues[id][
                             'snp_ref'] = f['snp_ref'].value()
@@ -175,21 +210,65 @@ def get_interactionValues_from_formsets(fs):
                         break
                 for f in fs['phenotype']:
                     if len(form['phenotypes'].value()) > 0 and f['id'].value() == form['phenotypes'].value()[0]:
+                        interactionValues[id]['interactCache'][
+                            'genotypes'] = f['id'].value()
                         interactionValues[id][
                             'phenotype_name'] = f['phenotype_name'].value()
                         break
                 for f in fs['panel']:
                     if len(form['panels'].value()) > 0 and f['id'].value() == form['panels'].value()[0]:
+                        interactionValues[id]['interactCache'][
+                            'genotypes'] = f['id'].value()
                         interactionValues[id][
                             'panel_description'] = f['panel_description'].value()
                         break
             if field=='id':
                 continue
             else:
-                interactionValues[id][field] = form[field].value()
-    return interactionValues
-        
+                interactionValues[id][field] = field.value()
     
+    return interactionValues
+    
+def get_formset_maps_by_id(id):
+    ''' Return variable layout is as follows: 
+            {
+                'genotype':
+                    {
+                        '0': a form, 
+                        '1':, a second form, 
+                        ...
+                    },
+                'phenotype':
+                    {
+                        '0':...,
+                        ...
+                    },
+                'panel':
+                    {
+                        '0':...,
+                        ...
+                    },
+                'interaction': [form, different form]
+                'study': [study form]
+            }
+    '''
+    '''formSets = {'study':formset,'genotype':formsetGenotype,
+        'phenotype':formsetPhenotype,'panel':formsetPanel,
+        'interaction':formsetInteraction}
+        '''
+    returnFormSets = {'study':[],'genotype':{},
+        'phenotype':{},'panel':{},
+        'interaction':[]}
+    inputFormSets = get_formsets_by_id(id)
+    for index, form in enumerate(inputFormSets['genotype']):
+        returnFormSets['genotype'][index] = form
+    for index, form in enumerate(inputFormSets['phenotype']):
+        returnFormSets['phenotype'][index] = form
+    for index, form in enumerate(inputFormSets['panel']):
+        returnFormSets['panel'][index] = form
+    returnFormSets['study'] =  inputFormSets['study']
+    returnFormSets['interaction'] =  inputFormSets['interaction']
+    return returnFormSets    
 
 def get_formsets_by_id(id):
     qs = Study.objects.filter(pk=id)     
@@ -373,14 +452,11 @@ def call_entrez(snp_ref):
         snp_ref = snp_ref.strip('rs')
     search_url = 'http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=snp&id={0}&report=GENB'.format(snp_ref)
     requested_url = 'http://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?searchType=adhoc_search&type=rs&rs=rs{0}'.format(snp_ref)
-    #479341
-    str1 = 'Nothing happened'
     error = False
     error_code = ''
     try:
         try:
             fileHandle = urllib2.urlopen(search_url)
-            str1 = fileHandle.read()
             fileHandle.close()
         except urllib2.HTTPError, e:
             error = True
