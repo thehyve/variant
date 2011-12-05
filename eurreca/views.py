@@ -128,12 +128,15 @@ def study_create(request):
             print "\nin study create view"
             print '\na)',type(inst)     # the exception instance
             print '\nb)',inst
+            print '\nc)',inst.__class__       
+            print '\nd)',inst.args
+            print '\ne)',inst.args.__class_
             
-            if isinstance(inst.args[0], str):
+            if len(inst.args) != 2 or isinstance(inst.args, str):
                 # We received a string. So we did not receive a second 
                 # argument (which should be a map of lists of forms)
                 message =  "The study has not been saved."
-                message += " Please review the errors and try again: "+str(inst.args[0])
+                message += " Please review the errors and try again: "+str(inst.args)
                 messageType = "negative"
                 formset = StudyFormSet(queryset=Study.objects.none(), prefix="study")
                 return render(request, 'domain_views/study_editing.html', 
@@ -141,22 +144,20 @@ def study_create(request):
                      'message' : message,
                      'messageType' : messageType,
                      'year_list': utils.get_year_list(),})
-            print '\nc)',inst.args[0][0]      
-            print '\nd)',inst.args[0][1]
             
             
             # Exception while reading or writing the study-related objects
             message =  "The study has not been saved."
-            message += " Please review the errors and try again."+str(inst.args[0][0])
+            message += " Please review the errors and try again."+str(inst.args[0])
             messageType = "negative"
 
             return render(request, 'domain_views/study_editing.html', 
-                {'formset' : inst.args[0][1]['formset'], 
-                 'formsetGenotype' : inst.args[0][1]['formsetGenotype'],
-                 'formsetPhenotype' :  inst.args[0][1]['formsetPhenotype'],
-                 'formsetPanel' :  inst.args[0][1]['formsetPanel'],
-                 'formsetInteraction' :  inst.args[0][1]['formsetInteraction'], 
-                 'interactionValues' : inst.args[0][1]['interactionValues'], 
+                {'formset' : inst.args[1]['formset'], 
+                 'formsetGenotype' : inst.args[1]['formsetGenotype'],
+                 'formsetPhenotype' :  inst.args[1]['formsetPhenotype'],
+                 'formsetPanel' :  inst.args[1]['formsetPanel'],
+                 'formsetInteraction' :  inst.args[1]['formsetInteraction'], 
+                 'interactionValues' : inst.args[1]['interactionValues'], 
                  'message' : message,
                  'messageType' : messageType,
                  'year_list': utils.get_year_list(),}) 
@@ -228,11 +229,15 @@ def study_update(request, id):
             print "\nin study update view"
             print '\na)',type(inst)     # the exception instance
             print '\nb)',inst
-            if isinstance(inst.args[0], str):
+            print '\nc)',inst.__class__
+            print '\nd)',inst.args
+            print '\ne)',inst.args.__class__            
+            
+            if len(inst.args) != 2 or isinstance(inst.args, str):
                 # We received a string. So we did not receive a second 
                 # argument (which should be a map of lists of forms)
                 message =  "The study has not been saved."
-                message += " Please review the errors and try again: "+str(inst.args[0])
+                message += " Please review the errors and try again: "+str(inst.args)
                 messageType = "negative"
                 fs = utils.get_formsets_by_id(id)
                 # Make sure these lists of items have already been processed at
@@ -259,15 +264,15 @@ def study_update(request, id):
             for p in old_Panels: p.save()
             for i in old_Interactions: i.save() 
             message =  "The study has not been saved."
-            message += " Please review the errors and try again."+str(inst.args[0][0])
+            message += " Please review the errors and try again."+str(inst.args[0])
             messageType = "negative"
             return render(request, 'domain_views/study_editing.html', 
-                {'formset' : inst.args[0][1]['formset'], 
-                 'formsetGenotype' : inst.args[0][1]['formsetGenotype'],
-                 'formsetPhenotype' :  inst.args[0][1]['formsetPhenotype'],
-                 'formsetPanel' :  inst.args[0][1]['formsetPanel'],
-                 'formsetInteraction' :  inst.args[0][1]['formsetInteraction'], 
-                 'interactionValues' : inst.args[0][1]['interactionValues'], 
+                {'formset' : inst.args[1]['formset'], 
+                 'formsetGenotype' : inst.args[1]['formsetGenotype'],
+                 'formsetPhenotype' :  inst.args[1]['formsetPhenotype'],
+                 'formsetPanel' :  inst.args[1]['formsetPanel'],
+                 'formsetInteraction' :  inst.args[1]['formsetInteraction'], 
+                 'interactionValues' : inst.args[1]['interactionValues'], 
                  'message' : message,
                  'messageType' : messageType,
                  'year_list': utils.get_year_list(),})

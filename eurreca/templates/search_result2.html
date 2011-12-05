@@ -4,7 +4,12 @@
 <div>
     <span class="button">
         <a href="/studies/view/{{ form.id.value }}">
-            Study <img alt="View" src="{{ STATIC_URL }}images/icons/page.png">
+            {% if form.paper_title.value %}
+                {{ form.paper_title.value }}
+            {% else %}
+                Study 
+            {% endif %}
+            <img alt="View" src="{{ STATIC_URL }}images/icons/page.png">
         </a>    
     </span>
     <table>
