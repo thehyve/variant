@@ -1,5 +1,11 @@
 <div class="editable_form_placeholder">
-	<input class="all" type="text" onFocus="showFormByElement(this);"> 
+	{% if editable %}
+		<input class="all" type="text" onFocus="showFormByElement(this);" value="{{endpoint}}">
+	{% else %}
+		<a class="all" href="#" onClick="showFormByElement( this ); return false;">
+			{{endpoint}}
+		</a>
+	{% endif %} 
 	<div class="more_inputs">
 		<label>Endpoint (not saved yet)</label><input type="text" class="label focus" name="endpoint-endpoint" value="{{endpoint}}"><br />
 		<input type="button" onClick="saveFormByElement( this );" value="OK">

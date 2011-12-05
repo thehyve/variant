@@ -1,7 +1,15 @@
+{% load joinNonEmpty %}
+{% load addToList %}
 <div class="editable_form_placeholder">
-	<input class="all" type="text" onFocus="showFormByElement(this);"> 
+	{% if editable %}
+		<input class="all" type="text" onFocus="showFormByElement(this);" value="{{ "[]"|addToList:gene|addToList:snp_ref|addToList:snp_variant|joinNonEmpty:", "}}">
+	{% else %}
+		<a class="all" href="#" onClick="showFormByElement( this ); return false;">
+			{{ "[]"|addToList:gene|addToList:snp_ref|addToList:snp_variant|joinNonEmpty:", "}}
+		</a>
+	{% endif %} 
 	<div class="more_inputs">
-		<label>Gene name</label><input type="text" class="label focus" name="genotype-gene" value="{{gene}}"><br />
+		<label>Gene name *</label><input type="text" class="label focus required" name="genotype-gene" value="{{gene}}"><br />
 		<label>SNP ref</label><input type="text" class="label" name="genotype-snp_ref" value="{{snp_ref}}"><br />
 		<label>SNP variant</label><input type="text" class="label" name="genotype-snp_variant" value="{{snp_variant}}"><br />
 		<input type="button" onClick="saveFormByElement( this );" value="OK">

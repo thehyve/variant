@@ -276,11 +276,11 @@ function findOrAddMatchingObjects( objects ) {
 function findOrAddMatchingObject( id, listToCheck ) {
 	var iElement = null;
 	
-	// If listToCheck is empty, don't add anything
-	var isEmpty = false;
+	// If any of the values in listToCheck is empty, don't add anything
+	var isEmpty = true;
 	for( i = 0; i < listToCheck.length; i++ ) {
-		if( listToCheck[ i ] == "" ) {
-			isEmpty = true;
+		if( listToCheck[ i ] != "" ) {
+			isEmpty = false;
 			break;
 		}
 	}
@@ -432,12 +432,48 @@ function rowEditingButtons( id, editing ) {
 var formShown = false;
 var originalFieldValues;
 
+// Initialize click outside of the form to close the form
+$( function() {
+	$( "#fade_background" ).bind( "click", function(e) {
+		if( formShown != false )
+			saveForm(formShown); 
+	} );
+});
+
 function formKeyPress( e ) {
 	if( formShown != false ) {
-		if( e.which == 27 )
+		if( e.which == 27 )	// Escape
 			cancelForm( formShown );
-		else if( e.which == 13 ) 
+		else if( e.which == 13 ) // Enter
 			saveForm( formShown );
+	}
+}
+
+function inputTabPress( e ) {
+	if( e.which == 9 && !e.shiftKey ) {	// Tab press (without shift)
+		// Show the form in the next td. If the next td contains buttons,
+		// just close this form
+		var td = $(e.target).parents( "td" ).first();
+		var nextTd = td.next();
+		
+		// If no next td is found, return
+		if( nextTd.length == 0 )
+			return;
+		
+		// If the next td contains buttons, close this form and focus
+		// on the first button
+		if( nextTd.hasClass( "buttons" ) ) {
+			if( saveForm( formShown ) ) {
+				$( "a", nextTd ).first().focus();
+			}
+			return false;
+		} 
+		
+		// Otherwise, open the next form
+		if( saveForm( formShown ) ) {
+			showForm( nextTd );
+		}
+		return false;
 	}
 }
 
@@ -450,10 +486,17 @@ function showForm(td) {
 	storeFields( td );
 	
 	$(td).addClass( "form-active" );
-	$( "#fade_background" ).show();
+	$( "#fade_background" ).show()
 	
+	// Set focus to the correct input field
 	var form = $( ".more_inputs", $(td) );
 	$( ".focus", form ).focus();
+	
+	// Make sure none of the fields is marked invalid
+	$( "input[type=text]", form ).removeClass( "invalid" );
+	
+	// Make sure that a tab press on the last input will send you to the next form
+	$( "input[type=text]", $(td) ).last().bind( "keydown", inputTabPress );
 
 	$( document ).bind( "keyup", formKeyPress );
 	formShown = td;
@@ -463,23 +506,34 @@ function hideForm(td) {
 	// Hide the form and remove the background color
 	$(td).removeClass( "form-active" );
 	$( document ).unbind( "keyup", formKeyPress );
+	
+	// Make sure that a tab press event handler is removed
+	$( "input[type=text]", $(td) ).last().unbind( "keydown", inputTabPress );
+	
 	$( "#fade_background" ).hide();
 }
 
 function saveForm(td) {
-	// Hide the form and store the fields
-	hideForm(td);
-	updateFields( td );
-	
-	// Check if this entry also exists in the interactCache list. If so
-	// also update attached objects
-	var tr = $(td).parents( "tr" );
-	
-	if( interactCache[ tr.index() ] != undefined ) {
-		interactCache[ tr.index() ] = updateObjectsBasedOnInteraction( tr );
+	if( checkFormConstraints( td ) ) {
+		// Hide the form and store the fields
+		hideForm(td);
+		
+		updateFields( td );
+		
+		// Check if this entry also exists in the interactCache list. If so
+		// also update attached objects
+		var tr = $(td).parents( "tr" );
+		
+		if( interactCache[ tr.index() ] != undefined ) {
+			interactCache[ tr.index() ] = updateObjectsBasedOnInteraction( tr );
+		}
+		
+		formShown = false;
+		
+		return true;
+	} else {
+		return false;
 	}
-	
-	formShown = false;
 }
 
 function cancelForm(td) {
@@ -534,7 +588,6 @@ function resetFields( td ) {
 	});
 }
 
-
 function updateObjectsBasedOnInteraction( row ) {
 	var fieldsToUpdate = getFieldsToUpdate();
 	var checkFields = {};
@@ -547,6 +600,25 @@ function updateObjectsBasedOnInteraction( row ) {
 	}
 	
 	return findOrAddMatchingObjects( checkFields );
+}
+
+function checkFormConstraints( td ) {
+	var validated = true;
+	$( "input.required", $(td) ).each( function( idx, el ) {
+		if( $(el).val().trim() == "" ) {
+			$(el).addClass( "invalid" );
+			validated = false;
+		} else {
+			$(el).removeClass( "invalid" );
+		}
+	});
+	
+	if( !validated ) {
+		alert( "Please fill in all required fields." );
+		$( "input.invalid", $(td) ).first().focus();
+	}
+	
+	return validated;
 }
 
 JSON.stringify = JSON.stringify || function (obj) {

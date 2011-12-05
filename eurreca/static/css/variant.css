@@ -89,27 +89,15 @@ td.form-active { background-color: #E4F7B2; z-index: 20; }
 td.form-active .all { position: relative; z-index: 21; }
 
 .interactions .editable_form_placeholder { position: relative; }
+.interactions a { text-decoration: none; display: block; min-height: 20px; }
+
 td.form-active .more_inputs { display: block; z-index: 22; }
 .more_inputs { border: 1px solid black; display: none; padding: 5px; position: absolute; top: 32px; width: 350px; background-color: white; z-index: 10;  }
 .more_inputs label { display: inline-block; width: 150px; *display: inline; zoom: 1; }
+.more_inputs .invalid { background-color: #FFC9D7; }
 
-.more_inputs:before, .more_inputs:after {
-	content: ' ';
-	height: 0;
-	position: absolute;
-	width: 0;
-}
-.more_inputs:before {
-	top: -20px;
-	left: 4px;
-	border: 10px solid transparent;
-	border-bottom-color: black;
-}
-.more_inputs:after {
-	top: -18px;
-	left: 5px;
-	border: 9px solid transparent;
-	border-bottom-color: white;
-}
+/* Nice arrows above each form */
+.more_inputs:before, .more_inputs:after { content: ' '; height: 0; position: absolute; width: 0; }
+.more_inputs:before { top: -20px; left: 4px; border: 10px solid transparent; border-bottom-color: black; }
+.more_inputs:after { top: -18px; left: 5px; border: 9px solid transparent; border-bottom-color: white; }
 
-.interactions a { text-decoration: none; display: block; min-height: 20px; }

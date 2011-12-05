@@ -135,43 +135,18 @@
 										{% if not form.genotypes.value.0 == None %}
 											{% for gf in formsetGenotype %}
 												{% if gf.id.value == form.genotypes.value.0 %}
-												
-													<a class="all" href="#" onClick="showFormByElement( this ); return false;">
-														{{gf.gene.value}}, {{gf.snp_ref.value}}, {{gf.snp_variant.value}}
-													</a>
-													<div class="more_inputs">
-														<label>Gene name</label><input class="label focus" type="text" name="genotype-gene" value="{{gf.gene.value}}"><br />
-														<label>SNP ref</label><input class="label" type="text" name="genotype-snp_ref" value="{{gf.snp_ref.value}}"><br />
-														<label>SNP variant</label><input class="label" type="text" name="genotype-snp_variant" value="{{gf.snp_variant.value}}"><br />
-														<input type="button" onClick="saveFormByElement( this );" value="OK">
-													</div>
+													{% include 'study_editing/genotype_form.html' with gene=gf.gene.value snp_ref=gf.snp_ref.value snp_variant=gf.snp_variant.value %}
 												{% endif %} 
 											{% endfor %}
 										{% else %}
 											{% if interactionValues %}
 												{% for item, value in interactionValues.items %}
 													{% ifequal forloop.parentloop.counter forloop.counter %}
-														<a class="all" href="#" onClick="showFormByElement( this ); return false;">
-															{{value.gene}}, {{value.snp_ref}}, {{value.snp_variant}}
-														</a>
-														<div class="more_inputs">
-															<label>Gene name</label><input class="label focus" type="text" name="genotype-gene" value="{{value.gene}}"><br />
-															<label>SNP ref</label><input class="label" type="text" name="genotype-snp_ref" value="{{value.snp_ref}}"><br />
-															<label>SNP variant</label><input class="label" type="text" name="genotype-snp_variant" value="{{value.snp_variant}}"><br />
-															<input type="button" onClick="saveFormByElement( this );" value="OK">
-														</div>
+														{% include 'study_editing/genotype_form.html' with gene=value.gene snp_ref=value.snp_ref snp_variant=value.snp_variant %}
 													{% endifequal %}
 												{% endfor %}
 											{% else %}
-												<a class="all" href="#" onClick="showFormByElement( this ); return false;">
-													
-												</a>
-												<div class="more_inputs">
-													<label>Gene name</label><input class="label focus" type="text" name="genotype-gene" value=""><br />
-													<label>SNP ref</label><input class="label" type="text" name="genotype-snp_ref" value=""><br />
-													<label>SNP variant</label><input class="label" type="text" name="genotype-snp_variant" value=""><br />
-													<input type="button" onClick="saveFormByElement( this );" value="OK">
-												</div>
+												{% include 'study_editing/genotype_form.html' with gene='' snp_ref='' snp_variant='' %}
 											{% endif %}
 										{% endif %}
 									</td>								
@@ -286,19 +261,19 @@
 
 								<tr class="addNew">
 									<td class="editable  editable_genotype">
-										{% include 'study_editing/genotype_form.html' with gene='' snp_ref='' snp_variant='' %}
+										{% include 'study_editing/genotype_form.html' with editable=1 gene='' snp_ref='' snp_variant='' %}
 									</td>								
 									<td class="editable editable_phenotype">
-										{% include 'study_editing/phenotype_form.html' with phenotype_name='' intake_data='' %}
+										{% include 'study_editing/phenotype_form.html' with editable=1 phenotype_name='' intake_data='' %}
 									</td>	
 									<td class="editable editable_panel"> 
-										{% include 'study_editing/panel_form.html' with panel_description='' %}
+										{% include 'study_editing/panel_form.html' with editable=1 panel_description='' %}
 									</td>
 									<td class="editable editable_endpoint">
-										{% include 'study_editing/endpoint_form.html' with endpoint='' %}
+										{% include 'study_editing/endpoint_form.html' with editable=1 endpoint='' %}
 									</td>
 									<td class="editable editable_ratios">
-										{% include 'study_editing/ratios_form.html' with statistical_model='' p_value='' ratio_type='' ratio='' ci_lower='' ci_upper='' significant_associations='' %}
+										{% include 'study_editing/ratios_form.html' with editable=1 statistical_model='' p_value='' ratio_type='' ratio='' ci_lower='' ci_upper='' significant_associations='' %}
 									</td>
 									<td class="buttons">
 										<a href="#" onClick="saveRow('interaction',this); return false;">save</a>

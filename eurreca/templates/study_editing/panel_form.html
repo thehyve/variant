@@ -1,5 +1,11 @@
 <div class="editable_form_placeholder">
-	<input class="all" type="text" onFocus="showFormByElement(this);"> 
+	{% if editable %}
+		<input class="all" type="text" onFocus="showFormByElement(this);" value="{{panel_description}}">
+	{% else %}
+		<a class="all" href="#" onClick="showFormByElement( this ); return false;">
+			{{panel_description}}
+		</a>
+	{% endif %} 
 	<div class="more_inputs">
 		<label>Panel description</label><input type="text" class="label focus" name="panel-panel_description" value="{{panel_description}}"><br />
 		<input type="button" onClick="saveFormByElement( this );" value="OK">

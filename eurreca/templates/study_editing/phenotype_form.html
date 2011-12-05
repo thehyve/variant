@@ -1,7 +1,13 @@
 <div class="editable_form_placeholder">
-	<input class="all" type="text" onFocus="showFormByElement(this);"> 
+	{% if editable %}
+		<input class="all" type="text" onFocus="showFormByElement(this);" value="{{phenotype_name}}">
+	{% else %}
+		<a class="all" href="#" onClick="showFormByElement( this ); return false;">
+			{{phenotype_name}}
+		</a>
+	{% endif %} 
 	<div class="more_inputs">
-		<label>Phenotype name</label><input type="text" class="label focus" name="phenotype-phenotype_name" value="{{phenotype_name}}"><br />
+		<label>Phenotype name *</label><input type="text" class="label required focus" name="phenotype-phenotype_name" value="{{phenotype_name}}"><br />
 		<label>Intake data</label><input type="text" class="" name="phenotype-intake_data" value="{{intake_data}}"><br />
 		<input type="button" onClick="saveFormByElement( this );" value="OK">
 		<input type="button" onClick="cancelFormByElement( this );" value="Cancel">
