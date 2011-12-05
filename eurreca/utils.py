@@ -49,7 +49,9 @@ def process_clientside_studydata(jason, study, study_formset, request):
         forms = add_interaction_forms(jason, study, saved_objects, forms)
         saved_objects['interaction'] = []
         for count, form in enumerate(forms['interaction']):
+            print 'get_interaction_values for interaction', count
             interactionValues[count] = get_interaction_values(str(count), forms, jason['interactionRelations'], form) 
+            print '\n'
         for count, form in enumerate(forms['interaction']):
             if not form.is_valid():
                 error_messages.append(form.errors.items())
@@ -116,7 +118,7 @@ def get_interaction_values(idx, forms, relations_lists, form):
                 'snp_variant']
         if not relations_list['phenotype'] == -1:
             index = str(relations_list['phenotype'])
-            print idx, '->', index
+            print idx, '->', index, ' (', forms['phenotype'][index].data['phenotype_name'], ')'
             return_map['interactCache']['phenotype'] = index
             return_map['phenotype_name'] = forms['phenotype'][index].data[
                 'phenotype_name']
@@ -129,11 +131,12 @@ def get_interaction_values(idx, forms, relations_lists, form):
                 
     # Set regular interaction fields, even if it has no relations
     for field in form:
-        if (field=='genotypes' or field=='phenotypes' or field=='panels' or
-            field=='id'):
+        if (field.name=='genotypes' or field.name=='phenotypes' or field.name=='panels' or
+            field.name=='id'):
             continue
         else:
             return_map[field] = field.value()
+            print idx, field.name, '->', field.value()
     return return_map
     
 def add_non_interaction_forms(jason, study):
@@ -167,7 +170,9 @@ def add_non_interaction_forms(jason, study):
 def add_interaction_forms(jason, study, saved_objects, forms):
     # Does not set all fields yet
     forms['interaction'] = []
-    for key1 in jason['interaction']:
+    keylist = jason['interaction'].keys()
+    keylist.sort()
+    for key1 in keylist:
         form = InteractionForm(Interaction.objects.none())
         form.data['study'] = study.id
         for field in form:
@@ -176,9 +181,10 @@ def add_interaction_forms(jason, study, saved_objects, forms):
                 continue
             if jason['interaction'][key1].has_key(field.name):
                 form.data[field.name] = jason['interaction'][key1][field.name]
+                print '(in add_interaction_forms) ', key1, '->', jason['interaction'][key1][field.name]
                 if form.data[field.name] == 'null':
                     form.data[field.name] = None
-        forms['interaction'].append(form)         
+        forms['interaction'].append(form) 
     return forms
     
 def errors_to_string(errors):
