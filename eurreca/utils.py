@@ -49,9 +49,7 @@ def process_clientside_studydata(jason, study, study_formset, request):
         forms = add_interaction_forms(jason, study, saved_objects, forms)
         saved_objects['interaction'] = []
         for count, form in enumerate(forms['interaction']):
-            print 'get_interaction_values for interaction', count
             interactionValues[count] = get_interaction_values(str(count), forms, jason['interactionRelations'], form) 
-            print '\n'
         for count, form in enumerate(forms['interaction']):
             if not form.is_valid():
                 error_messages.append(form.errors.items())
@@ -91,14 +89,12 @@ def process_clientside_studydata(jason, study, study_formset, request):
         
 def set_interaction_relations(obj, saved_objects, interactionValuesMap):
     # At this moment in time we are not yet dealing with lists, but single items
-    print 'entered set_interaction_relations'
     if interactionValuesMap['interactCache'].has_key('genotype'):
         obj.genotypes.add(saved_objects['genotype'][interactionValuesMap['interactCache']['genotype']])
     if interactionValuesMap['interactCache'].has_key('phenotype'):
         obj.phenotypes.add(saved_objects['phenotype'][interactionValuesMap['interactCache']['phenotype']])
     if interactionValuesMap['interactCache'].has_key('panel'):
         obj.panels.add(saved_objects['panel'][interactionValuesMap['interactCache']['panel']])
-    print 'leaving set_interaction_relations'
     return obj
 
 def get_interaction_values(idx, forms, relations_lists, form):
@@ -110,7 +106,6 @@ def get_interaction_values(idx, forms, relations_lists, form):
         relations_list = relations_lists[str(idx)]
         if not relations_list['genotype'] == -1:
             index = str(relations_list['genotype'])
-            print idx, '->', index, ' (', forms['genotype'][index].data['gene'], ')'
             return_map['interactCache']['genotype'] = index
             return_map['gene'] = forms['genotype'][index].data['gene']
             return_map['snp_ref'] = forms['genotype'][index].data['snp_ref']
@@ -118,13 +113,11 @@ def get_interaction_values(idx, forms, relations_lists, form):
                 'snp_variant']
         if not relations_list['phenotype'] == -1:
             index = str(relations_list['phenotype'])
-            print idx, '->', index, ' (', forms['phenotype'][index].data['phenotype_name'], ')'
             return_map['interactCache']['phenotype'] = index
             return_map['phenotype_name'] = forms['phenotype'][index].data[
                 'phenotype_name']
         if not relations_list['panel'] == -1:
             index = str(relations_list['panel'])
-            print idx, '->', index, ' (', forms['panel'][index].data['panel_description'], ')'
             return_map['interactCache']['panel'] = index
             return_map['panel_description'] = forms['panel'][index].data[
                 'panel_description']
@@ -136,7 +129,6 @@ def get_interaction_values(idx, forms, relations_lists, form):
             continue
         else:
             return_map[field] = field.value()
-            print idx, field.name, '->', field.value()
     return return_map
     
 def add_non_interaction_forms(jason, study):
@@ -148,7 +140,6 @@ def add_non_interaction_forms(jason, study):
             # 'interaction' key is not yet present at this point
             continue
         for key2 in jason[key1]:
-            print key1, '->', key2
             form = None
             if key1 == 'genotype': 
                 form = GenotypeForm(Genotype.objects.none())
@@ -181,7 +172,6 @@ def add_interaction_forms(jason, study, saved_objects, forms):
                 continue
             if jason['interaction'][key1].has_key(field.name):
                 form.data[field.name] = jason['interaction'][key1][field.name]
-                print '(in add_interaction_forms) ', key1, '->', jason['interaction'][key1][field.name]
                 if form.data[field.name] == 'null':
                     form.data[field.name] = None
         forms['interaction'].append(form) 
