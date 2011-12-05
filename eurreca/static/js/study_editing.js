@@ -430,43 +430,45 @@ function rowEditingButtons( id, editing ) {
  * 
  *******************************************************************************/
 var formShown = false;
+var originalFieldValues;
 
-function showFormByElement( element ) {
-	var parent = $(element).parent();
-	
-	while( parent.size() > 0 && parent.get(0).tagName.toLowerCase() != "td" ) {
-		parent = parent.parent();				
+function formKeyPress( e ) {
+	if( formShown != false ) {
+		if( e.which == 27 )
+			cancelForm( formShown );
+		else if( e.which == 13 ) 
+			saveForm( formShown );
 	}
-	
-	showForm( parent );
-}
-function hideFormByElement( element ) {
-	var parent = $(element).parent();
-	
-	while( parent.size() > 0 && parent.get(0).tagName.toLowerCase() != "td" ) {
-		parent = parent.parent();				
-	}
-	
-	hideForm( parent );
 }
 
 function showForm(td) {
 	if( formShown ) {
-		hideForm( formShown );
+		saveForm( formShown );
 	}
 	
+	// Store fields in case we want to cancel it
+	storeFields( td );
+	
 	$(td).addClass( "form-active" );
-
+	$( "#fade_background" ).show();
+	
 	var form = $( ".more_inputs", $(td) );
 	$( ".focus", form ).focus();
-	
+
+	$( document ).bind( "keyup", formKeyPress );
 	formShown = td;
 }
 
 function hideForm(td) {
 	// Hide the form and remove the background color
 	$(td).removeClass( "form-active" );
-	
+	$( document ).unbind( "keyup", formKeyPress );
+	$( "#fade_background" ).hide();
+}
+
+function saveForm(td) {
+	// Hide the form and store the fields
+	hideForm(td);
 	updateFields( td );
 	
 	// Check if this entry also exists in the interactCache list. If so
@@ -478,6 +480,24 @@ function hideForm(td) {
 	}
 	
 	formShown = false;
+}
+
+function cancelForm(td) {
+	// Hide the form and reset the fields
+	hideForm(td);
+	resetFields(td);
+	
+	formShown = false;
+}
+
+function showFormByElement( element ) {
+	showForm( $(element).parents( "td" ).first() );
+}
+function saveFormByElement( element ) {
+	saveForm( $(element).parents( "td" ).first() );
+}
+function cancelFormByElement( element ) {
+	cancelForm( $(element).parents( "td" ).first() );
 }
 
 function updateFields( td ) {
@@ -494,6 +514,26 @@ function updateFields( td ) {
 	$( "input.all", $(td) ).val( label );
 	$( "a.all", $(td) ).text( label );	
 }
+
+function storeFields( td ) {
+	var form = $( ".more_inputs", $(td) );
+	
+	// Loop through all fields in the form and reset the value
+	originalFieldValues = {};
+	$( "input[type=text]", form ).each( function( idx, el ) {
+		originalFieldValues[ $(el).attr( 'name' ) ] = $(el).val();
+	});
+}
+
+function resetFields( td ) {
+	var form = $( ".more_inputs", $(td) );
+	
+	// Loop through all fields in the form and reset the value
+	$( "input[type=text]", form ).each( function( idx, el ) {
+		$(el).val( originalFieldValues[ $(el).attr( 'name' ) ] );
+	});
+}
+
 
 function updateObjectsBasedOnInteraction( row ) {
 	var fieldsToUpdate = getFieldsToUpdate();

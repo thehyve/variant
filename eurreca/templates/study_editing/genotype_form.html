@@ -1,0 +1,10 @@
+<div class="editable_form_placeholder">
+	<input class="all" type="text" onFocus="showFormByElement(this);"> 
+	<div class="more_inputs">
+		<label>Gene name</label><input type="text" class="label focus" name="genotype-gene" value="{{gene}}"><br />
+		<label>SNP ref</label><input type="text" class="label" name="genotype-snp_ref" value="{{snp_ref}}"><br />
+		<label>SNP variant</label><input type="text" class="label" name="genotype-snp_variant" value="{{snp_variant}}"><br />
+		<input type="button" onClick="saveFormByElement( this );" value="OK">
+		<input type="button" onClick="cancelFormByElement( this );" value="Cancel">
+	</div>
+</div>

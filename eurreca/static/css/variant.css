@@ -84,9 +84,12 @@ table.interactions td.buttons { width: 100px; }
 table.interactions input.newVal { width: 100%; }
 
 /* Small forms in study edit */
-.interactions td { position: relative; }
-td.form-active { background-color: #E4F7B2; }
-td.form-active .more_inputs { display: block; }
+#fade_background { background-color: #F3F2F7; opacity: 0.6; z-index: 10; position: absolute; left: 0; top: 0; width: 100%; height: 100%; display: none; }
+td.form-active { background-color: #E4F7B2; z-index: 20; }
+td.form-active .all { position: relative; z-index: 21; }
+
+.interactions .editable_form_placeholder { position: relative; }
+td.form-active .more_inputs { display: block; z-index: 22; }
 .more_inputs { border: 1px solid black; display: none; padding: 5px; position: absolute; top: 32px; width: 350px; background-color: white; z-index: 10;  }
 .more_inputs label { display: inline-block; width: 150px; *display: inline; zoom: 1; }
 
