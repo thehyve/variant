@@ -22,17 +22,17 @@
 			{% endif %}
 			
 			{% if form.phenotypes.value.0 %}
-				// Zoek de index op van de genotype rij
+				// Zoek de index op van de phenotype rij
 				interactCache[ interactionIndex ][ "phenotypeNrs" ] = $( "tr#phenotype_{{form.phenotypes.value.0}}" ).index();
 			{% endif %}
 
 			{% if form.panels.value.0 %}
-				// Zoek de index op van de genotype rij
+				// Zoek de index op van de panel rij
 				interactCache[ interactionIndex ][ "panelNrs" ] = $( "tr#panel_{{form.panels.value.0}}" ).index();
 			{% endif %}
-
+			
 			interactionIndex++;
-		{% endfor %}			
+		{% endfor %}
 		
 		{# Add autocompletion to the field with id 'id_study-0-year_of_publication' #}
 		{# That is, the study's 'Year of publication' field #}
@@ -49,6 +49,7 @@
 {% endblock %}
 
 {% block body %}
+	<div id="fade_background"></div>
 	<div id="studylist">
 		{% for form in formset %}
 			{% if form.id.value == null or form.id.value == '' or form.id.value == None %}
@@ -133,42 +134,18 @@
 										{% if not form.genotypes.value.0 == None %}
 											{% for gf in formsetGenotype %}
 												{% if gf.id.value == form.genotypes.value.0 %}
-													<a class="all" href="#" onClick="showFormByElement( this ); return false;">
-														{{gf.gene.value}}, {{gf.snp_ref.value}}, {{gf.snp_variant.value}}
-													</a>
-													<div class="more_inputs">
-														<label>Gene name</label><input class="label focus" type="text" name="genotype-gene" value="{{gf.gene.value}}"><br />
-														<label>SNP ref</label><input class="label" type="text" name="genotype-snp_ref" value="{{gf.snp_ref.value}}"><br />
-														<label>SNP variant</label><input class="label" type="text" name="genotype-snp_variant" value="{{gf.snp_variant.value}}">
-														<input type="button" onClick="hideFormByElement( this );" value="OK">
-													</div>
+													{% include 'study_editing/genotype_form.html' with gene=gf.gene.value snp_ref=gf.snp_ref.value snp_variant=gf.snp_variant.value %}
 												{% endif %} 
 											{% endfor %}
 										{% else %}
 											{% if interactionValues %}
 												{% for item, value in interactionValues.items %}
 													{% ifequal forloop.parentloop.counter forloop.counter %}
-														<a class="all" href="#" onClick="showFormByElement( this ); return false;">
-															{{value.gene}}, {{value.snp_ref}}, {{value.snp_variant}}
-														</a>
-														<div class="more_inputs">
-															<label>Gene name</label><input class="label focus" type="text" name="genotype-gene" value="{{value.gene}}"><br />
-															<label>SNP ref</label><input class="label" type="text" name="genotype-snp_ref" value="{{value.snp_ref}}"><br />
-															<label>SNP variant</label><input class="label" type="text" name="genotype-snp_variant" value="{{value.snp_variant}}">
-															<input type="button" onClick="hideFormByElement( this );" value="OK">
-														</div>
+														{% include 'study_editing/genotype_form.html' with gene=value.gene snp_ref=value.snp_ref snp_variant=value.snp_variant %}
 													{% endifequal %}
 												{% endfor %}
 											{% else %}
-												<a class="all" href="#" onClick="showFormByElement( this ); return false;">
-													
-												</a>
-												<div class="more_inputs">
-													<label>Gene name</label><input class="label focus" type="text" name="genotype-gene" value=""><br />
-													<label>SNP ref</label><input class="label" type="text" name="genotype-snp_ref" value=""><br />
-													<label>SNP variant</label><input class="label" type="text" name="genotype-snp_variant" value="">
-													<input type="button" onClick="hideFormByElement( this );" value="OK">
-												</div>
+												{% include 'study_editing/genotype_form.html' with gene='' snp_ref='' snp_variant='' %}
 											{% endif %}
 										{% endif %}
 									</td>								
@@ -181,9 +158,8 @@
 													</a>
 													<div class="more_inputs">
 														<label>Phenotype name</label><input class="label focus" type="text" name="phenotype-phenotype_name" value="{{pf.phenotype_name.value}}"><br />
-														<label>Environmental factor</label><input class="label" type="text" name="phenotype-environmental_factor" value="{{pf.environmental_factor.value}}"><br />
-														<label>Type</label><input class="label" type="text" name="phenotype-type" value="{{pf.type.value}}">
-														<input type="button" onClick="hideFormByElement( this );" value="OK">
+														<label>Intake data</label><input class="" type="text" name="phenotype-intake_data" value="{{pf.intake_data.value}}"><br />
+														<input type="button" onClick="saveFormByElement( this );" value="OK">
 													</div>
 												{% endif %} 
 											{% endfor %}   
@@ -196,9 +172,8 @@
 														</a>
 														<div class="more_inputs">
 															<label>Phenotype name</label><input class="label focus" type="text" name="phenotype-phenotype_name" value="{{value.phenotype_name}}"><br />
-															<label>Environmental factor</label><input class="label" type="text" name="phenotype-environmental_factor" value="{{value.environmental_factor}}"><br />
-															<label>Type</label><input class="label" type="text" name="phenotype-type" value="{{value.type}}">
-															<input type="button" onClick="hideFormByElement( this );" value="OK">
+															<label>Intake data</label><input class="" type="text" name="phenotype-intake_data" value="{{value.intake_data}}"><br />
+															<input type="button" onClick="saveFormByElement( this );" value="OK">
 														</div>
 													{% endifequal %}
 												{% endfor %}
@@ -208,9 +183,8 @@
 												</a>
 												<div class="more_inputs">
 													<label>Phenotype name</label><input class="label focus" type="text" name="phenotype-phenotype_name" value=""><br />
-													<label>Environmental factor</label><input class="label" type="text" name="phenotype-environmental_factor" value=""><br />
-													<label>Type</label><input class="label" type="text" name="phenotype-type" value="">
-													<input type="button" onClick="hideFormByElement( this );" value="OK">
+													<label>Intake data</label><input class="" type="text" name="phenotype-intake_data" value=""><br />
+													<input type="button" onClick="saveFormByElement( this );" value="OK">
 												</div>
 											{% endif %}
 										{% endif %}
@@ -224,7 +198,7 @@
 													</a>
 													<div class="more_inputs">
 														<label>Panel description</label><input class="label focus" type="text" name="panel-panel_description" value="{{p.panel_description.value}}"><br />
-														<input type="button" onClick="hideFormByElement( this );" value="OK">
+														<input type="button" onClick="saveFormByElement( this );" value="OK">
 													</div>											
 												{% endif %} 
 											{% endfor %}
@@ -237,7 +211,7 @@
 														</a>
 														<div class="more_inputs">
 															<label>Panel description</label><input class="label focus" type="text" name="panel-panel_description" value="{{value.panel_description}}"><br />
-															<input type="button" onClick="hideFormByElement( this );" value="OK">
+															<input type="button" onClick="saveFormByElement( this );" value="OK">
 														</div>											
 													{% endifequal %}
 												{% endfor %}
@@ -247,7 +221,7 @@
 												</a>
 												<div class="more_inputs">
 													<label>Panel description</label><input class="label focus" type="text" name="panel-panel_description" value=""><br />
-													<input type="button" onClick="hideFormByElement( this );" value="OK">
+													<input type="button" onClick="saveFormByElement( this );" value="OK">
 												</div>											
 											{% endif %}
 										{% endif %}
@@ -258,7 +232,7 @@
 										</a>
 										<div class="more_inputs">
 											<label>Endpoint (not saved yet)</label><input type="text" class="label focus" name="endpoint-endpoint" value=""><br />
-											<input type="button" onClick="hideFormByElement( this );" value="OK">
+											<input type="button" onClick="saveFormByElement( this );" value="OK">
 										</div>
 									</td>
 									<td class="editable editable_ratios">
@@ -266,14 +240,14 @@
 											{% if form.ratio_type.value %}{{ form.ratio_type.value }}{% endif %} {% if form.ratio.value %}{{ form.ratio.value }}{% endif %}
 										</a>
 										<div class="more_inputs">
-											<label>Statistical model</label><input type="text" class="label" name="statistical_model" value="{% if form.statistical_model.value %}{{ form.statistical_model.value }}{% endif %}"><br />
-											<label>P value</label><input type="text" class="label" name="p_value" value="{% if form.p_value.value %}{{ form.p_value.value }}{% endif %}"><br />
-											<label>Ratio type</label><input type="text" class="label" name="ratio_type focus" value="{% if form.ratio_type.value %}{{ form.ratio_type.value }}{% endif %}">
-											<label>Ratio value</label><input  type="text" class="label" name="ratio focus" value="{% if form.ratio.value %}{{ form.ratio.value }}{% endif %}">
-											<label>CI lower</label><input type="text"  class="label" name="ci_lower" value="{% if form.ci_lower.value %}{{ form.ci_lower.value }}{% endif %}">
-											<label>CI upper</label><input type="text" class="label" name="ci_upper" value="{% if form.ci_upper.value %}{{ form.ci_upper.value }}{% endif %}">
-											<label>Significant associations</label><input type="text" class="label" name="significant_associations" value="{% if form.significant_associations.value %}{{ form.significant_associations.value }}{% endif %}">
-											<input type="button" onClick="hideFormByElement( this );" value="OK">
+											<label>Statistical model</label><input type="text" class=" focus" name="statistical_model" value="{% if form.statistical_model.value %}{{ form.statistical_model.value }}{% endif %}"><br />
+											<label>P value</label><input type="text" class="" name="p_value" value="{% if form.p_value.value %}{{ form.p_value.value }}{% endif %}"><br />
+											<label>Ratio type</label><input type="text" class="label" name="ratio_type" value="{% if form.ratio_type.value %}{{ form.ratio_type.value }}{% endif %}"><br />
+											<label>Ratio value</label><input  type="text" class="label" name="ratio" value="{% if form.ratio.value %}{{ form.ratio.value }}{% endif %}"><br />
+											<label>CI lower</label><input type="text"  class="" name="ci_lower" value="{% if form.ci_lower.value %}{{ form.ci_lower.value }}{% endif %}"><br />
+											<label>CI upper</label><input type="text" class="" name="ci_upper" value="{% if form.ci_upper.value %}{{ form.ci_upper.value }}{% endif %}"><br />
+											<label>Significant associations</label><input type="text" class="" name="significant_associations" value="{% if form.significant_associations.value %}{{ form.significant_associations.value }}{% endif %}"><br />
+											<input type="button" onClick="saveFormByElement( this );" value="OK">
 										</div>
 									</td>
 									<td class="buttons">
@@ -286,49 +260,19 @@
 
 								<tr class="addNew">
 									<td class="editable  editable_genotype">
-										<input class="all" type="text" onFocus="showFormByElement(this);"> 
-										<div class="more_inputs">
-											<label>Gene name</label><input type="text" class="label focus" name="genotype-gene" value=""><br />
-											<label>SNP ref</label><input type="text" class="label" name="genotype-snp_ref" value=""><br />
-											<label>SNP variant</label><input type="text" class="label" name="genotype-snp_variant" value="">
-											<input type="button" onClick="hideFormByElement( this );" value="OK">
-										</div>
+										{% include 'study_editing/genotype_form.html' with editable=1 gene='' snp_ref='' snp_variant='' %}
 									</td>								
 									<td class="editable editable_phenotype">
-										<input class="all" type="text" onFocus="showFormByElement(this);"> 
-										<div class="more_inputs">
-											<label>Phenotype name</label><input type="text" class="label focus" name="phenotype-phenotype_name" value=""><br />
-											<label>Environmental factor</label><input type="text" class="" name="phenotype-environmental_factor" value=""><br />
-											<label>Type</label><input type="text" class="" name="phenotype-type" value="">
-											<input type="button" onClick="hideFormByElement( this );" value="OK">
-										</div>
+										{% include 'study_editing/phenotype_form.html' with editable=1 phenotype_name='' intake_data='' %}
 									</td>	
 									<td class="editable editable_panel"> 
-										<input class="all" type="text" onFocus="showFormByElement(this);"> 
-										<div class="more_inputs">
-											<label>Panel description</label><input type="text" class="label focus" name="panel-panel_description" value=""><br />
-											<input type="button" onClick="hideFormByElement( this );" value="OK">
-										</div>											
+										{% include 'study_editing/panel_form.html' with editable=1 panel_description='' %}
 									</td>
 									<td class="editable editable_endpoint">
-										<input class="all" type="text" onFocus="showFormByElement(this);"> 
-										<div class="more_inputs">
-											<label>Endpoint (not saved yet)</label><input type="text" class="label focus" name="endpoint-endpoint" value=""><br />
-											<input type="button" onClick="hideFormByElement( this );" value="OK">
-										</div>
+										{% include 'study_editing/endpoint_form.html' with editable=1 endpoint='' %}
 									</td>
 									<td class="editable editable_ratios">
-										<input class="all" type="text" onFocus="showFormByElement(this);"> 
-										<div class="more_inputs">
-											<label>Statistical model</label><input type="text" class="focus" name="statistical_model" value=""><br />
-											<label>P value</label><input type="text" class="" name="p_value" value=""><br />
-											<label>Ratio type</label><input type="text" class="label" name="ratio_type" value="">
-											<label>Ratio value</label><input type="text" class="label" name="ratio" value="">
-											<label>CI lower</label><input type="text" class="" name="ci_lower" value="">
-											<label>CI upper</label><input type="text" class="" name="ci_upper" value="">
-											<label>Significant associations</label><input type="text" class="" name="significant_associations" value="">
-											<input type="button" onClick="hideFormByElement( this );" value="OK">
-										</div>
+										{% include 'study_editing/ratios_form.html' with editable=1 statistical_model='' p_value='' ratio_type='' ratio='' ci_lower='' ci_upper='' significant_associations='' %}
 									</td>
 									<td class="buttons">
 										<a href="#" onClick="saveRow('interaction',this); return false;">save</a>
@@ -392,17 +336,13 @@
 						<thead>
 							<tr class="header" id="phenotype_row">
 								<th id="phenotype_name">Name*</th>
-								<th id="environmental_factor">Environmental Factor*</th>
-								<th id="type">Type*</th>
-								<th id="intake_data">Intake data</th>
+								<th id="intake_data">Intake data*</th>
 							</tr>
 						</thead>
 						<tbody id="phenotype">
 							{% for form in formsetPhenotype %}
 								<tr id="phenotype_{{form.id.value}}">
 									<td class="editable">{% if form.phenotype_name.value %}{{ form.phenotype_name.value }}{% endif %}</td>
-									<td class="editable">{% if form.environmental_factor.value %}{{ form.environmental_factor.value }}{% endif %}</td>
-									<td class="editable">{% if form.type.value %}{{ form.type.value }}{% endif %}</td>
 									<td class="editable">{% if form.intake_data.value %}{{ form.intake_data.value }}{% endif %}</td>
 									<td class="buttons">
 										<a onclick="editRow('phenotype',this); return false;" href="#">edit</a>&nbsp;<a href="#" onClick="removeRow('phenotype',this); return false;">remove</a>

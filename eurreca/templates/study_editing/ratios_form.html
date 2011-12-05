@@ -1,0 +1,23 @@
+{% load joinNonEmpty %}
+{% load addToList %}
+<div class="editable_form_placeholder">
+	{% if editable %}
+		<input class="all" type="text" onFocus="showFormByElement(this);" value="{{ "[]"|addToList:p_value|addToList:ratio_type|addToList:ratio|joinNonEmpty:", "}}">
+	{% else %}
+		<a class="all" href="#" onClick="showFormByElement( this ); return false;">
+			{{ "[]"|addToList:p_value|addToList:ratio_type|addToList:ratio|joinNonEmpty:", "}}
+		</a>
+	{% endif %} 
+	<div class="more_inputs">
+		<label>Statistical model</label><input type="text" class="focus" name="statistical_model" value="{{statistical_model}}"><br />
+		<label>P value</label><input type="text" class="label" name="p_value" value="{{p_value}}"><br />
+		<label>Ratio type</label><input type="text" class="label" name="ratio_type" value="{{ratio_type}}"><br />
+		<label>Ratio value</label><input type="text" class="label" name="ratio" value="{{ratio}}"><br />
+		<label>CI lower</label><input type="text" class="" name="ci_lower" value="{{ci_lower}}"><br />
+		<label>CI upper</label><input type="text" class="" name="ci_upper" value="{{ci_upper}}"><br />
+		<label>Significant associations</label><input type="text" class="" name="significant_associations" value="{{significant_associations}}"><br />
+		<input type="button" onClick="saveFormByElement( this );" value="OK">
+		<input type="button" onClick="cancelFormByElement( this );" value="Cancel">
+	</div>
+
+</div>
