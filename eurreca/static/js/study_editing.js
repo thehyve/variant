@@ -87,8 +87,8 @@ function editRow(id, that) {
 
 /**
  * Saves a row that has been edited in the given table
- * @param id		Type of table to edit	(genotype, phenotype or panel)
- * @param that		Reference to the link clicked (or any other element in the tr that is being edited)
+ * @param id		Type of table to save	(genotype, phenotype or panel)
+ * @param that		Reference to the link clicked (or any other element in the tr that is being saved)
  */
 function saveRow(id, that) {
     
@@ -498,6 +498,9 @@ function showForm(td) {
 	// Make sure that a tab press on the last input will send you to the next form
 	$( "input[type=text]", $(td) ).last().bind( "keydown", inputTabPress );
 
+    // Make sure that snp_refs wil be checked
+    $("input[name='genotype-snp_ref']", form).bind("keyup", get_snp_url)
+
 	$( document ).bind( "keyup", formKeyPress );
 	formShown = td;
 }
@@ -646,18 +649,33 @@ JSON.stringify = JSON.stringify || function (obj) {
  * Call the application to see if dbSNP contains a particular ref
  * Will return '' if not, and the relevant url if it does.
  ***/
-var get_snp_url = function(ref) {
-    var result_of_call = ''
-    if (ref != '') {
+function get_snp_url(e) {
+    var that = this
+    var ref = $(this).val()
+    var result_of_call = '';
+    var image_to_set = '';
+    if (ref != ''){
         var data = { ref:ref };
-        var args = { type:"POST", url:"/ajax_snp/", data:data, complete:done };
-        $.ajax(args);
-        result_of_call = args
+        var args = { type:"POST", 
+                     url:"/ajax_snp/"+ref, 
+                     data:data};
+        var request = $.ajax(args)
+        request.done(function(result){
+            result_of_call = result;
+            if (result_of_call != ''){
+                //image_to_set = 
+                //background-color: #EDF2F7
+                //$(that).css("background-color", "#00FF00");
+                $(that).css("backgroundImage", "url('/static/images/icons/accept.png')");
+                $(that).css("background-repeat", "no-repeat");
+                $(that).css("background-position", "right top");
+                $(that).addClass('snpFound');
+                //alert(result_of_call);
+            } else {
+                $(that).css("backgroundImage", "None");
+                $(that).removeClass('snpFound');
+            }
+        });
     } 
-    if (result_of_call != '')
-        // ...
-    }
-    alert(result_of_call);
     return false;
 };
-

@@ -20,6 +20,7 @@ import utils
 import simple_search
 import advanced_search
 from itertools import chain
+from django.views.decorators.csrf import csrf_exempt
 
 def index(request):
     '''qs = Study.objects.all()
@@ -446,6 +447,7 @@ def all(request):
          'messageType' : messageType,
          'formSets' : search_output['results']})             
          
+@login_required           
 def snp_search(request, ref):
     message = utils.call_entrez(ref)
     list_of_snp_refs = []
@@ -473,13 +475,15 @@ def snp_search(request, ref):
         }
     )
     return HttpResponse(t.render(c))
-    
+ 
+@csrf_exempt 
 def ajax_snp(request, ref):
     ''' Returns either an empty string or a link to a dbSNP page,
         that corresponds to the given ref.
         Side-effect is that it enters any dbSNP page it finds into the db.
         Will not check dbSNP if the reference is already in the DB.
     '''
+    print '\n\najax_snp: entered view'
     t = Template("{{ url }}")
     try:
         link = utils.get_Link_to_dbSNP_by_ref(ref)
@@ -488,6 +492,7 @@ def ajax_snp(request, ref):
             print 'ajax_snp: no joy, checking interwebs'
             message = utils.call_entrez(ref)
             if message['messageType'] == 'negative':
+                print 'ajax_snp: negative result'
                 c = Context({"ref": ref, "url": ""})
                 return HttpResponse(t.render(c))
             else:
