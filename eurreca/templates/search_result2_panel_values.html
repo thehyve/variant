@@ -1,0 +1,16 @@
+﻿{% load contains %}
+
+<td></td>
+<td></td>
+{% if filtered == "True" and form.panel_description.value|containedin:matchedValues %}
+    <td><b>{{ form.panel_description.value }}</b></td>
+{% else %}
+    <td>{{ form.panel_description.value }}</td>
+{% endif %} 
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>

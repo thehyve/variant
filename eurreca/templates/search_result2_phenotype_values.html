@@ -1,0 +1,16 @@
+﻿{% load contains %}
+
+<td></td>
+{% if filtered == "True" and form.phenotype_name.value|containedin:matchedValues %}
+    <td><b>{{ form.phenotype_name.value }}</b></td>
+{% else %}
+    <td>{{ form.phenotype_name.value }}</td>
+{% endif %}     
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>

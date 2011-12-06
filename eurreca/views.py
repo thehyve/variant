@@ -1,5 +1,5 @@
 from django.http import HttpResponse
-from django.template import RequestContext, Context, loader
+from django.template import RequestContext, Context, loader, Template
 from eurreca.models import Study, Genotype, Phenotype, Panel, Interaction
 from eurreca.forms import StudyFormSet, StudyForm, GenotypeFormSet, GenotypeForm, PhenotypeFormSet, PhenotypeForm, PanelForm, PanelFormSet, InteractionForm, InteractionFormSet
 from django.http import HttpResponseRedirect
@@ -473,3 +473,33 @@ def snp_search(request, ref):
         }
     )
     return HttpResponse(t.render(c))
+    
+def ajax_snp(request, ref):
+    ''' Returns either an empty string or a link to a dbSNP page,
+        that corresponds to the given ref.
+        Side-effect is that it enters any dbSNP page it finds into the db.
+        Will not check dbSNP if the reference is already in the DB.
+    '''
+    t = Template("{{ url }}")
+    try:
+        link = utils.get_Link_to_dbSNP_by_ref(ref)
+        print 'link:',link
+        if link == None:
+            print 'ajax_snp: no joy, checking interwebs'
+            message = utils.call_entrez(ref)
+            if message['messageType'] == 'negative':
+                c = Context({"ref": ref, "url": ""})
+                return HttpResponse(t.render(c))
+            else:
+                link = utils.get_Link_to_dbSNP_by_ref(snp_ref = ref)
+                print 'ajax_snp: ',link.snp_ref,' -> ',link.url
+                c = Context({"ref": ref, "url": link.url})
+                return HttpResponse(t.render(c))
+        else:
+            print 'ajax_snp: ',link.snp_ref,' -> ',link.url
+            c = Context({"ref": ref, "url": link.url})
+            return HttpResponse(t.render(c))
+    except:
+        print 'ajax_snp: exception'
+        c = Context({"ref": ref, "url": ""})
+        return HttpResponse(t.render(c))

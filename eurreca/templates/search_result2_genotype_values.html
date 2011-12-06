@@ -1,0 +1,30 @@
+﻿{% load contains %}
+
+<td>
+    {% if filtered == "True" and form.gene.value|containedin:matchedValues %}
+        <b>{{ form.gene.value }}</b>
+    {% else %}
+        {{ form.gene.value }}
+    {% endif %}  
+    ,            
+    {% if filtered == "True" and form.snp_ref.value|containedin:matchedValues %}
+        <b>{{ form.snp_ref.value }}</b>
+    {% else %}
+        {{ form.snp_ref.value }}
+    {% endif %}    
+    ,
+    {% if filtered == "True" and form.snp_variant.value|containedin:matchedValues %}
+        <b>{{ form.snp_variant.value }}</b>
+    {% else %}
+        {{ form.snp_variant.value }}
+    {% endif %}     
+</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>

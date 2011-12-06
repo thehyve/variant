@@ -640,3 +640,24 @@ JSON.stringify = JSON.stringify || function (obj) {
         return (arr ? "[" : "{") + String(json) + (arr ? "]" : "}");
     }
 };
+
+
+/****
+ * Call the application to see if dbSNP contains a particular ref
+ * Will return '' if not, and the relevant url if it does.
+ ***/
+var get_snp_url = function(ref) {
+    var result_of_call = ''
+    if (ref != '') {
+        var data = { ref:ref };
+        var args = { type:"POST", url:"/ajax_snp/", data:data, complete:done };
+        $.ajax(args);
+        result_of_call = args
+    } 
+    if (result_of_call != '')
+        // ...
+    }
+    alert(result_of_call);
+    return false;
+};
+

@@ -503,3 +503,13 @@ def get_snp_ref_to_dbSNP_url_dict(list_of_snp_refs):
     for item in items:
         results[item.snp_ref] = item.url
     return results
+    
+def get_Link_to_dbSNP_by_ref(ref):
+    if ref == None or ref == '':
+        return None
+    if ref.startswith('rs'):
+       ref = ref.strip('rs')
+    print 'get_Link_to_dbSNP_by_ref: looking for',ref
+    link = Link_to_dbSNP.objects.get(snp_ref=ref)
+    print '\tfound', link
+    return link
