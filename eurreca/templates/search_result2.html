@@ -1,35 +1,29 @@
 ﻿{% load contains %}
 {% load truncatechars %}
 
-<div>
-    <span class="button">
-        <a href="/studies/view/{{ form.id.value }}">
-            {% if form.paper_title.value %}
-                {{ form.paper_title.value }}
-            {% else %}
-                Study 
-            {% endif %}
-            <img alt="View" src="{{ STATIC_URL }}images/icons/page.png">
-        </a>    
-    </span>
-    <table>
-        {% include 'table2_titles.html' with title="Study" %}  
-        {% include 'table2_values.html' with title="Study" class="contentItem" filtered="True" %}
-    </table>
-    <br/>
-    {# Unfortunately, Django template language does not support actual dicts... #}
-    {# This is a work-around, of sorts #}
-    {% for id, ids in study_id_to_interaction_id_mapping.items %}
-        {% if form.id.value == id and not ids|length == '' %}
-            Interactions:
-            <table>
-            {% include 'table2_titles.html' with title="Interaction" %}  
-            {% for form2 in formSets.interaction %}
-                {% if id == form2.study.value %}
+{% for id, ids in study_id_to_interaction_id_mapping.items %}
+    {% if form.id.value == id and not ids|length == '' %}
+        {% for form2 in formSets.interaction %}
+            {% if id == form2.study.value %}
+                <tr>
+                    <td class="button">
+                        <a href="/studies/view/{{ form.id.value }}">
+                            {% if form.study_id.value or form.paper_title.value %}
+                                {% if form.study_id.value %}
+                                    ({{ form.study_id.value }})
+                                {% endif %}
+                                {% if form.paper_title.value %}
+                                    {{ form.paper_title.value|truncatewords:4 }}
+                                {% endif %}
+                            {% else %}
+                                Study 
+                            {% endif %}
+                            <img alt="View" src="{{ STATIC_URL }}images/icons/page.png">
+                        </a>    
+                    </td>
                     {% include 'search_result2_values.html' with form=form2 title="Interaction" class="contentItem" filtered="True" %}
-                {% endif %}
-            {% endfor %} 
-            </table>
-        {% endif %}
-    {% endfor %}
-</div>
+                </tr>
+            {% endif %}
+        {% endfor %} 
+    {% endif %}
+{% endfor %}

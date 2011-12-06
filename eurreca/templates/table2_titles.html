@@ -1,4 +1,4 @@
-﻿<tr class="formfield {{ field.name }}">
+﻿<tr>
     {% if title == "Phenotype" %}
         <td>Phenotype name</td>
         <td>Intake data</td>
@@ -24,11 +24,10 @@
         <td>Additional age description</td>
     {% endif %}
     {% if title == "Interaction" %}
-        <td>Gene</td>
-        <td>Snp ref</td>
-        <td>Snp variant</td>
-        <td>Phenotype name</td>
-        <td>Panel Description</td>
+        <td>Study</td>
+        <td>Genotype</td>
+        <td>Phenotype</td>
+        <td>Panel</td>
         <td>Statistical model</td>
         <td>p Value</td>
         <td>Ratio type</td>

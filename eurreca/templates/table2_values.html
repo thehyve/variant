@@ -1,80 +1,78 @@
 ﻿{% load contains %}
 {% load tosnpref %}
 
-<tr class="formfield {{ field.name }}">
-    {% if title == "Phenotype" %}
-        {% include 'table2_value.html' with field=form.phenotype_name %}
-        {% include 'table2_value.html' with field=form.intake_data %}
-    {% endif %}
-    {% if title == "Genotype" %}
-        {% include 'table2_value.html' with field=form.gene %}
-        
-        {# Handle snp_ref #}
-        {% if form.snp_ref.value|snprefcontainedin:dbSNP %}
+{% if title == "Phenotype" %}
+    {% include 'table2_value.html' with field=form.phenotype_name %}
+    {% include 'table2_value.html' with field=form.intake_data %}
+{% endif %}
+{% if title == "Genotype" %}
+    {% include 'table2_value.html' with field=form.gene %}
+    
+    {# Handle snp_ref #}
+    {% if form.snp_ref.value|snprefcontainedin:dbSNP %}
 
-            {# We have an url for this #}
-            
-            {% for ref, url in dbSNP.items %}
-                {% if ref == form.snp_ref.value|tosnpref %}
-                    {% if filtered == "True" and form.snp_ref.value|snprefcontainedin:matchedValues %}
-                        <td><b><a href="{{ url }}">{{ form.snp_ref.value }}</a></b></td>
-                    {% else %}
-                        <td><a href="{{ url }}">{{ form.snp_ref.value }}</a></td>
-                    {% endif %}     
+        {# We have an url for this #}
+        
+        {% for ref, url in dbSNP.items %}
+            {% if ref == form.snp_ref.value|tosnpref %}
+                {% if filtered == "True" and form.snp_ref.value|snprefcontainedin:matchedValues %}
+                    <td><b><a href="{{ url }}">{{ form.snp_ref.value }}</a></b></td>
+                {% else %}
+                    <td><a href="{{ url }}">{{ form.snp_ref.value }}</a></td>
                 {% endif %}     
-            {% endfor %}
-        {% else %}
-        
-            {% comment %}
-                We do not have an url for this or 
-                the dbSNP urls are not available in this context
-            {% endcomment %}
-            
-            {% if filtered == "True" and form.snp_ref.value|snprefcontainedin:matchedValues %}
-                <td><b>{{ form.snp_ref.value }}</b></td>
-            {% else %}
-                <td>{{ form.snp_ref.value }}</td>
             {% endif %}     
-        {% endif %}     
+        {% endfor %}
+    {% else %}
+    
+        {% comment %}
+            We do not have an url for this or 
+            the dbSNP urls are not available in this context
+        {% endcomment %}
         
-        {% include 'table2_value.html' with field=form.snp_variant %}
-        {% include 'table2_value.html' with field=form.snp_name %}
-        {% include 'table2_value.html' with field=form.allele %}
-        {% include 'table2_value.html' with field=form.mutation %}
-        {% include 'table2_value.html' with field=form.zygosity %}
-        {% include 'table2_value.html' with field=form.number_of_people_with_genotype %}
-        {% include 'table2_value.html' with field=form.genotype_frequency %}
-        {% include 'table2_value.html' with field=form.estimated_overal_frequency %}
-        {% include 'table2_value.html' with field=form.genotype_details %}
-    {% endif %}
-    {% if title == "Panel" %}
-        {% include 'table2_value.html' with field=form.panel_description %}
-        {% include 'table2_value.html' with field=form.number_of_participants %}
-        {% include 'table2_value.html' with field=form.gender %}
-        {% include 'table2_value.html' with field=form.mean_age %}
-        {% include 'table2_value.html' with field=form.additional_age_description %}
-    {% endif %}
-    {% if title == "Interaction" %}
-        {% include 'table2_interaction_geno_pheno_panel.html' %}
-        {% include 'table2_value.html' with field=form.statistical_model %}
-        {% include 'table2_value.html' with field=form.p_value %}
-        {% include 'table2_value.html' with field=form.ratio_type %}
-        {% include 'table2_value.html' with field=form.ratio %}
-        {% include 'table2_value.html' with field=form.ci_lower %}
-        {% include 'table2_value.html' with field=form.ci_upper %}
-    {% endif %}   
-    {% if title == "Study" %}
-        {% include 'table2_value.html' with field=form.study_id %}
-        {% include 'table2_value.html' with field=form.pubmed_id %}
-        {% include 'table2_value.html' with field=form.year_of_publication %}
-        {% include 'table2_value.html' with field=form.authors %}
-        {% include 'table2_value.html' with field=form.micronutrient %}
-        {% include 'table2_value.html' with field=form.population %}
-        {% include 'table2_value.html' with field=form.gender %}
-        {% include 'table2_value.html' with field=form.endpoint %}
-        {% include 'table2_value.html' with field=form.paper_title %}
-        {% include 'table2_value.html' with field=form.journal_title %}
-        {% include 'table2_value.html' with field=form.study_type %}
-        {% include 'table2_value.html' with field=form.number_of_participants %}
-    {% endif %}
-</tr>
+        {% if filtered == "True" and form.snp_ref.value|snprefcontainedin:matchedValues %}
+            <td><b>{{ form.snp_ref.value }}</b></td>
+        {% else %}
+            <td>{{ form.snp_ref.value }}</td>
+        {% endif %}     
+    {% endif %}     
+    
+    {% include 'table2_value.html' with field=form.snp_variant %}
+    {% include 'table2_value.html' with field=form.snp_name %}
+    {% include 'table2_value.html' with field=form.allele %}
+    {% include 'table2_value.html' with field=form.mutation %}
+    {% include 'table2_value.html' with field=form.zygosity %}
+    {% include 'table2_value.html' with field=form.number_of_people_with_genotype %}
+    {% include 'table2_value.html' with field=form.genotype_frequency %}
+    {% include 'table2_value.html' with field=form.estimated_overal_frequency %}
+    {% include 'table2_value.html' with field=form.genotype_details %}
+{% endif %}
+{% if title == "Panel" %}
+    {% include 'table2_value.html' with field=form.panel_description %}
+    {% include 'table2_value.html' with field=form.number_of_participants %}
+    {% include 'table2_value.html' with field=form.gender %}
+    {% include 'table2_value.html' with field=form.mean_age %}
+    {% include 'table2_value.html' with field=form.additional_age_description %}
+{% endif %}
+{% if title == "Interaction" %}
+    {% include 'table2_interaction_geno_pheno_panel.html' %}
+    {% include 'table2_value.html' with field=form.statistical_model %}
+    {% include 'table2_value.html' with field=form.p_value %}
+    {% include 'table2_value.html' with field=form.ratio_type %}
+    {% include 'table2_value.html' with field=form.ratio %}
+    {% include 'table2_value.html' with field=form.ci_lower %}
+    {% include 'table2_value.html' with field=form.ci_upper %}
+{% endif %}   
+{% if title == "Study" %}
+    {% include 'table2_value.html' with field=form.study_id %}
+    {% include 'table2_value.html' with field=form.pubmed_id %}
+    {% include 'table2_value.html' with field=form.year_of_publication %}
+    {% include 'table2_value.html' with field=form.authors %}
+    {% include 'table2_value.html' with field=form.micronutrient %}
+    {% include 'table2_value.html' with field=form.population %}
+    {% include 'table2_value.html' with field=form.gender %}
+    {% include 'table2_value.html' with field=form.endpoint %}
+    {% include 'table2_value.html' with field=form.paper_title %}
+    {% include 'table2_value.html' with field=form.journal_title %}
+    {% include 'table2_value.html' with field=form.study_type %}
+    {% include 'table2_value.html' with field=form.number_of_participants %}
+{% endif %}

@@ -1,12 +1,10 @@
 ﻿{% load contains %}
 
-<tr class="formfield {{ field.name }}">
-    {% include 'search_result2_geno_pheno_panel.html' %}
-    {% include 'table2_value.html' with field=form.statistical_model %}
-    {% include 'table2_value.html' with field=form.p_value %}
-    {% include 'table2_value.html' with field=form.ratio_type %}
-    {% include 'table2_value.html' with field=form.ratio %}
-    {% include 'table2_value.html' with field=form.ci_lower %}
-    {% include 'table2_value.html' with field=form.ci_upper %}
-    {% include 'table2_value.html' with field=form.significant_associations %}
-</tr>
+{% include 'search_result2_geno_pheno_panel.html' %}
+{% include 'table2_value.html' with field=form.statistical_model %}
+{% include 'table2_value.html' with field=form.p_value %}
+{% include 'table2_value.html' with field=form.ratio_type %}
+{% include 'table2_value.html' with field=form.ratio %}
+{% include 'table2_value.html' with field=form.ci_lower %}
+{% include 'table2_value.html' with field=form.ci_upper %}
+{% include 'table2_value.html' with field=form.significant_associations %}
