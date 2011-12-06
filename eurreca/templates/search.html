@@ -86,7 +86,7 @@
     {% else %}
         {% if formSets %}
             <table>
-                {% include 'table2_titles.html' with title="Interaction" %}  
+                {% include 'search_result2_titles.html' with title="Interaction" %}  
                 {% for form in formSets.study %}
                     {% include 'search_result2.html' with title="Interaction" class="contentItem" filtered="True" %}
                 {% endfor %}
