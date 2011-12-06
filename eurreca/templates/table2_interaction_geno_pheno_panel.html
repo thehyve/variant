@@ -1,6 +1,4 @@
-﻿{% if form.genotypes.value|length == 0 %}
-    <td></td><td></td><td></td>
-{% else %}
+﻿{% if form.genotypes %}
     {% for g_form in formsetGenotype %}
         {% if form.genotypes.value.0 == g_form.id.value %}
             {% include 'table2_value.html' with field=g_form.gene %}
@@ -8,22 +6,24 @@
             {% include 'table2_value.html' with field=g_form.snp_variant %}
         {% endif %}
     {% endfor %}
-{% endif %}
-{% if form.phenotypes.value|length == 0 %}
-    <td></td><td></td><td></td>
 {% else %}
+    <td></td><td></td><td></td>
+{% endif %}
+{% if form.phenotypes.value %}
     {% for p_form in formsetPhenotype %}
         {% if form.phenotypes.value.0 == p_form.id.value %}
             {% include 'table2_value.html' with field=p_form.phenotype_name %}
         {% endif %}
     {% endfor %}
-{% endif %}
-{% if form.panels.value|length == 0 %}
-    <td></td>
 {% else %}
+    <td></td><td></td><td></td>
+{% endif %}
+{% if form.panels.value %}
     {% for p_form in formsetPanel %}
         {% if form.panels.value.0 == p_form.id.value %}
             {% include 'table2_value.html' with field=p_form.panel_description %}
         {% endif %}
     {% endfor %}
+{% else %}
+    <td></td>
 {% endif %}

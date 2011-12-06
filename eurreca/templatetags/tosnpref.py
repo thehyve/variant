@@ -8,8 +8,11 @@ register = template.Library()
 
 @register.filter()
 def tosnpref(value):
-    print 'tosnpref received',value
-    if value.startswith('rs'):
-           value = value.strip('rs')
-    print 'tosnpref returns',value
-    return value
+    try:
+        print 'tosnpref received',value
+        if value.startswith('rs'):
+               value = value.strip('rs')
+        print 'tosnpref returns',value
+        return value
+    except:
+        return value

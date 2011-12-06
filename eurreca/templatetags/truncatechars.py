@@ -33,7 +33,6 @@ def truncatechars(value, length):
     else:
         return value
 
-@register.filter()
 def truncatewords(value, length):
     """
         truncate after a certain number of characters,
@@ -47,7 +46,7 @@ def truncatewords(value, length):
     value_array = []
     try:
         value_array = str(value).lsplit(' ')
-    except Excption:
+    except Exception:
         return value
     
     try:

@@ -488,6 +488,8 @@ def get_snp_ref_to_dbSNP_url_dict(list_of_snp_refs):
         return {}
     q = []
     for ref in list_of_snp_refs:
+        if ref == None or ref == '':
+            continue
         if ref.startswith('rs'):
            ref = ref.strip('rs')
         print 'about to look for ref',ref

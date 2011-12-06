@@ -1,43 +1,57 @@
 ﻿{% load contains %}
 
-{% for g_form in formSets.genotype %}
-    {% if form.genotypes.value.0 == g_form.id.value %}
-        <td>
-            {% if filtered == "True" and g_form.gene.value|containedin:matchedValues %}
-                <b>{{ g_form.gene.value }}</b>
+{% if form.genotypes.value.0 %}
+    {% for g_form in formSets.genotype %}
+        {% if form.genotypes.value.0 == g_form.id.value %}
+            <td>
+                {% if filtered == "True" and g_form.gene.value|containedin:matchedValues %}
+                    <b>{{ g_form.gene.value }}</b>
+                {% else %}
+                    {{ g_form.gene.value }}
+                {% endif %}  
+                ,            
+                {% if filtered == "True" and g_form.snp_ref.value|containedin:matchedValues %}
+                    <b>{{ g_form.snp_ref.value }}</b>
+                {% else %}
+                    {{ g_form.snp_ref.value }}
+                {% endif %}    
+                ,
+                {% if filtered == "True" and g_form.snp_variant.value|containedin:matchedValues %}
+                    <b>{{ g_form.snp_variant.value }}</b>
+                {% else %}
+                    {{ g_form.snp_variant.value }}
+                {% endif %}     
+            </td>
+        {% endif %}
+    {% endfor %}
+{% else %}
+    <td></td>
+{% endif %}   
+
+{% if form.phenotypes.value.0 %} 
+    {% for p_form in formSets.phenotype %}
+        {% if form.phenotypes.value.0 == p_form.id.value %}
+            {% if filtered == "True" and p_form.phenotype_name.value|containedin:matchedValues %}
+                <td><b>{{ p_form.phenotype_name.value }}</b></td>
             {% else %}
-                {{ g_form.gene.value }}
-            {% endif %}  
-            ,            
-            {% if filtered == "True" and g_form.snp_ref.value|containedin:matchedValues %}
-                <b>{{ g_form.snp_ref.value }}</b>
-            {% else %}
-                {{ g_form.snp_ref.value }}
-            {% endif %}    
-            ,
-            {% if filtered == "True" and g_form.snp_variant.value|containedin:matchedValues %}
-                <b>{{ g_form.snp_variant.value }}</b>
-            {% else %}
-                {{ g_form.snp_variant.value }}
+                <td>{{ p_form.phenotype_name.value }}</td>
             {% endif %}     
-        </td>
-    {% endif %}
-{% endfor %}
-{% for p_form in formSets.phenotype %}
-    {% if form.phenotypes.value.0 == p_form.id.value %}
-        {% if filtered == "True" and p_form.phenotype_name.value|containedin:matchedValues %}
-            <td><b>{{ p_form.phenotype_name.value }}</b></td>
-        {% else %}
-            <td>{{ p_form.phenotype_name.value }}</td>
-        {% endif %}     
-    {% endif %}
-{% endfor %}
-{% for p_form in formSets.panel %}
-    {% if form.panels.value.0 == p_form.id.value %}
-        {% if filtered == "True" and p_form.phenotype_name.value|containedin:matchedValues %}
-            <td><b>{{ p_form.panel_description.value }}</b></td>
-        {% else %}
-            <td>{{ p_form.panel_description.value }}</td>
-        {% endif %}   
-    {% endif %}
-{% endfor %}
+        {% endif %}
+    {% endfor %}
+{% else %}
+        <td></td>
+{% endif %}    
+
+{% if form.panels.value.0 %}
+    {% for p_form in formSets.panel %}
+        {% if form.panels.value.0 == p_form.id.value %}
+            {% if filtered == "True" and p_form.panel_description.value|containedin:matchedValues %}
+                <td><b>{{ p_form.panel_description.value }}</b></td>
+            {% else %}
+                <td>{{ p_form.panel_description.value }}</td>
+            {% endif %}   
+        {% endif %}
+    {% endfor %}
+{% else %}
+    <td></td>
+{% endif %}    
