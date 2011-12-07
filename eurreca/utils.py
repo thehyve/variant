@@ -187,13 +187,28 @@ def errors_to_string(errors):
     return returnMessage
 
 def get_interactionValues_from_formsets(fs):
+    ''' Return variable is formatted as follows:
+        { 
+            interaction id : {
+                field       : value,
+                other field : other value,
+                ... : ...,
+                interactCache : {
+                    'panels'        : value,
+                    'phenotypes'    : value,
+                    'genotypes'     : value
+                }
+            }
+        }
+    
+    '''
     interactionValues = {}
-    for form in fs['interaction']:
+    for form in fs['interaction']:    
         id = form['id'].value()
         interactionValues[id] = {}
         interactionValues[id]['interactCache'] = {}
         for field in form:
-            if field=='genotypes' or field=='phenotypes' or field=='panels':
+            if field.name=='genotypes' or field.name=='phenotypes' or field.name=='panels':
                 for f in fs['genotype']:
                     if len(form['genotypes'].value()) > 0 and f['id'].value() == form['genotypes'].value()[0]:
                         interactionValues[id]['interactCache'][
@@ -207,21 +222,21 @@ def get_interactionValues_from_formsets(fs):
                 for f in fs['phenotype']:
                     if len(form['phenotypes'].value()) > 0 and f['id'].value() == form['phenotypes'].value()[0]:
                         interactionValues[id]['interactCache'][
-                            'genotypes'] = f['id'].value()
+                            'phenotypes'] = f['id'].value()
                         interactionValues[id][
                             'phenotype_name'] = f['phenotype_name'].value()
                         break
                 for f in fs['panel']:
                     if len(form['panels'].value()) > 0 and f['id'].value() == form['panels'].value()[0]:
                         interactionValues[id]['interactCache'][
-                            'genotypes'] = f['id'].value()
+                            'panels'] = f['id'].value()
                         interactionValues[id][
                             'panel_description'] = f['panel_description'].value()
                         break
-            if field=='id':
+            if field.name=='id':
                 continue
             else:
-                interactionValues[id][field] = field.value()
+                interactionValues[id][field.name] = field.value()
     
     return interactionValues
     
@@ -428,6 +443,70 @@ def get_year_list():
         year_list.append(now.tm_year - n + 1)
     return year_list    
     
+def get_autofill_lists():
+    ''' Returns a dict containing lists of field contents that 
+        can be used for autofill purposes.
+        Will return lists for the following field names:
+
+        micronutrient (from study database objects)
+        endpoint (from study)
+        journal_title (from study)
+        study_type (from study)
+        environmental_factor (from study)
+        gene (gene name, used in both genotype and interaction tables, 
+                from genotype)
+        phenotype_name (used in both phenotype and interaction tables, 
+                from phenotype)
+        statistical_model (from interaction)
+    '''
+    print '\nentered get_autofill_lists'
+    lists = {
+        'micronutrient':[],
+         'endpoint':[],
+         'journal_title':[],
+         'study_type':[],
+         'environmental_factor':[],
+         'gene':[],
+         'phenotype_name':[],
+         'statistical_model':[]
+    }
+    # micronutrient, endpoint, journal_title, study_type, environmental_factor
+    temp_list = Study.objects.raw('''SELECT id, micronutrient, endpoint, 
+                                     journal_title, study_type, 
+                                     environmental_factor FROM eurreca_study''')
+    for entry in temp_list:
+        lists['micronutrient'].append(entry.micronutrient)
+        lists['endpoint'].append(entry.endpoint)
+        lists['journal_title'].append(entry.journal_title)
+        lists['study_type'].append(entry.study_type)
+        lists['environmental_factor'].append(entry.environmental_factor)
+    
+    # gene
+    temp_list = Genotype.objects.raw('''SELECT id, gene 
+                                        FROM eurreca_genotype''')
+    for entry in temp_list:
+        lists['gene'].append(entry.gene)
+    
+    # phenotype_name
+    temp_list = Phenotype.objects.raw('''SELECT id, phenotype_name 
+                                         FROM eurreca_phenotype''')
+    for entry in temp_list:
+        lists['phenotype_name'].append(entry.phenotype_name)
+    
+    # statistical_model
+    temp_list = Interaction.objects.raw('''SELECT id, statistical_model 
+                                         FROM eurreca_interaction''')
+    for entry in temp_list:
+        lists['statistical_model'].append(entry.statistical_model)
+    
+    # Removing duplicate and empty list items
+    for key in lists:
+        lists[key] = clean_list(list(set(lists[key])), ['', 'None', None])
+        print key,'->',lists[key]
+        
+    print 'leaving get_autofill_lists'
+    return lists
+
 def clean_list(list, dirty_bits = []):
     ''' Returns it's list argument cleaned of 'None's, or cleaned of whichever
         items were listed in 'dirty_bits'.

@@ -278,6 +278,7 @@ def study_update(request, id):
                  'messageType' : messageType,
                  'year_list': utils.get_year_list(),})
     else:
+        autofill_lists = utils.get_autofill_lists()
         try:
             fs = utils.get_formsets_by_id(id)
             interactionValues = utils.get_interactionValues_from_formsets(fs)
@@ -285,7 +286,10 @@ def study_update(request, id):
             for something in interactionValues:
                 print '**', something, '** - '
                 for other_thingie in interactionValues[something]:
-                    print '\t$', other_thingie, '$ - @', interactionValues[something][other_thingie],'@'
+                    try:
+                        print '\t$', other_thingie.name, '$ - @', interactionValues[something][other_thingie],'@'
+                    except:
+                        print '\t$', other_thingie, '$ - @', interactionValues[something][other_thingie],'@'
             '''    
             return render(request, 'domain_views/study_editing.html', 
                 {'formset' : fs['study'], 
