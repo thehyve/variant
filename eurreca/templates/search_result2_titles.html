@@ -1,0 +1,53 @@
+﻿<tr>
+    {% if title == "Phenotype" %}
+        <td>Phenotype name</td>
+        <td>Intake data</td>
+    {% endif %}
+    {% if title == "Genotype" %}
+        <td>Gene name</td>
+        <td>Snp ref</td>
+        <td>Snp variant</td>
+        <td>Snp name</td>
+        <td>Allele</td>
+        <td>Mutation</td>
+        <td>Zygosity</td>
+        <td>Number of people with genotype</td>
+        <td>Frequency</td>
+        <td>Estimated overall frequency</td>
+        <td>Genotype details</td>
+    {% endif %}
+    {% if title == "Panel" %}
+        <td>Panel description</td>
+        <td>No. of participants</td>
+        <td>Gender</td>
+        <td>Mean age</td>
+        <td>Additional age description</td>
+    {% endif %}
+    {% if title == "Interaction" %}
+        <td>Study</td>
+        <td>Genotype</td>
+        <td>Phenotype</td>
+        <td>Panel</td>
+        <td>Statistical model</td>
+        <td>p Value</td>
+        <td>Ratio type</td>
+        <td>Ratio</td>
+        <td>95% CI lower</td>
+        <td>95% CI upper</td>
+        <td>Significant associations</td>
+    {% endif %}                
+    {% if title == "Study" %}
+        <td>Study id</td>
+        <td>Pubmed id</td>
+        <td>Year of publication</td>
+        <td>Authors</td>
+        <td>Micronutrient</td>
+        <td>Population</td>
+        <td>Gender</td>
+        <td>Endpoint</td>
+        <td>Paper title</td>
+        <td>Journal title</td>
+        <td>Study type</td>
+        <td>Number of participants</td>
+    {% endif %}                
+</tr>
