@@ -504,7 +504,7 @@ def ajax_snp(request, ref):
             print 'ajax_snp: ',link.snp_ref,' -> ',link.url
             c = Context({"ref": ref, "url": link.url})
             return HttpResponse(t.render(c))
-    except:
-        print 'ajax_snp: exception'
+    except Exception as inst:
+        print 'ajax_snp: exception: ', inst
         c = Context({"ref": ref, "url": ""})
         return HttpResponse(t.render(c))

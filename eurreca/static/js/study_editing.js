@@ -650,8 +650,30 @@ JSON.stringify = JSON.stringify || function (obj) {
  * Will return '' if not, and the relevant url if it does.
  ***/
 function get_snp_url(e) {
-    var that = this
     var ref = $(this).val()
+    
+    // If this request is not necessary, don't do it
+    if(get_snp_url_request_last_ref == ref){
+        return false;
+    }
+    // If no ref is entered, the user isn't interested
+    // Reset everything
+    if(ref == '' || ref == null){
+        $(this).css("backgroundImage", "None");
+        $(this).removeClass('snpFound');
+        get_snp_url_request.abort();
+        get_snp_url_request_last_ref = ''
+        return false;
+    }
+    
+    // Clear out old request.
+    if(get_snp_url_request){
+        get_snp_url_request.abort();
+        get_snp_url_request_last_ref = ref
+    }
+    
+    // Now build up a new request.
+    var that = this
     var result_of_call = '';
     var image_to_set = '';
     if (ref != ''){
@@ -659,8 +681,8 @@ function get_snp_url(e) {
         var args = { type:"POST", 
                      url:"/ajax_snp/"+ref, 
                      data:data};
-        var request = $.ajax(args)
-        request.done(function(result){
+        get_snp_url_request = $.ajax(args)
+        get_snp_url_request.done(function(result){
             result_of_call = result;
             if (result_of_call != ''){
                 //image_to_set = 

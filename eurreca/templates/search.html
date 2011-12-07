@@ -83,14 +83,13 @@
             </div>
             <input type="submit" value="search" />
         </form>
-    {% else %}
-        {% if formSets %}
-            <table>
-                {% include 'search_result2_titles.html' with title="Interaction" %}  
-                {% for form in formSets.study %}
-                    {% include 'search_result2.html' with title="Interaction" class="contentItem" filtered="True" %}
-                {% endfor %}
-            </table>
-        {% endif %}
+    {% endif %}
+    {% if formSets %}
+        <table>
+            {% include 'search_result2_titles.html' with title="Interaction" %}  
+            {% for form in formSets.study %}
+                {% include 'search_result2.html' with title="Interaction" class="contentItem" filtered="True" %}
+            {% endfor %}
+        </table>
     {% endif %}
 {% endblock body %}

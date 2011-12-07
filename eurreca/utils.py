@@ -457,13 +457,10 @@ def call_entrez(snp_ref):
         except urllib2.HTTPError, e:
             error = True
             error_code = e.code
-            print e.code
-            print e.read()
     except IOError:
         print 'Cannot open URL %s for reading' % search_url
         str1 = 'error!'
         return {'message': 'dbSNP Entrez service appears to be unavailable.', 'messageType': 'negative'}
-    #print str1    
     if error:
         print 'Error occurred:', error_code
         if error_code==400:
