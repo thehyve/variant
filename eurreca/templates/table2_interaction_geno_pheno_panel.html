@@ -1,4 +1,5 @@
 ﻿{% load contains %}
+{% load tosnpref %}
 
 {% if form.genotypes.value.0 %}
     {% for g_form in formsetGenotype %}
@@ -10,10 +11,28 @@
                     {{ g_form.gene.value }}
                 {% endif %}  
                 ,            
-                {% if filtered == "True" and g_form.snp_ref.value|containedin:matchedValues %}
-                    <b>{{ g_form.snp_ref.value }}</b>
+                {# Handle snp_ref #}
+                {% if g_form.snp_ref.value|snprefcontainedin:dbSNP %}
+                    {# We have an url for this #}
+                    {% for ref, url in dbSNP.items %}
+                        {% if ref == g_form.snp_ref.value|tosnpref %}
+                            {% if filtered == "True" and g_form.snp_ref.value|snprefcontainedin:matchedValues %}
+                                <b><a href="{{ url }}">{{ g_form.snp_ref.value }}</a></b>
+                            {% else %}
+                                <a href="{{ url }}">{{ g_form.snp_ref.value }}</a>
+                            {% endif %}     
+                        {% endif %}     
+                    {% endfor %}
                 {% else %}
-                    {{ g_form.snp_ref.value }}
+                    {% comment %}
+                        We do not have an url for this or 
+                        the dbSNP urls are not available in this context
+                    {% endcomment %}
+                    {% if filtered == "True" and g_form.snp_ref.value|snprefcontainedin:matchedValues %}
+                        <b>{{ g_form.snp_ref.value }}</b>
+                    {% else %}
+                        {{ g_form.snp_ref.value }}
+                    {% endif %}     
                 {% endif %}    
                 ,
                 {% if filtered == "True" and g_form.snp_variant.value|containedin:matchedValues %}
