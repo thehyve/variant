@@ -315,8 +315,8 @@ def study_view(request, id):
         fs = utils.get_formsets_by_id(id)
         results = utils.get_snp_ref_to_dbSNP_url_dict(
             utils.get_list_of_snp_refs_from_formsets(fs))
-        for r in results:
-            print r,' -> ',results[r]
+        #for r in results:
+        #    print r,' -> ',results[r]
         return render(request, 'domain_views/study_view.html', 
             {'formset' : fs['study'], 
              'formsetGenotype' : fs['genotype'],
@@ -483,28 +483,21 @@ def ajax_snp(request, ref):
         Side-effect is that it enters any dbSNP page it finds into the db.
         Will not check dbSNP if the reference is already in the DB.
     '''
-    print '\n\najax_snp: entered view'
     t = Template("{{ url }}")
     try:
         link = utils.get_Link_to_dbSNP_by_ref(ref)
-        print 'link:',link
         if link == None:
-            print 'ajax_snp: no joy, checking interwebs'
             message = utils.call_entrez(ref)
             if message['messageType'] == 'negative':
-                print 'ajax_snp: negative result'
                 c = Context({"ref": ref, "url": ""})
                 return HttpResponse(t.render(c))
             else:
-                link = utils.get_Link_to_dbSNP_by_ref(snp_ref = ref)
-                print 'ajax_snp: ',link.snp_ref,' -> ',link.url
+                link = utils.get_Link_to_dbSNP_by_ref(ref)
                 c = Context({"ref": ref, "url": link.url})
                 return HttpResponse(t.render(c))
         else:
-            print 'ajax_snp: ',link.snp_ref,' -> ',link.url
             c = Context({"ref": ref, "url": link.url})
             return HttpResponse(t.render(c))
     except Exception as inst:
-        print 'ajax_snp: exception: ', inst
         c = Context({"ref": ref, "url": ""})
         return HttpResponse(t.render(c))

@@ -458,17 +458,17 @@ def call_entrez(snp_ref):
             error = True
             error_code = e.code
     except IOError:
-        print 'Cannot open URL %s for reading' % search_url
+        #print 'Cannot open URL %s for reading' % search_url
         str1 = 'error!'
         return {'message': 'dbSNP Entrez service appears to be unavailable.', 'messageType': 'negative'}
     if error:
-        print 'Error occurred:', error_code
+        #print 'Error occurred:', error_code
         if error_code==400:
             return {'message': 'No such snp ref could be found in dbSNP.', 'messageType': 'negative'}
         else:
             return {'message': 'dbSNP Entrez service appears to be unavailable.', 'messageType': 'negative'}
     else:
-        print 'search succesful'
+        #print 'search succesful'
         l = Link_to_dbSNP(snp_ref=snp_ref, url=requested_url)
         l.save()
         return {'message': 'Requested URL: <a href="{0}">{0}</a>'.format(requested_url), 'messageType': 'positive'}
@@ -480,7 +480,7 @@ def get_list_of_snp_refs_from_formsets(fs):
     return list_of_snp_refs
         
 def get_snp_ref_to_dbSNP_url_dict(list_of_snp_refs):
-    print 'get_snp_ref_to_dbSNP_url_dict:',list_of_snp_refs
+    #print 'get_snp_ref_to_dbSNP_url_dict:',list_of_snp_refs
     if list_of_snp_refs == []:
         return {}
     q = []
@@ -489,12 +489,12 @@ def get_snp_ref_to_dbSNP_url_dict(list_of_snp_refs):
             continue
         if ref.startswith('rs'):
            ref = ref.strip('rs')
-        print 'about to look for ref',ref
+        #print 'about to look for ref',ref
         q.append(Q(snp_ref = ref))
     if q == []:
         return {}
     filter = reduce(operator.or_, q)    
-    print filter
+    #print filter
     items = Link_to_dbSNP.objects.filter(filter)
     results = {}
     for item in items:
