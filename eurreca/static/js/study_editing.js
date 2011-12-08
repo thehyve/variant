@@ -34,7 +34,15 @@ function addRow(id, values, editable) {
     	var cell = $( "<td class='editable'></td>" );
     	
     	if( editable ) {
-    		cell.append( $( "<input class='newVal' type='text' id='input_" + $(this).attr('id') + "'/>" ).val( newVal ) );
+    		var fieldName = $(this).attr('id'); 
+    		var input = $( "<input class='newVal' type='text' id='input_" + fieldName + "'/>" ).val( newVal );
+    		
+    		if( availableFields && availableFields[ fieldName ] ) {
+    			cell.append( $( "<div class='autofill' rel=\"" + fieldName + "\"></div" ).append( input ) );
+    		} else {
+    			cell.append( input );
+    		}
+    			
     	} else {
     		cell.text( newVal );
     	}
@@ -46,6 +54,8 @@ function addRow(id, values, editable) {
     row.append( '<td class="buttons">' + ( editable ? rowEditingButtons( id, false ) : rowDefaultButtons( id ) ) + '</td>' );
     
     $("#"+id).append(row);
+    
+    initAutoFill( row );
 }
 
 
@@ -57,17 +67,18 @@ function addRow(id, values, editable) {
 function editRow(id, that) {
     lstHeaders = $('#'+id+'_row').find('th');
     iCounter = 0;
-    $(that).parents('tr').find('td').each(function(){
+    var tr = $(that).parents( "tr" );
+    
+    tr.find('td').each(function(){
         if(iCounter < lstHeaders.length) {
             oldVal = $(this).html();
             
+            
             // Determine the id of the new input field
             var newId;
-            if(id == 'interaction'){
-                newId = "input_"+$('#'+id+'_row').children('th:nth-child('+(iCounter+1)+')').attr('id')
-            } else {
-            	newId = $(lstHeaders[iCounter]).html();
-            }
+            var fieldName;
+            fieldName = $('#'+id+'_row').children('th:nth-child('+(iCounter+1)+')').attr('id');
+            newId = "input_" + fieldName;
             
             // Create a text field to edit this value. Assign id and value this way, so escaping is
             // done properly
@@ -76,13 +87,21 @@ function editRow(id, that) {
             // Create a hidden field with the old value in it, so the edit can be cancelled anytime
             var hiddenOldValue = $( "<input type='hidden' class='oldVal'>" ).val( oldVal );
             
+    		if( availableFields && availableFields[ fieldName ] ) {
+    			$(this).html( $( "<div class='autofill' rel=\"" + fieldName + "\"></div" ).append( newInput ) );
+    		} else {
+    			$(this).html( newInput );
+    		}
+            
             // Replace the current cell with these contents
-            $(this).html(newInput).append( hiddenOldValue );
+            $(this).append( hiddenOldValue );
         } else {
             $(this).html( rowEditingButtons( id, true ) );
         }
         iCounter = iCounter + 1;
     });
+    
+    initAutoFill( tr );
 }
 
 /**
@@ -213,6 +232,11 @@ function saveInteractionRow() {
 	// Create a row with the newly added element above the 'addNew' row. Do so by copying 
 	// the addNew row and replacing the inputs with links
 	var addNewRow = $( "#interactionTable .addNew" );
+	
+	// First destroy the autofill options, since they can not be cloned
+	// See http://bugs.jqueryui.com/ticket/5866
+	destroyAutoFill( "#interactionTable" );	
+	
 	var newRow = addNewRow.clone( true, true ).removeClass( "addNew" );
 	
 	// Replace the input.all elements with links
@@ -238,6 +262,9 @@ function saveInteractionRow() {
 	// Insert the new row
 	addNewRow.before( newRow );
 	
+	// Add the autofill lists to the copied elements again
+	initAutoFill( "#interactionTable" );
+
 	// Clear the addNew row, so a new row can be inserted
 	$( "input", addNewRow ).not("[type=button]").val( "" );
 	
@@ -499,7 +526,7 @@ function showForm(td) {
 	$( "input[type=text]", $(td) ).last().bind( "keydown", inputTabPress );
 
     // Make sure that snp_refs wil be checked
-    $("input[name='genotype-snp_ref']", form).bind("keyup", get_snp_url)
+    $("input[name='genotype-snp_ref']", $(td)).bind("keyup", get_snp_url)
     
     if(autofill_lists_available==true){
         // Add autofill when appropriate
@@ -507,7 +534,7 @@ function showForm(td) {
            endpoint (study)
            journal_title (study)
            study_type (study)
-            environmental_factor (study)
+           environmental_factor (study)
            gene (gene name, used in both genotype and interaction tables)
            phenotype_name (used in both phenotype and interaction tables)
            statistical_model (from interaction)
@@ -529,6 +556,10 @@ function hideForm(td) {
 	
 	// Make sure that a tab press event handler is removed
 	$( "input[type=text]", $(td) ).last().unbind( "keydown", inputTabPress );
+	
+    // Make sure that snp_refs will not be checked anymore
+    $("input[name='genotype-snp_ref']", $(td) ).unbind("keyup", get_snp_url)
+	
 	
 	$( "#fade_background" ).hide();
 }
@@ -718,3 +749,57 @@ function get_snp_url(e) {
     } 
     return false;
 };
+
+/**
+ * Initializes autofill options for all inputs in .autofill classes within the given container
+ * @param container
+ */
+function initAutoFill( container ) {
+	if( container == undefined )
+		container = $(document);
+	
+	// Initialize autofill lists. Each input in a .autofill element
+	// will be initialized with an autocomplete. The values will be
+	// the values that are given in the autofill_lists and the type
+	// should be specified by the 'rel' element on the .autofill element.
+	// e.g.: <div class="autofill" rel="year_of_publication"><input type="text"></div>
+	$( ".autofill", container ).each( function( idx, el ) {
+		var rel = $(el).attr( "rel" );
+		if( rel && availableFields[ rel ] ) {
+			$("input", $( el ) ).autocomplete({
+				source: availableFields[ rel ]
+			}).bind( "click", autoCompleteClick );
+		}
+	});
+}
+
+/**
+ * Destroys autofill options for all inputs in .autofill classes within the given container
+ * @param container
+ */
+function destroyAutoFill( container ) {
+	if( container == undefined )
+		container = $(document);
+	
+	// Destroy autofill lists. 
+	// e.g.: <div class="autofill" rel="year_of_publication"><input type="text"></div>
+	$( ".autofill", container ).each( function( idx, el ) {
+		$(".ui-autocomplete-input" , $( el ) ).unbind( "click", autoCompleteClick );
+		$("input", $( el ) ).autocomplete( 'destroy' );
+	});
+}
+
+function autoCompleteClick(e) {
+	$this = $(this);
+	
+	$this.blur();
+    
+	// pass empty string as value to search for, displaying all results
+	// This only works with minLength set to zero
+    var oldMinLength = $this.autocomplete( "option", "minLength" );
+    $this.autocomplete( "option", "minLength", 0 );
+    $this.autocomplete( "search", $this.val() );
+    $this.autocomplete( "option", "minLength", oldMinLength );
+    
+    $this.focus();
+}

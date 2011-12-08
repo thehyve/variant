@@ -17,8 +17,16 @@
     // don't crash and burn when the lists are missing
     var autofill_lists_available = false;
     {% if autofill_lists %}
-        autofill_lists_available = true);
+        autofill_lists_available = true;
     {% endif %}
+    
+	{# Add autocompletion to the field with id 'id_study-0-year_of_publication' #}
+	{# That is, the study's 'Year of publication' field #}
+	var availableFields = {};;
+	
+	{% for name,list in autofill_lists.items %}
+		availableFields.{{name}} = [ "{{list|safeseq|join:"\", \""}}" ]; 
+	{% endfor %}    
     
 	$(function() {
         {# Initialize interaction table relations management #}
@@ -44,15 +52,7 @@
 			interactionIndex++;
 		{% endfor %}
 		
-		{# Add autocompletion to the field with id 'id_study-0-year_of_publication' #}
-		{# That is, the study's 'Year of publication' field #}
-		var availableFields = [];
-		{% for year in year_list %}
-			availableFields.push("{{year}}");
-		{% endfor %}
-		$( "#id_study-0-year_of_publication" ).autocomplete({
-			source: availableFields
-		});
+		initAutoFill();
 	});
   </script>
 
@@ -98,20 +98,21 @@
 									{% else %}
 										<td>
 									{% endif %}
-										{{ field.label_tag }}</td> 
+										{{ field.label_tag }}
+									{% if field.field.required %}
+										</span></td>
+									{% else %}
+										</td>
+									{% endif %}										
 									<td>
-										{% if field.name == 'year_of_publication' %}
-											<div class="ui-widget">
+										{% if field.name == "year_of_publication" or field.name == "study_type" or field.name == "micronutrient" or field.name == "endpoint" or field.name == "journal_title" or field.name == "environmental_factor" %}
+											<div class="autofill" rel="{{field.name}}">
 												{{ field }}
 											</div>
 										{% else %}
 											{{ field }}
 										{% endif %}
-									{% if field.field.required %}
-										</span></td>
-									{% else %}
-										</td>
-									{% endif %}
+									</td>
 									<td>
 										{% if field.errors %}
 											{% for error in field.errors %}
