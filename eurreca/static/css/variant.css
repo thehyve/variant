@@ -102,3 +102,6 @@ td.form-active .more_inputs { display: block; z-index: 22; }
 .more_inputs:before { top: -20px; left: 4px; border: 10px solid transparent; border-bottom-color: black; }
 .more_inputs:after { top: -18px; left: 5px; border: 9px solid transparent; border-bottom-color: white; }
 
+/* Alternating row colors */
+.row1 { background-color: #DCDCDC; }
+.row2 { background-color: #FFFFCC; }
