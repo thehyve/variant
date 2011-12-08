@@ -86,9 +86,12 @@
     {% endif %}
     {% if formSets %}
         <table>
+            
             {% include 'search_result2_titles.html' with title="Interaction" %}  
+            {% cycle 'row1' 'row2' as rowcolors silent %}
             {% for form in formSets.study %}
-                {% include 'search_result2.html' with title="Interaction" class="contentItem" filtered="True" %}
+                {% include 'search_result2.html' with title="Interaction" class=rowcolors filtered="True" %}
+                {% cycle rowcolors %}
             {% endfor %}
         </table>
     {% endif %}
