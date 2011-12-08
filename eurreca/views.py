@@ -144,7 +144,8 @@ def study_create(request):
                     {'formset' : formset, 
                      'message' : message,
                      'messageType' : messageType,
-                     'year_list': utils.get_year_list(),})
+                     'year_list': utils.get_year_list(),
+                     'autofill_lists': utils.get_autofill_lists()})
             
             
             # Exception while reading or writing the study-related objects
@@ -161,14 +162,16 @@ def study_create(request):
                  'interactionValues' : inst.args[1]['interactionValues'], 
                  'message' : message,
                  'messageType' : messageType,
-                 'year_list': utils.get_year_list(),}) 
+                 'year_list': utils.get_year_list(),
+                 'autofill_lists': utils.get_autofill_lists()}) 
     else:
         formset = StudyFormSet(queryset=Study.objects.none(), prefix="study")
     return render(request, 'domain_views/study_editing.html', 
         {'formset' : formset, 
          'message' : message,
          'messageType' : messageType,
-         'year_list': utils.get_year_list(),})
+         'year_list': utils.get_year_list(),
+         'autofill_lists': utils.get_autofill_lists()})
          
 @login_required   
 def study_update(request, id):
@@ -216,7 +219,9 @@ def study_update(request, id):
                      'formsetPanel' :  fs['panel'],
                      'formsetInteraction' :  fs['interaction'],
                      'message' : message,
-                     'messageType' : messageType,})         
+                     'messageType' : messageType,
+                     'year_list': utils.get_year_list(),
+                     'autofill_lists': utils.get_autofill_lists()})         
             except Study.DoesNotExist:
                 qs = Study.objects.all()
                 study_list = []
@@ -255,7 +260,8 @@ def study_update(request, id):
                      'formsetInteraction' :  fs['interaction'],
                      'message' : message,
                      'messageType' : messageType,
-                     'year_list': utils.get_year_list(),})  
+                     'year_list': utils.get_year_list(),
+                     'autofill_lists': utils.get_autofill_lists()})  
             
             # Exception while reading or writing the study-related objects
             # Make sure these lists of items have already been processed at
@@ -276,9 +282,9 @@ def study_update(request, id):
                  'interactionValues' : inst.args[1]['interactionValues'], 
                  'message' : message,
                  'messageType' : messageType,
-                 'year_list': utils.get_year_list(),})
+                 'year_list': utils.get_year_list(),
+                 'autofill_lists': utils.get_autofill_lists()})
     else:
-        autofill_lists = utils.get_autofill_lists()
         try:
             fs = utils.get_formsets_by_id(id)
             interactionValues = utils.get_interactionValues_from_formsets(fs)
@@ -300,7 +306,8 @@ def study_update(request, id):
                  'message' : message,
                  'messageType' : messageType,
                  'interactionValues' : interactionValues,
-                 'year_list': utils.get_year_list(),})
+                 'year_list': utils.get_year_list(),
+                 'autofill_lists': utils.get_autofill_lists()})
         except Study.DoesNotExist:
             qs = Study.objects.all()
             study_list = []

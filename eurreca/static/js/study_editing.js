@@ -500,6 +500,23 @@ function showForm(td) {
 
     // Make sure that snp_refs wil be checked
     $("input[name='genotype-snp_ref']", form).bind("keyup", get_snp_url)
+    
+    if(autofill_lists_available==true){
+        // Add autofill when appropriate
+        /* micronutrient (study)
+           endpoint (study)
+           journal_title (study)
+           study_type (study)
+            environmental_factor (study)
+           gene (gene name, used in both genotype and interaction tables)
+           phenotype_name (used in both phenotype and interaction tables)
+           statistical_model (from interaction)
+           
+           These lists are available from 
+           the Django template variable 'autofill_lists'
+           Perhaps put them in a JS var
+        */
+    }
 
 	$( document ).bind( "keyup", formKeyPress );
 	formShown = td;

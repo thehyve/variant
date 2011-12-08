@@ -459,7 +459,6 @@ def get_autofill_lists():
                 from phenotype)
         statistical_model (from interaction)
     '''
-    print '\nentered get_autofill_lists'
     lists = {
         'micronutrient':[],
          'endpoint':[],
@@ -502,9 +501,7 @@ def get_autofill_lists():
     # Removing duplicate and empty list items
     for key in lists:
         lists[key] = clean_list(list(set(lists[key])), ['', 'None', None])
-        print key,'->',lists[key]
         
-    print 'leaving get_autofill_lists'
     return lists
 
 def clean_list(list, dirty_bits = []):

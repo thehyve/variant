@@ -13,6 +13,13 @@
     var get_snp_url_request;
     var get_snp_url_request_last_ref = '';
         
+    // A check to make sure that javascripts that use autofill lists, 
+    // don't crash and burn when the lists are missing
+    var autofill_lists_available = false;
+    {% if autofill_lists %}
+        autofill_lists_available = true;);
+    {% endif %}
+    
 	$(function() {
         {# Initialize interaction table relations management #}
 		var interactionIndex = 0;
