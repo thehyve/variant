@@ -6,7 +6,7 @@
             <div class="header roundedcorners">Control panel</div>
             <ul>
                 <li>
-                    <a href="/studies/remove/{{ formset.0.id.value }}">
+                    <a onclick="return confirm( 'Are you sure?' );" href="/studies/remove/{{ formset.0.id.value }}">
                         <img alt="" 
                             src="{{ STATIC_URL }}images/remove_40x40.png"/>
                         <span>        
@@ -21,7 +21,7 @@
                         <span>        
                             Update this study
                         </span> 
-                    </a>    
+                    </a>
                 </li>
             </ul>
         </div>
