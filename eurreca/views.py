@@ -452,7 +452,9 @@ def all(request):
     return render(request, 'search.html', 
         {'message' : message,
          'messageType' : messageType,
-         'formSets' : search_output['results']})             
+         'formSets' : search_output['results'],
+         'study_id_to_interaction_id_mapping' : search_output[
+            'study_id_to_interaction_id_mapping']})             
          
 @login_required           
 def snp_search(request, ref):
