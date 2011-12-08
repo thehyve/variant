@@ -55,7 +55,7 @@
     {% endcomment %}
     {% for form2 in formSets.genotype %}
         {% if id == form2.study.value %}
-            <tr>
+            <tr class="{{ class }}">
                 <td class="button">
                     <a href="/studies/view/{{ form.id.value }}">
                         {% if form.study_id.value or form.paper_title.value %}
