@@ -34,7 +34,15 @@ function addRow(id, values, editable) {
     	var cell = $( "<td class='editable'></td>" );
     	
     	if( editable ) {
-    		cell.append( $( "<input class='newVal' type='text' id='input_" + $(this).attr('id') + "'/>" ).val( newVal ) );
+    		var fieldName = $(this).attr('id'); 
+    		var input = $( "<input class='newVal' type='text' id='input_" + fieldName + "'/>" ).val( newVal );
+    		
+    		if( availableFields && availableFields[ fieldName ] ) {
+    			cell.append( $( "<div class='autofill' rel=\"" + fieldName + "\"></div" ).append( input ) );
+    		} else {
+    			cell.append( input );
+    		}
+    			
     	} else {
     		cell.text( newVal );
     	}
@@ -46,6 +54,8 @@ function addRow(id, values, editable) {
     row.append( '<td class="buttons">' + ( editable ? rowEditingButtons( id, false ) : rowDefaultButtons( id ) ) + '</td>' );
     
     $("#"+id).append(row);
+    
+    initAutoFill( row );
 }
 
 
@@ -57,17 +67,18 @@ function addRow(id, values, editable) {
 function editRow(id, that) {
     lstHeaders = $('#'+id+'_row').find('th');
     iCounter = 0;
-    $(that).parents('tr').find('td').each(function(){
+    var tr = $(that).parents( "tr" );
+    
+    tr.find('td').each(function(){
         if(iCounter < lstHeaders.length) {
             oldVal = $(this).html();
             
+            
             // Determine the id of the new input field
             var newId;
-            if(id == 'interaction'){
-                newId = "input_"+$('#'+id+'_row').children('th:nth-child('+(iCounter+1)+')').attr('id')
-            } else {
-            	newId = $(lstHeaders[iCounter]).html();
-            }
+            var fieldName;
+            fieldName = $('#'+id+'_row').children('th:nth-child('+(iCounter+1)+')').attr('id');
+            newId = "input_" + fieldName;
             
             // Create a text field to edit this value. Assign id and value this way, so escaping is
             // done properly
@@ -76,13 +87,21 @@ function editRow(id, that) {
             // Create a hidden field with the old value in it, so the edit can be cancelled anytime
             var hiddenOldValue = $( "<input type='hidden' class='oldVal'>" ).val( oldVal );
             
+    		if( availableFields && availableFields[ fieldName ] ) {
+    			$(this).html( $( "<div class='autofill' rel=\"" + fieldName + "\"></div" ).append( newInput ) );
+    		} else {
+    			$(this).html( newInput );
+    		}
+            
             // Replace the current cell with these contents
-            $(this).html(newInput).append( hiddenOldValue );
+            $(this).append( hiddenOldValue );
         } else {
             $(this).html( rowEditingButtons( id, true ) );
         }
         iCounter = iCounter + 1;
     });
+    
+    initAutoFill( tr );
 }
 
 /**
