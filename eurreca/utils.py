@@ -458,6 +458,7 @@ def get_autofill_lists():
         phenotype_name (used in both phenotype and interaction tables, 
                 from phenotype)
         statistical_model (from interaction)
+        year_of_publication ( see get_year_list/1 )
     '''
     lists = {
         'micronutrient':[],
@@ -501,7 +502,10 @@ def get_autofill_lists():
     # Removing duplicate and empty list items
     for key in lists:
         lists[key] = clean_list(list(set(lists[key])), ['', 'None', None])
-        
+    
+    # Add year list    
+    lists['year_of_publication'] = get_year_list()
+    
     return lists
 
 def clean_list(list, dirty_bits = []):

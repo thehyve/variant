@@ -144,7 +144,6 @@ def study_create(request):
                     {'formset' : formset, 
                      'message' : message,
                      'messageType' : messageType,
-                     'year_list': utils.get_year_list(),
                      'autofill_lists': utils.get_autofill_lists()})
             
             
@@ -162,7 +161,6 @@ def study_create(request):
                  'interactionValues' : inst.args[1]['interactionValues'], 
                  'message' : message,
                  'messageType' : messageType,
-                 'year_list': utils.get_year_list(),
                  'autofill_lists': utils.get_autofill_lists()}) 
     else:
         formset = StudyFormSet(queryset=Study.objects.none(), prefix="study")
@@ -170,7 +168,6 @@ def study_create(request):
         {'formset' : formset, 
          'message' : message,
          'messageType' : messageType,
-         'year_list': utils.get_year_list(),
          'autofill_lists': utils.get_autofill_lists()})
          
 @login_required   
@@ -220,7 +217,6 @@ def study_update(request, id):
                      'formsetInteraction' :  fs['interaction'],
                      'message' : message,
                      'messageType' : messageType,
-                     'year_list': utils.get_year_list(),
                      'autofill_lists': utils.get_autofill_lists()})         
             except Study.DoesNotExist:
                 qs = Study.objects.all()
@@ -260,7 +256,6 @@ def study_update(request, id):
                      'formsetInteraction' :  fs['interaction'],
                      'message' : message,
                      'messageType' : messageType,
-                     'year_list': utils.get_year_list(),
                      'autofill_lists': utils.get_autofill_lists()})  
             
             # Exception while reading or writing the study-related objects
@@ -282,7 +277,6 @@ def study_update(request, id):
                  'interactionValues' : inst.args[1]['interactionValues'], 
                  'message' : message,
                  'messageType' : messageType,
-                 'year_list': utils.get_year_list(),
                  'autofill_lists': utils.get_autofill_lists()})
     else:
         try:
@@ -306,7 +300,6 @@ def study_update(request, id):
                  'message' : message,
                  'messageType' : messageType,
                  'interactionValues' : interactionValues,
-                 'year_list': utils.get_year_list(),
                  'autofill_lists': utils.get_autofill_lists()})
         except Study.DoesNotExist:
             qs = Study.objects.all()
@@ -450,8 +443,11 @@ def all(request):
     message = ""
     messageType = ""
         
-    # Perform search    
-    search_output = simple_search.search([''])
+    ''' Perform search. 
+        Second argument says to use all interactions for 
+        the search, regardless of search terms. 
+        We want this, because we want to show as much items as possible.'''
+    search_output = simple_search.search_by_interaction([''], True)
 
     return render(request, 'search.html', 
         {'message' : message,
