@@ -213,6 +213,11 @@ function saveInteractionRow() {
 	// Create a row with the newly added element above the 'addNew' row. Do so by copying 
 	// the addNew row and replacing the inputs with links
 	var addNewRow = $( "#interactionTable .addNew" );
+	
+	// First destroy the autofill options, since they can not be cloned
+	// See http://bugs.jqueryui.com/ticket/5866
+	destroyAutoFill( "#interactionTable" );	
+	
 	var newRow = addNewRow.clone( true, true ).removeClass( "addNew" );
 	
 	// Replace the input.all elements with links
@@ -238,6 +243,9 @@ function saveInteractionRow() {
 	// Insert the new row
 	addNewRow.before( newRow );
 	
+	// Add the autofill lists to the copied elements again
+	initAutoFill( "#interactionTable" );
+
 	// Clear the addNew row, so a new row can be inserted
 	$( "input", addNewRow ).not("[type=button]").val( "" );
 	
@@ -499,7 +507,7 @@ function showForm(td) {
 	$( "input[type=text]", $(td) ).last().bind( "keydown", inputTabPress );
 
     // Make sure that snp_refs wil be checked
-    $("input[name='genotype-snp_ref']", form).bind("keyup", get_snp_url)
+    $("input[name='genotype-snp_ref']", $(td)).bind("keyup", get_snp_url)
     
     if(autofill_lists_available==true){
         // Add autofill when appropriate
@@ -507,7 +515,7 @@ function showForm(td) {
            endpoint (study)
            journal_title (study)
            study_type (study)
-            environmental_factor (study)
+           environmental_factor (study)
            gene (gene name, used in both genotype and interaction tables)
            phenotype_name (used in both phenotype and interaction tables)
            statistical_model (from interaction)
@@ -529,6 +537,10 @@ function hideForm(td) {
 	
 	// Make sure that a tab press event handler is removed
 	$( "input[type=text]", $(td) ).last().unbind( "keydown", inputTabPress );
+	
+    // Make sure that snp_refs will not be checked anymore
+    $("input[name='genotype-snp_ref']", $(td) ).unbind("keyup", get_snp_url)
+	
 	
 	$( "#fade_background" ).hide();
 }
@@ -718,3 +730,57 @@ function get_snp_url(e) {
     } 
     return false;
 };
+
+/**
+ * Initializes autofill options for all inputs in .autofill classes within the given container
+ * @param container
+ */
+function initAutoFill( container ) {
+	if( container == undefined )
+		container = $(document);
+	
+	// Initialize autofill lists. Each input in a .autofill element
+	// will be initialized with an autocomplete. The values will be
+	// the values that are given in the autofill_lists and the type
+	// should be specified by the 'rel' element on the .autofill element.
+	// e.g.: <div class="autofill" rel="year_of_publication"><input type="text"></div>
+	$( ".autofill", container ).each( function( idx, el ) {
+		var rel = $(el).attr( "rel" );
+		if( rel && availableFields[ rel ] ) {
+			$("input", $( el ) ).autocomplete({
+				source: availableFields[ rel ]
+			}).bind( "click", autoCompleteClick );
+		}
+	});
+}
+
+/**
+ * Destroys autofill options for all inputs in .autofill classes within the given container
+ * @param container
+ */
+function destroyAutoFill( container ) {
+	if( container == undefined )
+		container = $(document);
+	
+	// Destroy autofill lists. 
+	// e.g.: <div class="autofill" rel="year_of_publication"><input type="text"></div>
+	$( ".autofill", container ).each( function( idx, el ) {
+		$(".ui-autocomplete-input" , $( el ) ).unbind( "click", autoCompleteClick );
+		$("input", $( el ) ).autocomplete( 'destroy' );
+	});
+}
+
+function autoCompleteClick(e) {
+	$this = $(this);
+	
+	$this.blur();
+    
+	// pass empty string as value to search for, displaying all results
+	// This only works with minLength set to zero
+    var oldMinLength = $this.autocomplete( "option", "minLength" );
+    $this.autocomplete( "option", "minLength", 0 );
+    $this.autocomplete( "search", $this.val() );
+    $this.autocomplete( "option", "minLength", oldMinLength );
+    
+    $this.focus();
+}

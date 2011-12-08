@@ -9,7 +9,9 @@
 		</a>
 	{% endif %} 
 	<div class="more_inputs">
-		<label>Gene name *</label><input type="text" class="label focus required" name="genotype-gene" value="{{gene}}"><br />
+		<div class="autofill" rel="gene">
+			<label>Gene name *</label><input type="text" class="label focus required" name="genotype-gene" value="{{gene}}"><br />
+		</div>
 		<label>SNP ref</label><input type="text" class="label" name="genotype-snp_ref" value="{{snp_ref}}"><br />
 		<label>SNP variant</label><input type="text" class="label" name="genotype-snp_variant" value="{{snp_variant}}"><br />
 		<input type="button" onClick="saveFormByElement( this );" value="OK">
