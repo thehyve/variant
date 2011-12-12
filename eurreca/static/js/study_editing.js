@@ -717,21 +717,11 @@ function checkFormConstraints( td, show_alerts) {
         $(td).find('input[id="input_panel_description"]').addClass( "invalid" );
         return false;
     }
-    if($(td).find('input[id="input_phenotype_name"]').val()=='' ||
-        $(td).find('input[id="input_intake_data"]').val()==''){
+    if($(td).find('input[id="input_phenotype_name"]').val()==''){
         if(show_alerts){
-            alert("Please fill in the phenotype name and intake data fields to continue.");
+            alert("Please fill in the phenotype name field to continue.");
         }
-        if($(td).find('input[id="input_phenotype_name"]').val()==''){
-            $(td).find('input[id="input_phenotype_name"]').addClass( "invalid" );
-        } else {
-            $(td).find('input[id="input_phenotype_name"]').removeClass( "invalid" );
-        }
-        if($(td).find('input[id="input_intake_data"]').val()==''){
-            $(td).find('input[id="input_intake_data"]').addClass( "invalid" );
-        } else {
-            $(td).find('input[id="input_intake_data"]').removeClass( "invalid" );
-        }
+        $(td).find('input[id="input_phenotype_name"]').addClass( "invalid" );
         return false;
     }
 	

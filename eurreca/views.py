@@ -492,6 +492,7 @@ def ajax_snp(request, ref):
         Side-effect is that it enters any dbSNP page it finds into the db.
         Will not check dbSNP if the reference is already in the DB.
     '''
+    print 'entered ajax_snp'
     t = Template("{{ url }}")
     try:
         link = utils.get_Link_to_dbSNP_by_ref(ref)
@@ -499,14 +500,18 @@ def ajax_snp(request, ref):
             message = utils.call_entrez(ref)
             if message['messageType'] == 'negative':
                 c = Context({"ref": ref, "url": ""})
+                print 'exited ajax_snp a'
                 return HttpResponse(t.render(c))
             else:
                 link = utils.get_Link_to_dbSNP_by_ref(ref)
                 c = Context({"ref": ref, "url": link.url})
+                print 'exited ajax_snp b'
                 return HttpResponse(t.render(c))
         else:
             c = Context({"ref": ref, "url": link.url})
+            print 'exited ajax_snp c'
             return HttpResponse(t.render(c))
     except Exception as inst:
         c = Context({"ref": ref, "url": ""})
+        print 'exited ajax_snp d'
         return HttpResponse(t.render(c))
