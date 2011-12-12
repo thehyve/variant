@@ -83,7 +83,50 @@
 					<li><a href="#panels">Panels</a></li>
 				</ul>
 				
-                {% include 'study_editing/study_form.html' %}
+                {# include 'study_editing/study_form.html' #}
+                <div id="studyInformation">
+                    <table>
+                        {% for field in form %}
+                            {% if not field.name == 'id' %}
+                                {% if field.errors %}
+                                    <tr class = "error {{ field.name }}">
+                                    <td class= "error"></td>
+                                {% else %}
+                                    <tr class = "formfield {{ field.name }}">
+                                    <td class= "formspacer"></td>
+                                {% endif %}
+                                
+                                {% if field.field.required %}
+                                        <td><span class="requiredLabel">{{ field.label_tag }}</span></td>
+                                {% else %}
+                                        <td>{{ field.label_tag }}</td>
+                                {% endif %}		
+								
+                                {% if field.field.required %}
+                                        <td class="contains_required_inputs">
+                                {% else %}
+                                        <td>
+                                {% endif %}										
+                                    {% if field.name == "year_of_publication" or field.name == "study_type" or field.name == "micronutrient" or field.name == "endpoint" or field.name == "journal_title" or field.name == "environmental_factor" %}
+                                        <div class="autofill" rel="{{field.name}}">
+                                            {{ field }}
+                                        </div>
+                                    {% else %}
+                                        {{ field }}
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if field.errors %}
+                                        {% for error in field.errors %}
+                                            {{ error|escape }} 
+                                        {% endfor %}
+                                    {% endif %}
+                                </td>
+                                </tr>
+                            {% endif %}		
+                        {% endfor %}
+                    </table>
+                </div>
                 
 				<div id="interactions">
 					<table id="interactionTable" class="interactions">

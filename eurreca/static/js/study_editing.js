@@ -352,18 +352,20 @@ function submitData() {
     
     // Check if all required study fields have been set.
     var required_fields_set = true;
-    var coll = $('tr.study');
+    var coll = $('#studyInformation tr td.contains_required_inputs');
     coll.each(function() {
-        // Check form constraints and do not show the relevant alerts
-        var set = checkFormConstraints($(coll), false)
-        if(set==false){
-            alert('Some required fields in the study section are not filled in.');
-            required_fields_set = false
-            return false;
-        }
+        $( this ).children('input').each( function( idx, el ) {
+            if( $(el).val().trim() == "" ) {
+                $(el).addClass( "invalid" );
+                required_fields_set = false;
+            } else {
+                $(el).removeClass( "invalid" );
+            }
+        });
     });
     if(required_fields_set==false){
-        // Not all are set. Move to the tab in question.
+        // Not all are set. Alert user and move to the tab in question.
+        alert('Some required fields in the study section are not filled in.');
         switchToTab(0)
         return false;
     }
