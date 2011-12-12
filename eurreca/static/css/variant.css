@@ -13,7 +13,7 @@ a img { border-width: 0; }
 }
 input.roundedcorners:focus { outline-width: 0px; }
 input.button { width: 60px; }
-.required:after { content: "*"; }
+.requiredLabel:after { content: "*"; }
 .snpFound:after { content: "(SNf ref has been found in snpDB)"; }
 
 /* Header styles */
@@ -39,8 +39,8 @@ ul#searchMenu li { display: inline-block; *display: inline; zoom: 1; padding-top
 #pagetabs.withcontextmenu { margin-right: 210px; }
 #pagetabs .ui-tabs-panel { padding-left: 0; padding-right: 0; }
 #pagetabs li a { margin: 4px; padding: 2px; vertical-align: middle; }
-#pagetabs li a img { vertical-align: middle; display: float; }
-#pagetabs li a span { vertical-align: middle; display: float; }
+#pagetabs li a img { vertical-align: middle; }
+#pagetabs li a span { vertical-align: middle; }
 
 
 div.contentItem { background-color: #F8FFF0; display: block; float: left; margin: 5px; padding: 10px; }
@@ -54,8 +54,8 @@ ul.searchResults { list-style-type: none; }
 #contextmenu ul { list-style-type: none; margin: 0; padding: 8px; }
 #contextmenu ul li { margin: 4px 0; padding: 0; }
 #contextmenu li a { text-decoration:none; }
-#contextmenu li a img { vertical-align: middle; display: float; }
-#contextmenu li a span { vertical-align: middle; display: float; }
+#contextmenu li a img { vertical-align: middle; }
+#contextmenu li a span { vertical-align: middle; }
 
 /* Bugfix for tabs with floating elements next to it: http://bugs.jqueryui.com/ticket/5601 */
 .ui-helper-clearfix:after { }
@@ -96,6 +96,7 @@ td.form-active .more_inputs { display: block; z-index: 22; }
 .more_inputs { border: 1px solid black; display: none; padding: 5px; position: absolute; top: 32px; width: 350px; background-color: white; z-index: 10;  }
 .more_inputs label { display: inline-block; width: 150px; *display: inline; zoom: 1; }
 .more_inputs .invalid { background-color: #FFC9D7; }
+input.invalid { background-color: #FFC9D7; }
 
 /* Nice arrows above each form */
 .more_inputs:before, .more_inputs:after { content: ' '; height: 0; position: absolute; width: 0; }

@@ -82,49 +82,9 @@
 					<li><a href="#phenotypes">Phenotypes</a></li>
 					<li><a href="#panels">Panels</a></li>
 				</ul>
-				<div id="studyInformation">
-					<table>
-						{% for field in form %}
-							{% if not field.name == 'id' %}
-								{% if field.errors %}
-									<tr class = "error {{ field.name }}">
-									<td class= "error"></td>
-								{% else %}
-									<tr class = "formfield {{ field.name }}">
-									<td class= "formspacer"></td>
-								{% endif %}
-									{% if field.field.required %}
-										<td><span class="required">
-									{% else %}
-										<td>
-									{% endif %}
-										{{ field.label_tag }}
-									{% if field.field.required %}
-										</span></td>
-									{% else %}
-										</td>
-									{% endif %}										
-									<td>
-										{% if field.name == "year_of_publication" or field.name == "study_type" or field.name == "micronutrient" or field.name == "endpoint" or field.name == "journal_title" or field.name == "environmental_factor" %}
-											<div class="autofill" rel="{{field.name}}">
-												{{ field }}
-											</div>
-										{% else %}
-											{{ field }}
-										{% endif %}
-									</td>
-									<td>
-										{% if field.errors %}
-											{% for error in field.errors %}
-												{{ error|escape }} 
-											{% endfor %}
-										{% endif %}
-									</td>
-								</tr>
-							{% endif %}		
-						{% endfor %}
-					</table>
-				</div>
+				
+                {% include 'study_editing/study_form.html' %}
+                
 				<div id="interactions">
 					<table id="interactionTable" class="interactions">
 						<thead>
@@ -251,7 +211,7 @@
 											{% if form.ratio_type.value %}{{ form.ratio_type.value }}{% endif %} {% if form.ratio.value %}{{ form.ratio.value }}{% endif %}
 										</a>
 										<div class="more_inputs">
-											<label>Statistical model</label><input type="text" class=" focus" name="statistical_model" value="{% if form.statistical_model.value %}{{ form.statistical_model.value }}{% endif %}"><br />
+											<label>Statistical model<span  class='requiredLabel'></span></label><input type="text" class=" focus" name="statistical_model" value="{% if form.statistical_model.value %}{{ form.statistical_model.value }}{% endif %}"><br />
 											<label>P value</label><input type="text" class="" name="p_value" value="{% if form.p_value.value %}{{ form.p_value.value }}{% endif %}"><br />
 											<label>Ratio type</label><input type="text" class="label" name="ratio_type" value="{% if form.ratio_type.value %}{{ form.ratio_type.value }}{% endif %}"><br />
 											<label>Ratio value</label><input  type="text" class="label" name="ratio" value="{% if form.ratio.value %}{{ form.ratio.value }}{% endif %}"><br />
@@ -286,7 +246,7 @@
 										{% include 'study_editing/ratios_form.html' with editable=1 statistical_model='' p_value='' ratio_type='' ratio='' ci_lower='' ci_upper='' significant_associations='' %}
 									</td>
 									<td class="buttons">
-										<a href="#" onClick="saveRow('interaction',this); return false;">save</a>
+										<a href="#" onClick="saveRow('interaction',this); return false;">ok</a>
 										<!-- <a onclick="editRow('interaction',this); return false;" href="#">edit</a>
 										<a href="#" onClick="removeRow('interaction',this); return false;">remove</a> --> 
 									</td>
@@ -403,7 +363,7 @@
 	</div>
 	<div id="contextmenu">
 		<ul>
-			<li><a href="#" onClick="submitData(); return false;">Update</a></li>
+			<li><a href="#" onClick="submitData(); return false;">Save the changes to this study</a></li>
 			<li>{% if not formset.0.id.value == null and not formset.0.id.value == '' and not formset.0.id.value == None %}
 					<a href="/studies/view/{{ formset.0.id.value }}">
 						Cancel

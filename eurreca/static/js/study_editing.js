@@ -117,38 +117,41 @@ function saveRow(id, that) {
         arrIndex = saveInteractionRow();
         interactCache[iRowNr] = arrIndex;
     } else {
-        iRowNr = $(that).parents('tr').index();
-        
-        // List of fields to update if an object has been changed
-        var listToUpdate = getFieldsToUpdate();
-        
-        // Update relevant interaction rows
-        // Right now only works with one object rather than with a list of objects
-        $('#interaction tr').each(function() {
-            arrIndex = interactCache[$(this).index()];
-            if(arrIndex != undefined && iRowNr==arrIndex[id+'Nrs']) {
+        // Check form constraints and show relevant alerts
+        if( checkFormConstraints( $(that).parents('tr').children('td'), true ) ) {
+            iRowNr = $(that).parents('tr').index();
+            
+            // List of fields to update if an object has been changed
+            var listToUpdate = getFieldsToUpdate();
+            
+            // Update relevant interaction rows
+            // Right now only works with one object rather than with a list of objects
+            $('#interaction tr').each(function() {
+                arrIndex = interactCache[$(this).index()];
+                if(arrIndex != undefined && iRowNr==arrIndex[id+'Nrs']) {
 
-            	// Update the fields in the interaction table
-            	var td = $("td.editable_" + id, this);
-            	
-            	var sourceTds = $(that).parents( "tr" ).children();
-            	for( i = 0; i < listToUpdate[ id ].length; i++ ) {
-            		var value = sourceTds.eq(i).find('input.newVal').val();
-            		$( listToUpdate[ id ][ i ], td ).val( value );
-            	}
-            	updateFields( td );
-            }
-        });
-        
-        // Now put all edited text into the td
-        strNewRow = '';
-        $(that).parents('tr').find( 'td.editable' ).each(function(){
-        	var newVal = $('input.newVal', $(this)).val();
-        	$(this).text( newVal );
-        });
-        
-        // Replace the buttons with the correct ones
-        $(that).parents('tr').find( "td.buttons" ).html( rowDefaultButtons( id ) );
+                    // Update the fields in the interaction table
+                    var td = $("td.editable_" + id, this);
+                    
+                    var sourceTds = $(that).parents( "tr" ).children();
+                    for( i = 0; i < listToUpdate[ id ].length; i++ ) {
+                        var value = sourceTds.eq(i).find('input.newVal').val();
+                        $( listToUpdate[ id ][ i ], td ).val( value );
+                    }
+                    updateFields( td );
+                }
+            });
+            
+            // Now put all edited text into the td
+            strNewRow = '';
+            $(that).parents('tr').find( 'td.editable' ).each(function(){
+                var newVal = $('input.newVal', $(this)).val();
+                $(this).text( newVal );
+            });
+            
+            // Replace the buttons with the correct ones
+            $(that).parents('tr').find( "td.buttons" ).html( rowDefaultButtons( id ) );
+        }
     }
 }
 
@@ -232,44 +235,50 @@ function saveInteractionRow() {
 	// Create a row with the newly added element above the 'addNew' row. Do so by copying 
 	// the addNew row and replacing the inputs with links
 	var addNewRow = $( "#interactionTable .addNew" );
-	
-	// First destroy the autofill options, since they can not be cloned
-	// See http://bugs.jqueryui.com/ticket/5866
-	destroyAutoFill( "#interactionTable" );	
-	
-	var newRow = addNewRow.clone( true, true ).removeClass( "addNew" );
-	
-	// Replace the input.all elements with links
-	newRow.find( "input.all" ).each( function( idx, el ) {
-		// Create a new link
-		var link = $( "<a class='all' href='#'></a>" ).text( $(el).val() );
-		link.click( function(event) { 
-			showFormByElement( this ); return false; 
-		} );
-		
-		// Replace the input element with a link
-		$(el).before( link )
-		$(el).remove();
-	});
-	
-	// Replace the 'save' link with a 'remove' link
-	var buttonsCell = newRow.find( "td.buttons" );
-	buttonsCell.empty();
-	buttonsCell.append( 
-			$( "<a href='#'>remove</a>" ).click( function(event) { removeRow( 'interaction', this ); return false; } )
-	);
-	
-	// Insert the new row
-	addNewRow.before( newRow );
-	
-	// Add the autofill lists to the copied elements again
-	initAutoFill( "#interactionTable" );
+    
+    // If the required field has been set, it can be saved.
+    if( addNewRow.find('input[name="statistical_model"]').val()!='' ) {
+        // First destroy the autofill options, since they can not be cloned
+        // See http://bugs.jqueryui.com/ticket/5866
+        destroyAutoFill( "#interactionTable" );	
+        
+        var newRow = addNewRow.clone( true, true ).removeClass( "addNew" );
+        
+        // Replace the input.all elements with links
+        newRow.find( "input.all" ).each( function( idx, el ) {
+            // Create a new link
+            var link = $( "<a class='all' href='#'></a>" ).text( $(el).val() );
+            link.click( function(event) { 
+                showFormByElement( this ); return false; 
+            } );
+            
+            // Replace the input element with a link
+            $(el).before( link )
+            $(el).remove();
+        });
+        
+        // Replace the 'save' link with a 'remove' link
+        var buttonsCell = newRow.find( "td.buttons" );
+        buttonsCell.empty();
+        buttonsCell.append( 
+                $( "<a href='#'>remove</a>" ).click( function(event) { removeRow( 'interaction', this ); return false; } )
+        );
+        
+        // Insert the new row
+        addNewRow.before( newRow );
+        
+        // Add the autofill lists to the copied elements again
+        initAutoFill( "#interactionTable" );
 
-	// Clear the addNew row, so a new row can be inserted
-	$( "input", addNewRow ).not("[type=button]").val( "" );
-	
-	// Now update the interaction cache. To do that, check whether the inserted genotypes and phenotypes already exist.
-	return updateObjectsBasedOnInteraction( newRow );
+        // Clear the addNew row, so a new row can be inserted
+        $( "input", addNewRow ).not("[type=button]").val( "" );
+        
+        // Now update the interaction cache. To do that, check whether the inserted genotypes and phenotypes already exist.
+        return updateObjectsBasedOnInteraction( newRow );
+    } else {
+        alert("Please set a value in the the Ratios' statistical model field to continue.");
+        return false;
+	}
 }
 
 function getFieldsToUpdate() {
@@ -340,6 +349,25 @@ function findOrAddMatchingObject( id, listToCheck ) {
 }
 
 function submitData() {
+    
+    // Check if all required study fields have been set.
+    var required_fields_set = true;
+    var coll = $('tr.study');
+    coll.each(function() {
+        // Check form constraints and do not show the relevant alerts
+        var set = checkFormConstraints($(coll), false)
+        if(set==false){
+            alert('Some required fields in the study section are not filled in.');
+            required_fields_set = false
+            return false;
+        }
+    });
+    if(required_fields_set==false){
+        // Not all are set. Move to the tab in question.
+        switchToTab(0)
+        return false;
+    }
+    
     genotypes = '"genotype":'+submitDataHelper('genotype');
     phenotypes = '"phenotype":'+submitDataHelper('phenotype');
     panels =  '"panel":'+submitDataHelper('panel');
@@ -440,7 +468,7 @@ function rowDefaultButtons( id ) {
  * @returns {String}
  */
 function rowEditingButtons( id, editing ) {
-	var strHTML = '<a href="#" onClick="saveRow(\''+id+'\',this); return false;">save</a>&nbsp;';
+	var strHTML = '<a href="#" onClick="saveRow(\''+id+'\',this); return false;">ok</a>&nbsp;';
 	
 	if( editing ) {
 		strHTML += '<a href="#" onClick="cancelEdit(\''+id+'\',this); return false;">cancel</a>';
@@ -565,6 +593,7 @@ function hideForm(td) {
 }
 
 function saveForm(td) {
+    // Check form constraints and show relevant alerts
 	if( checkFormConstraints( td ) ) {
 		// Hide the form and store the fields
 		hideForm(td);
@@ -653,7 +682,7 @@ function updateObjectsBasedOnInteraction( row ) {
 	return findOrAddMatchingObjects( checkFields );
 }
 
-function checkFormConstraints( td ) {
+function checkFormConstraints( td, show_alerts) {
 	var validated = true;
 	$( "input.required", $(td) ).each( function( idx, el ) {
 		if( $(el).val().trim() == "" ) {
@@ -663,9 +692,51 @@ function checkFormConstraints( td ) {
 			$(el).removeClass( "invalid" );
 		}
 	});
+    
+    // Additional checks on inputs that cannot be caught with the above selector
+    if($(td).find('input[name="statistical_model"]').val()==''){
+        if(show_alerts){
+            alert("Please set a value in the the tatistical model field to continue.");
+        }
+        $(td).find('input[name="statistical_model"]').addClass( "invalid" );
+        return false;
+    }
+    if($(td).find('input[id="input_gene"]').val()==''){
+        if(show_alerts){
+            alert("Please fill in the gene name field to continue.");
+        }
+        $(td).find('input[id="input_gene"]').addClass( "invalid" );
+        return false;
+    }
+    if($(td).find('input[id="input_panel_description"]').val()==''){
+        if(show_alerts){
+            alert("Please fill in the panel description field to continue.");
+        }
+        $(td).find('input[id="input_panel_description"]').addClass( "invalid" );
+        return false;
+    }
+    if($(td).find('input[id="input_phenotype_name"]').val()=='' ||
+        $(td).find('input[id="input_intake_data"]').val()==''){
+        if(show_alerts){
+            alert("Please fill in the phenotype name and intake data fields to continue.");
+        }
+        if($(td).find('input[id="input_phenotype_name"]').val()==''){
+            $(td).find('input[id="input_phenotype_name"]').addClass( "invalid" );
+        } else {
+            $(td).find('input[id="input_phenotype_name"]').removeClass( "invalid" );
+        }
+        if($(td).find('input[id="input_intake_data"]').val()==''){
+            $(td).find('input[id="input_intake_data"]').addClass( "invalid" );
+        } else {
+            $(td).find('input[id="input_intake_data"]').removeClass( "invalid" );
+        }
+        return false;
+    }
 	
 	if( !validated ) {
-		alert( "Please fill in all required fields." );
+        if(show_alerts){
+            alert( "Please fill in all required fields." );
+        }
 		$( "input.invalid", $(td) ).first().focus();
 	}
 	
