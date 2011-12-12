@@ -51,7 +51,7 @@ class Genotype(models.Model):
     number_of_people_with_genotype = models.IntegerField(max_length=9, blank=True, null=True)
     genotype_frequency = models.CharField(max_length=10, null=True, blank=True)
     estimated_overal_frequency = models.CharField(max_length=10, null=True, blank=True)
-    genotype_details = models.CharField(max_length=20, blank=True)
+    genotype_details = models.CharField(max_length=200, blank=True)
     
     def __unicode__(self):
         # Order of preference:
