@@ -11,14 +11,14 @@
                     {% if field.value|containedin:matchedValues %}
                         <tr class = "formfield {{ field.name }}">
                             <!-- <td class= "formspacer"></td> -->
-                            <td><b>{{ field.name }}</b></td> 
+                            <td><b>{{ field.label }}</b></td> 
                             <td><b>{{ field.value }}</b></td>
                         </tr>
                     {% endif %}     
                 {% else %}
                     <tr class = "formfield {{ field.name }}">
                         <!-- <td class= "formspacer"></td> -->
-                        <td>{{ field.name }}</td> 
+                        <td>{{ field.label }}</td> 
                         <td>{{ field.value }}</td>
                     </tr>                    
                 {% endif %}     
