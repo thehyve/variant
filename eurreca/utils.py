@@ -594,3 +594,41 @@ def get_Link_to_dbSNP_by_ref(ref):
         return link
     except:
         return None
+        
+def get_mouseover_text():
+    mouseover_text = {}
+    mouseover_text["significant_associations"] = "Record details of any statistically significant associations or interactions between genotype and either diet, status, environmental factors or health outcomes reported in the study."
+    mouseover_text["ratio_type"]  = "Select whether the paper reports hazard ratios (HR), odds ratios (OR) or relative risk (RR)."
+    mouseover_text["ci_lower"] = "Enter the lower end 95% CI (confidence interval) for either the HR, OR or RR reported previously."
+    mouseover_text["ci_upper"] = "Enter the upper end 95% CI (confidence interval) for either the HR, OR or RR reported previously."
+    mouseover_text["p_value"] = "Enter the p-value for interaction for the previously reported HR, OR or RR.";
+    mouseover_text["p_value_for_trend"] = "Enter the p-value for trend (statistical significance) for the previously reported HR, OR or RR."
+    mouseover_text["statistical_model"] = "Enter information on the statistical model used to evaluate the data. Note: the paper may report the use of more than one statistical approach e.g. a different model may be used to evaluate 'trends' as opposed to 'interactions'."
+    mouseover_text["gene"] = "Enter the commonly used name for the gene e.g. MTHFR, HFE"
+    mouseover_text["snp_ref"] = "Enter the SNP reference number, IDs beginning with rs are SNPs from the NCBI SNPs database. If you enter a new SNP reference number and this field gets a green icon, the SNP has been found in the NCBI SNPs database."
+    mouseover_text["snp_variant"] = "Enter details of the SNP variant where provided e.g. AA, TT or AT."
+    mouseover_text["snp_name"] = "Enter the SNP name. In addition to the SNP reference (accession) number or HGVS number, papers sometimes report a SNP name which may provide information on the location of the SNP in relation to the gene. The SNP name is sometimes reported concatenated with the gene name e.g. MAT1A_d18777."
+    mouseover_text["phenotype_name"] = "Describe the relevant phenotype or biomarkers of status reported. Examples of phenotype include BMI, bone density."
+    mouseover_text["intake_data"] = "Enter details of the dietary micronutrient intake if reported. This may be reported as supplemental micronutrient, habitual intake, or both."
+    mouseover_text["environmental_factor"] = "Enter details of any relevant environmental factor e.g. habitual dietary intake, status, physical activity, smoking etc."
+    mouseover_text["comments"] = "Enter details of potentially useful information related to the paper or the reported study which has not been captured elsewhere."
+    mouseover_text["study_type"] = "Select the type of study e.g. nested case control, prospective cohort etc. from the list. Where the design is unusual or not listed, please include a description in the comments field."
+    mouseover_text["number_of_participants"] = ""
+    mouseover_text["journal_title"] = "Enter the title of the journal"
+    mouseover_text["paper_title"] = "Enter the full title of the paper."
+    mouseover_text["endpoint"] = "Enter details of the health outcome which is linked to the SNP under investigation e.g. stroke, coronary heart disease etc."
+    mouseover_text["gender"] = ""
+    mouseover_text["population"] = "Enter details of the population group e.g. where the study was undertaken etc. and provide numbers of cases and controls as appropriate e.g. US PHS study; healthy US physicians (cases:1286; controls: 1267)."
+    mouseover_text["micronutrient"] = "List the EURRECA priority micronutrient for which the paper is relevant; separate micronutrients with a comma where the paper is relevant to more than one: folate, B12"
+    mouseover_text["authors"] = "Enter details of the authors of the paper, but limit names to the first three authors."
+    mouseover_text["year_of_publication"] = "Enter the year of publication of the paper."
+    mouseover_text["study_id"] = "Add the first author and year, as detailed in the following example Smith1999"
+    mouseover_text["allele"] = ""
+    mouseover_text["mutation"] = ""
+    mouseover_text["zygosity"] = ""
+    mouseover_text["number_of_people_with_genotype"] = ""
+    mouseover_text["genotype_frequency"] = ""
+    mouseover_text["estimated_overal_frequency"] = ""
+    mouseover_text["genotype_details"] = ""
+    mouseover_text["pubmed_id"] = ""
+    return mouseover_text

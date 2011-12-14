@@ -7,7 +7,7 @@
 		</a>
 	{% endif %} 
 	<div class="more_inputs">
-		<label>Endpoint (not saved yet)</label><input type="text" class="label focus" name="endpoint-endpoint" value="{{endpoint}}"><br />
+		<label>Endpoint (not saved yet)</label><input type="text" class="label focus" name="endpoint-endpoint" value="{{endpoint}}"><span class="tooltip"><img src="{{ STATIC_URL }}images/icons/help.png" alt="help"/><span>{{ mouseover_text.endpoint }}</span></span><br />
 		<input type="button" onClick="saveFormByElement( this );" value="OK">
 		<input type="button" onClick="cancelFormByElement( this );" value="Cancel">
 	</div>

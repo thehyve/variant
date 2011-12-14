@@ -8,9 +8,9 @@
 	{% endif %} 
 	<div class="more_inputs">
 		<div class="autofill" rel="phenotype_name">
-			<label>Phenotype name *</label><input type="text" class="label required focus" name="phenotype-phenotype_name" value="{{phenotype_name}}"><br />
+			<label>Phenotype name *</label><input type="text" class="label required focus" name="phenotype-phenotype_name" value="{{phenotype_name}}"><span class="tooltip"><img src="{{ STATIC_URL }}images/icons/help.png" alt="help"/><span>{{ mouseover_text.phenotype_name }}</span></span><br />
 		</div>
-		<label>Intake data</label><input type="text" class="" name="phenotype-intake_data" value="{{intake_data}}"><br />
+		<label>Intake data</label><input type="text" class="" name="phenotype-intake_data" value="{{intake_data}}"><span class="tooltip"><img src="{{ STATIC_URL }}images/icons/help.png" alt="help"/><span>{{ mouseover_text.intake_data }}</span></span><br />
 		<input type="button" onClick="saveFormByElement( this );" value="OK">
 		<input type="button" onClick="cancelFormByElement( this );" value="Cancel">
 	</div>

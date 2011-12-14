@@ -1,5 +1,5 @@
 ﻿{% load contains %}
-
+{% spaceless %}
 <td>
     {% if filtered == "True" and form.gene.value|containedin:matchedValues %}
         <b>{{ form.gene.value }}</b>
@@ -28,3 +28,4 @@
 <td></td>
 <td></td>
 <td></td>
+{% endspaceless %}

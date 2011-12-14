@@ -1,4 +1,5 @@
-﻿<tr>
+﻿{% spaceless %}
+<tr>
     {% if title == "Phenotype" %}
         <td>Phenotype name</td>
         <td>Intake data</td>
@@ -35,7 +36,7 @@
         <td>95% CI lower</td>
         <td>95% CI upper</td>
         <td>Significant associations</td>
-    {% endif %}                
+    {% endif %}
     {% if title == "Study" %}
         <td>Study id</td>
         <td>Pubmed id</td>
@@ -49,5 +50,6 @@
         <td>Journal title</td>
         <td>Study type</td>
         <td>Number of participants</td>
-    {% endif %}                
+    {% endif %}
 </tr>
+{% endspaceless %}

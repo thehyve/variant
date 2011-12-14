@@ -144,7 +144,8 @@ def study_create(request):
                     {'formset' : formset, 
                      'message' : message,
                      'messageType' : messageType,
-                     'autofill_lists': utils.get_autofill_lists()})
+                     'autofill_lists': utils.get_autofill_lists(),
+                     'mouseover_text': utils.get_mouseover_text(),})
             
             
             # Exception while reading or writing the study-related objects
@@ -161,6 +162,7 @@ def study_create(request):
                  'interactionValues' : inst.args[1]['interactionValues'], 
                  'message' : message,
                  'messageType' : messageType,
+                 'mouseover_text': utils.get_mouseover_text(),
                  'autofill_lists': utils.get_autofill_lists()}) 
     else:
         formset = StudyFormSet(queryset=Study.objects.none(), prefix="study")
@@ -168,6 +170,7 @@ def study_create(request):
         {'formset' : formset, 
          'message' : message,
          'messageType' : messageType,
+         'mouseover_text': utils.get_mouseover_text(),
          'autofill_lists': utils.get_autofill_lists()})
          
 @login_required   
@@ -256,6 +259,7 @@ def study_update(request, id):
                      'formsetInteraction' :  fs['interaction'],
                      'message' : message,
                      'messageType' : messageType,
+                     'mouseover_text': utils.get_mouseover_text(),
                      'autofill_lists': utils.get_autofill_lists()})  
             
             # Exception while reading or writing the study-related objects
@@ -277,6 +281,7 @@ def study_update(request, id):
                  'interactionValues' : inst.args[1]['interactionValues'], 
                  'message' : message,
                  'messageType' : messageType,
+                 'mouseover_text': utils.get_mouseover_text(),
                  'autofill_lists': utils.get_autofill_lists()})
     else:
         try:
@@ -300,6 +305,7 @@ def study_update(request, id):
                  'message' : message,
                  'messageType' : messageType,
                  'interactionValues' : interactionValues,
+                 'mouseover_text': utils.get_mouseover_text(),
                  'autofill_lists': utils.get_autofill_lists()})
         except Study.DoesNotExist:
             qs = Study.objects.all()

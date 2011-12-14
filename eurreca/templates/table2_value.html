@@ -1,7 +1,8 @@
 ﻿{% load contains %}
-
+{% spaceless %}
 {% if filtered == "True" and field.value|containedin:matchedValues %}
     <td><b>{{ field.value }}</b></td>
 {% else %}
     <td>{{ field.value }}</td>
-{% endif %}     
+{% endif %}
+{% endspaceless %}

@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 {% load contains %}
 {% load getsearchresultsize %}
-
 {% block extraScripts %}
     <script type="text/javascript" 
         src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js">
@@ -32,9 +31,9 @@
         </script>
     {% endif %}
 {% endblock %}
-
 {% block body %}
     {% if advancedSearch %}
+        {% spaceless %}
         <form name="input" action="/search/" method="post">
             <input name="search_type"  type="hidden" value="advanced"/>
             <div class="ui-widget">
@@ -83,11 +82,12 @@
             </div>
             <input type="submit" value="search" />
         </form>
+        {% endspaceless %}
     {% endif %}
+    {% spaceless %}
     {% if formSets %}
         <table>
-            
-            {% include 'search_result2_titles.html' with title="Interaction" %}  
+            {% include 'search_result2_titles.html' with title="Interaction" %}
             {% cycle 'row1' 'row2' as rowcolors silent %}
             {% for form in formSets.study %}
                 {% include 'search_result2.html' with title="Interaction" class=rowcolors filtered="True" %}
@@ -95,4 +95,5 @@
             {% endfor %}
         </table>
     {% endif %}
+    {% endspaceless %}
 {% endblock body %}

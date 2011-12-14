@@ -1,7 +1,7 @@
 ﻿{% load contains %}
 {% load truncatechars %}
 {% load repeat %}
-
+{% spaceless %}
 {% if form.id.value|containedin:study_id_to_interaction_id_mapping.keys %}
     {% for id, ids in study_id_to_interaction_id_mapping.items %}
         {% if form.id.value == id and not ids|length == '' %}
@@ -18,15 +18,14 @@
                                         {{ form.paper_title.value|truncatewords:4 }}
                                     {% endif %}
                                 {% else %}
-                                    Study 
+                                    Study
                                 {% endif %}
-                                
-                            </a>    
+                            </a>
                         </td>
                         {% include 'search_result2_interaction_values.html' with form=form2 title="Interaction" class="contentItem" filtered="True" %}
                     </tr>
                 {% endif %}
-            {% endfor %} 
+            {% endfor %}
         {% endif %}
     {% endfor %}
 {% else %}
@@ -42,10 +41,9 @@
                         {{ form.paper_title.value|truncatewords:4 }}
                     {% endif %}
                 {% else %}
-                    Study 
+                    Study
                 {% endif %}
-                
-            </a>    
+            </a>
         </td>
         {{ "<td></td>"|repeat:10|safe }}
     </tr>
@@ -66,14 +64,14 @@
                                 {{ form.paper_title.value|truncatewords:4 }}
                             {% endif %}
                         {% else %}
-                            Study 
+                            Study
                         {% endif %}
-                    </a>    
+                    </a>
                 </td>
                 {% include 'search_result2_genotype_values.html' with form=form2 title="Genotype" class="contentItem" filtered="True" %}
             </tr>
         {% endif %}
-    {% endfor %} 
+    {% endfor %}
     {% for form2 in formSets.phenotype %}
         {% if id == form2.study.value %}
             <tr class="{{ class }}">
@@ -87,14 +85,14 @@
                                 {{ form.paper_title.value|truncatewords:4 }}
                             {% endif %}
                         {% else %}
-                            Study 
+                            Study
                         {% endif %}
-                    </a>    
+                    </a>
                 </td>
                 {% include 'search_result2_phenotype_values.html' with form=form2 title="Phenotype" class="contentItem" filtered="True" %}
             </tr>
         {% endif %}
-    {% endfor %} 
+    {% endfor %}
     {% for form2 in formSets.panel %}
         {% if id == form2.study.value %}
             <tr class="{{ class }}">
@@ -108,12 +106,13 @@
                                 {{ form.paper_title.value|truncatewords:4 }}
                             {% endif %}
                         {% else %}
-                            Study 
+                            Study
                         {% endif %}
-                    </a>    
+                    </a>
                 </td>
                 {% include 'search_result2_panel_values.html' with form=form2 title="Panel" class="contentItem" filtered="True" %}
             </tr>
         {% endif %}
     {% endfor %}
 {% endif %}
+{% endspaceless %}

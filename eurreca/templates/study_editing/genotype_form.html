@@ -10,10 +10,10 @@
 	{% endif %} 
 	<div class="more_inputs">
 		<div class="autofill" rel="gene">
-			<label>Gene name *</label><input type="text" class="label focus required" name="genotype-gene" value="{{gene}}"><br />
+			<label>Gene name *</label><input type="text" class="label focus required" name="genotype-gene" value="{{gene}}"><span class="tooltip"><img src="{{ STATIC_URL }}images/icons/help.png" alt="help"/><span>{{ mouseover_text.gene }}</span></span><br />
 		</div>
-		<label>SNP ref</label><input type="text" class="label" name="genotype-snp_ref" value="{{snp_ref}}"><br />
-		<label>SNP variant</label><input type="text" class="label" name="genotype-snp_variant" value="{{snp_variant}}"><br />
+		<label>SNP ref</label><input type="text" class="label" name="genotype-snp_ref" value="{{snp_ref}}"><span class="tooltip"><img src="{{ STATIC_URL }}images/icons/help.png" alt="help"/><span>{{ mouseover_text.snp_ref }}</span></span><br />
+		<label>SNP variant</label><input type="text" class="label" name="genotype-snp_variant" value="{{snp_variant}}"><span class="tooltip"><img src="{{ STATIC_URL }}images/icons/help.png" alt="help"/><span>{{ mouseover_text.snp_variant }}</span></span><br />
 		<input type="button" onClick="saveFormByElement( this );" value="OK">
 		<input type="button" onClick="cancelFormByElement( this );" value="Cancel">
 	</div>

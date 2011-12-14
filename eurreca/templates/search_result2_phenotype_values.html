@@ -1,5 +1,5 @@
 ﻿{% load contains %}
-
+{% spaceless %}
 <td></td>
 {% if filtered == "True" and form.phenotype_name.value|containedin:matchedValues %}
     <td><b>{{ form.phenotype_name.value }}</b></td>
@@ -14,3 +14,4 @@
 <td></td>
 <td></td>
 <td></td>
+{% endspaceless %}

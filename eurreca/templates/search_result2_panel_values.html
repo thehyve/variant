@@ -1,5 +1,5 @@
 ﻿{% load contains %}
-
+{% spaceless %}
 <td></td>
 <td></td>
 {% if filtered == "True" and form.panel_description.value|containedin:matchedValues %}
@@ -14,3 +14,4 @@
 <td></td>
 <td></td>
 <td></td>
+{% endspaceless %}
