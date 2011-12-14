@@ -88,6 +88,7 @@ class Interaction(models.Model):
     panels = models.ManyToManyField(Panel, null=True, blank=True)
     statistical_model = models.CharField(max_length=200)
     p_value = models.CharField(max_length=10, null=True, blank=True)
+    p_value_for_trend = models.CharField(max_length=10, null=True, blank=True)
     ratio_type = models.CharField(max_length=1, choices = RATIO_TYPE_CHOICES, blank=True)
     ratio = models.CharField(max_length=10, null=True, blank=True)
     ci_lower = models.CharField(max_length=10, null=True, blank=True)
