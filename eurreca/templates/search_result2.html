@@ -22,6 +22,8 @@
                                 {% endif %}
                             </a>
                         </td>
+						{% include 'table2_value.html' with field=form.micronutrient %}
+                        
                         {% include 'search_result2_interaction_values.html' with form=form2 title="Interaction" class="contentItem" filtered="True" %}
                     </tr>
                 {% endif %}
@@ -45,7 +47,9 @@
                 {% endif %}
             </a>
         </td>
-        {{ "<td></td>"|repeat:10|safe }}
+		{% include 'table2_value.html' with field=form.micronutrient %}
+        
+        {{ "<td></td>"|repeat:8|safe }}
     </tr>
     {% comment %}
         The following will list genotypes, phenotypes and panels that are 

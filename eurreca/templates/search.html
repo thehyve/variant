@@ -86,7 +86,7 @@
     {% endif %}
     {% spaceless %}
     {% if formSets %}
-        <table>
+        <table class="searchresults" cellspacing="0">
             {% include 'search_result2_titles.html' with title="Interaction" %}
             {% cycle 'row1' 'row2' as rowcolors silent %}
             {% for form in formSets.study %}

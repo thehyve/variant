@@ -1,56 +1,56 @@
 ﻿{% spaceless %}
+<thead>
 <tr>
     {% if title == "Phenotype" %}
-        <td>Phenotype name</td>
-        <td>Intake data</td>
+        <th>Phenotype name</th>
+        <th>Intake data</th>
     {% endif %}
     {% if title == "Genotype" %}
-        <td>Gene name</td>
-        <td>Snp ref</td>
-        <td>Snp variant</td>
-        <td>Snp name</td>
-        <td>Allele</td>
-        <td>Mutation</td>
-        <td>Zygosity</td>
-        <td>Number of people with genotype</td>
-        <td>Frequency</td>
-        <td>Estimated overall frequency</td>
-        <td>Genotype details</td>
+        <th>Gene name</th>
+        <th>Snp ref</th>
+        <th>Snp variant</th>
+        <th>Snp name</th>
+        <th>Allele</th>
+        <th>Mutation</th>
+        <th>Zygosity</th>
+        <th>Number of people with genotype</th>
+        <th>Frequency</th>
+        <th>Estimated overall frequency</th>
+        <th>Genotype details</th>
     {% endif %}
     {% if title == "Panel" %}
-        <td>Panel description</td>
-        <td>No. of participants</td>
-        <td>Gender</td>
-        <td>Mean age</td>
-        <td>Additional age description</td>
+        <th>Panel description</th>
+        <th>No. of participants</th>
+        <th>Gender</th>
+        <th>Mean age</th>
+        <th>Additional age description</th>
     {% endif %}
     {% if title == "Interaction" %}
-        <td>Study</td>
-        <td>Genotype</td>
-        <td>Phenotype</td>
-        <td>Panel</td>
-        <td>Statistical model</td>
-        <td>p Value for interaction</td>
-        <td>p Value for trend</td>
-        <td>Ratio type</td>
-        <td>Ratio</td>
-        <td>95% CI lower</td>
-        <td>95% CI upper</td>
-        <td>Significant associations</td>
+        <th>Study</th>
+        <th>Micronutrient</th>
+        <th>Genotype</th>
+        <th>Phenotype</th>
+        <th>Linked health outcome</th>
+        <th>p Value for interaction</th>
+        <th>p Value for trend</th>
+        <th>Ratio type</th>
+        <th>Ratio</th>
+        <th>Significant associations</th>
     {% endif %}
     {% if title == "Study" %}
-        <td>Study id</td>
-        <td>Pubmed id</td>
-        <td>Year of publication</td>
-        <td>Authors</td>
-        <td>Micronutrient</td>
-        <td>Population</td>
-        <td>Gender</td>
-        <td>Endpoint</td>
-        <td>Paper title</td>
-        <td>Journal title</td>
-        <td>Study type</td>
-        <td>Number of participants</td>
+        <th>Study id</th>
+        <th>Pubmed id</th>
+        <th>Year of publication</th>
+        <th>Authors</th>
+        <th>Micronutrient</th>
+        <th>Population</th>
+        <th>Gender</th>
+        <th>Endpoint</th>
+        <th>Paper title</th>
+        <th>Journal title</th>
+        <th>Study type</th>
+        <th>Number of participants</th>
     {% endif %}
 </tr>
+</thead>
 {% endspaceless %}

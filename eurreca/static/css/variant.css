@@ -78,6 +78,7 @@ div.negativeMessage { display: inline; background: url("/static/images/icons/err
 table.interactions { width: 100%; border-collapse: collapse; }
 table.interactions caption { font-weight: bold; }
 table.interactions tr.header { background-color: #ADC376; border-top-width: 0; }
+table.interactions tr.header th { color: white; }
 table.interactions tr { border-top: 1px solid #aaa; }
 table.interactions th { border-right: 1px solid white; }
 table.interactions th, table.interactions td { text-align: left; margin: 0; padding: 2px 6px; }
@@ -103,11 +104,28 @@ input.invalid { background-color: #FFC9D7; }
 .more_inputs:before { top: -20px; left: 4px; border: 10px solid transparent; border-bottom-color: black; }
 .more_inputs:after { top: -18px; left: 5px; border: 9px solid transparent; border-bottom-color: white; }
 
+/* Header of tables */
+thead th { 
+	border-bottom: 1px dotted #6A9403;
+	text-align: left;
+	color: #6A9403;
+	font-weight: normal;
+	padding: 2px 5px;
+}
+
 /* Alternating row colors */
-.row1 { background-color: #DCDCDC; }
-.row2 { background-color: #FFFFCC; }
+.row1 { background-color: #F7FFE0; }
+.row2 { background-color: #E5F0C9; }
 
-
+/* Search result table */
+table.searchresults td {
+	margin: 0;
+	padding: 5px;
+	border-bottom: 2px solid white;
+	border-right: 1px solid white;
+	color: #333;
+}
+	
 /* Tooltip */
 .tooltip span {
     border-radius: 5px 5px 5px 5px;
@@ -119,6 +137,7 @@ input.invalid { background-color: #FFC9D7; }
     /* background: none repeat scroll 0 0 seashell; */
     padding:2px 3px;
     margin-left:8px;
+    font-weight: normal;
 }
 
 .tooltip:hover span{

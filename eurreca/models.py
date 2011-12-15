@@ -94,6 +94,7 @@ class Interaction(models.Model):
     ci_lower = models.CharField(max_length=10, null=True, blank=True)
     ci_upper = models.CharField(max_length=10, null=True, blank=True)
     significant_associations = models.CharField(max_length=500, blank=True)
+    endpoint = models.CharField(max_length=200, blank=True)
     
 class Link_to_dbSNP(models.Model):
     snp_ref = models.CharField(max_length=200)

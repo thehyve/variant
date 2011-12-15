@@ -18,3 +18,5 @@ syntax: regexp
 ^eggs$
 syntax: regexp
 ^eurreca/eurreca\.db$
+syntax: regexp
+^eurreca/fixtures$
