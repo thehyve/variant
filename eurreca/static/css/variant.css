@@ -43,7 +43,7 @@ ul#searchMenu li { display: inline-block; *display: inline; zoom: 1; padding-top
 #pagetabs li a span { vertical-align: middle; }
 
 
-div.contentItem { background-color: #F8FFF0; display: block; float: left; margin: 5px; padding: 10px; }
+/* div.contentItem { background-color: #F8FFF0; display: block; float: left; margin: 5px; padding: 10px; } */
 ul.searchResults { list-style-type: none; }
 
 .ui-widget { font-size: 1em; }

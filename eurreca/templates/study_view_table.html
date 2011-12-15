@@ -1,11 +1,16 @@
 ﻿{% load contains %}
 {% if not tmp_formset|length == '' %}
     <div class="{{ class }}"><table>
-        {% include 'table2_titles.html' %}                   
+        {% include 'table2_titles.html' %}
+		
+		{% cycle 'row1' 'row2' as rowcolors silent %}
+                           
         {% for form in tmp_formset %}
-            <tr>
+            <tr class="{{rowcolors}}">
                 {% include 'table2_values.html' %}
             </tr>
+            {% cycle rowcolors %}
+            
         {% endfor %}
     </table></div>
 {% endif %}
