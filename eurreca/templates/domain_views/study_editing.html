@@ -358,23 +358,23 @@
 				</div>
 				
 			</div>
+
+			<ul class="buttons">
+				<li><a href="#" onClick="submitData(); return false;">Save the changes to this study</a></li>
+				<li>{% if not formset.0.id.value == null and not formset.0.id.value == '' and not formset.0.id.value == None %}
+						<a href="/studies/view/{{ formset.0.id.value }}">
+							Cancel
+						</a>
+					{% else %}
+						<a href="/studies/">
+							Cancel
+						</a>
+					{% endif %}
+				</li>
+			</ul>
+
 		</form>
 	  {% endfor %}
-	</div>
-	<div id="contextmenu">
-		<ul>
-			<li><a href="#" onClick="submitData(); return false;">Save the changes to this study</a></li>
-			<li>{% if not formset.0.id.value == null and not formset.0.id.value == '' and not formset.0.id.value == None %}
-					<a href="/studies/view/{{ formset.0.id.value }}">
-						Cancel
-					</a>
-				{% else %}
-					<a href="/studies/">
-						Cancel
-					</a>
-				{% endif %}
-			</li>
-		</ul>
 	</div>
 
 {% endblock body %}

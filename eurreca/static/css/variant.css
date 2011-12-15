@@ -104,6 +104,13 @@ input.invalid { background-color: #FFC9D7; }
 .more_inputs:before { top: -20px; left: 4px; border: 10px solid transparent; border-bottom-color: black; }
 .more_inputs:after { top: -18px; left: 5px; border: 9px solid transparent; border-bottom-color: white; }
 
+/* Buttons menu underneath the form */
+form ul.buttons { list-style-type: none; margin: 0; padding: 8px; }
+form ul.buttons li { margin: 4px 0; padding: 0; }
+form ul.buttons a { text-decoration:none; }
+form ul.buttons img { vertical-align: middle; }
+form ul.buttons span { vertical-align: middle; }
+
 /* Header of tables */
 thead th { 
 	border-bottom: 1px dotted #6A9403;
