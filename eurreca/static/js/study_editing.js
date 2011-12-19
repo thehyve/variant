@@ -110,16 +110,16 @@ function editRow(id, that) {
  * @param that		Reference to the link clicked (or any other element in the tr that is being saved)
  */
 function saveRow(id, that) {
-    
-    iRowNr = $(that).parents('tr').index();
+    var trs = $(that).parents('tr'); 
+    iRowNr = trs.index();
 
     if(id=='interaction') {
         arrIndex = saveInteractionRow();
         interactCache[iRowNr] = arrIndex;
     } else {
         // Check form constraints and show relevant alerts
-        if( checkFormConstraints( $(that).parents('tr').children('td'), true ) ) {
-            iRowNr = $(that).parents('tr').index();
+        if( checkFormConstraints( trs.children('td'), true ) ) {
+            iRowNr = trs.index();
             
             // List of fields to update if an object has been changed
             var listToUpdate = getFieldsToUpdate();
@@ -133,7 +133,7 @@ function saveRow(id, that) {
                     // Update the fields in the interaction table
                     var td = $("td.editable_" + id, this);
                     
-                    var sourceTds = $(that).parents( "tr" ).children();
+                    var sourceTds = trs.children();
                     for( i = 0; i < listToUpdate[ id ].length; i++ ) {
                         var value = sourceTds.eq(i).find('input.newVal').val();
                         $( listToUpdate[ id ][ i ], td ).val( $.trim(value) );
@@ -144,13 +144,13 @@ function saveRow(id, that) {
             
             // Now put all edited text into the td
             strNewRow = '';
-            $(that).parents('tr').find( 'td.editable' ).each(function(){
+            trs.find( 'td.editable' ).each(function(){
                 var newVal = $('input.newVal', $(this)).val();
                 $(this).text( newVal );
             });
             
             // Replace the buttons with the correct ones
-            $(that).parents('tr').find( "td.buttons" ).html( rowDefaultButtons( id ) );
+            trs.find( "td.buttons" ).html( rowDefaultButtons( id ) );
         }
     }
 }
@@ -542,7 +542,10 @@ function showForm(td) {
 	storeFields( td );
 	
 	$(td).addClass( "form-active" );
-	$( "#fade_background" ).show()
+	
+	if( !isRunningIE7OrBelow ) {
+		$( "#fade_background" ).show()
+	}
 	
 	// Set focus to the correct input field
 	var form = $( ".more_inputs", $(td) );
@@ -605,7 +608,7 @@ function saveForm(td) {
 		});
 		
 		if( td.parents( ".addNew" ).length > 0 && hasValues ) {
-			saveRow('interaction', td.siblings( ".buttons" ).children().first() ); 
+			saveRow('interaction', td.siblings( ".buttons" ) ); 
 		}
 		
 		return true;
