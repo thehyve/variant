@@ -152,74 +152,29 @@
                                         {% if interactionValues %}
                                             {% for item, value in interactionValues.items %}
                                                 {% ifequal forloop.parentloop.counter forloop.counter %}
-                                                    <a class="all" href="#" onClick="showFormByElement( this ); return false;">
-                                                        {{value.phenotype_name}}
-                                                    </a>
-                                                    <div class="more_inputs">
-                                                        <label>Phenotype name</label><input class="label focus" type="text" name="phenotype-phenotype_name" value="{{value.phenotype_name}}"><span class="tooltip"><img src="{{ STATIC_URL }}images/icons/help.png" alt="help"/><span>{{ mouseover_text.phenotype_name }}</span></span><br />
-                                                        <label>Intake data</label><input class="" type="text" name="phenotype-intake_data" value="{{value.intake_data}}"><span class="tooltip"><img src="{{ STATIC_URL }}images/icons/help.png" alt="help"/><span>{{ mouseover_text.intake_data }}</span></span><br />
-                                                        <input type="button" onClick="saveFormByElement( this );" value="OK">
-                                                    </div>
+                                                    {% include 'study_editing/phenotype_form.html' with phenotype_name=value.phenotype_name intake_data=value.intake_data %}
                                                 {% endifequal %}
                                             {% endfor %}
                                         {% else %}
-                                            <a class="all" href="#" onClick="showFormByElement( this ); return false;">
-                                                
-                                            </a>
-                                            <div class="more_inputs">
-                                                <label>Phenotype name</label><input class="label focus" type="text" name="phenotype-phenotype_name" value=""><span class="tooltip"><img src="{{ STATIC_URL }}images/icons/help.png" alt="help"/><span>{{ mouseover_text.phenotype_name }}</span></span><br />
-                                                <label>Intake data</label><input class="" type="text" name="phenotype-intake_data" value=""><span class="tooltip"><img src="{{ STATIC_URL }}images/icons/help.png" alt="help"/><span>{{ mouseover_text.intake_data }}</span></span><br />
-                                                <input type="button" onClick="saveFormByElement( this );" value="OK">
-                                            </div>
+                                           {% include 'study_editing/phenotype_form.html' with phenotype_name='' intake_data='' %}
                                         {% endif %}
 									</td>
 									<td class="editable editable_panel">
                                         {% if interactionValues %}
                                             {% for item, value in interactionValues.items %}
                                                 {% ifequal forloop.parentloop.counter forloop.counter %}
-                                                    <a class="all" href="#" onClick="showFormByElement( this ); return false;">
-                                                        {{value.panel_description}}
-                                                    </a>
-                                                    <div class="more_inputs">
-                                                        <label>Panel description</label><input class="label focus" type="text" name="panel-panel_description" value="{{value.panel_description}}"><br />
-                                                        <input type="button" onClick="saveFormByElement( this );" value="OK">
-                                                    </div>
+                                                    {% include 'study_editing/panel_form.html' with panel_description=value.panel_description %}
                                                 {% endifequal %}
                                             {% endfor %}
                                         {% else %}
-                                            <a class="all" href="#" onClick="showFormByElement( this ); return false;">
-                                                
-                                            </a>
-                                            <div class="more_inputs">
-                                                <label>Panel description</label><input class="label focus" type="text" name="panel-panel_description" value=""><br />
-                                                <input type="button" onClick="saveFormByElement( this );" value="OK">
-                                            </div>
+                                            {% include 'study_editing/panel_form.html' with panel_description='' %}
                                         {% endif %}
 									</td>
 									<td class="editable editable_endpoint">
-										<a class="all" href="#" onClick="showFormByElement( this ); return false;">
-											
-										</a>
-										<div class="more_inputs">
-											<label>Endpoint (not saved yet)</label><input type="text" class="label focus" name="endpoint-endpoint" value=""><span class="tooltip"><img src="{{ STATIC_URL }}images/icons/help.png" alt="help"/><span>{{ mouseover_text.endpoint }}</span></span><br />
-											<input type="button" onClick="saveFormByElement( this );" value="OK">
-										</div>
+                                        {% include 'study_editing/endpoint_form.html' with endpoint='' %}
 									</td>
 									<td class="editable editable_ratios">
-										<a class="all" href="#" onClick="showFormByElement( this ); return false;">
-											{% if form.ratio_type.value %}{{ form.ratio_type.value }}{% endif %} {% if form.ratio.value %}{{ form.ratio.value }}{% endif %}
-										</a>
-										<div class="more_inputs">
-											<label>Statistical model<span  class=''></span></label><input type="text" class=" focus" name="statistical_model" value="{% if form.statistical_model.value %}{{ form.statistical_model.value }}{% endif %}"><span class="tooltip"><img src="{{ STATIC_URL }}images/icons/help.png" alt="help"/><span>{{ mouseover_text.statistical_model }}</span></span><br />
-											<label>P value for interaction</label><input type="text" class="" name="p_value" value="{% if form.p_value.value %}{{ form.p_value.value }}{% endif %}"><span class="tooltip"><img src="{{ STATIC_URL }}images/icons/help.png" alt="help"/><span>{{ mouseover_text.p_value }}</span></span><br />
-                                            <label>P value for trend</label><input type="text" class="" name="p_value_for_trend" value="{% if form.p_value_for_trend.value %}{{ form.p_value_for_trend.value }}{% endif %}"><span class="tooltip"><img src="{{ STATIC_URL }}images/icons/help.png" alt="help"/><span>{{ mouseover_text.p_value_for_trend }}</span></span><br />
-											<label>Ratio type</label><input type="text" class="label" name="ratio_type" value="{% if form.ratio_type.value %}{{ form.ratio_type.value }}{% endif %}"><span class="tooltip"><img src="{{ STATIC_URL }}images/icons/help.png" alt="help"/><span>{{ mouseover_text.ratio_type }}</span></span><br />
-											<label>Ratio value</label><input  type="text" class="label" name="ratio" value="{% if form.ratio.value %}{{ form.ratio.value }}{% endif %}"><br />
-											<label>CI lower</label><input type="text"  class="" name="ci_lower" value="{% if form.ci_lower.value %}{{ form.ci_lower.value }}{% endif %}"><span class="tooltip"><img src="{{ STATIC_URL }}images/icons/help.png" alt="help"/><span>{{ mouseover_text.ci_lower }}</span></span><br />
-											<label>CI upper</label><input type="text" class="" name="ci_upper" value="{% if form.ci_upper.value %}{{ form.ci_upper.value }}{% endif %}"><span class="tooltip"><img src="{{ STATIC_URL }}images/icons/help.png" alt="help"/><span>{{ mouseover_text.ci_upper }}</span></span><br />
-											<label>Significant associations</label><input type="text" class="" name="significant_associations" value="{% if form.significant_associations.value %}{{ form.significant_associations.value }}{% endif %}"><span class="tooltip"><img src="{{ STATIC_URL }}images/icons/help.png" alt="help"/><span>{{ mouseover_text.significant_associations }}</span></span><br />
-											<input type="button" onClick="saveFormByElement( this );" value="OK">
-										</div>
+										{% include 'study_editing/ratios_form.html' with statistical_model=form.statistical_model.value p_value=form.p_value.value p_value_for_trend_value=form.p_value_for_trend_value.value ratio_type=form.ratio_type.value ratio=form.ratio.value ci_lower=form.ci_lower.value ci_upper=form.ci_upper.value significant_associations=form.significant_associations.value %}
 									</td>
 									<td class="buttons">
 										<!-- <a onclick="editRow('interaction',this); return false;" href="#">edit</a> -->
