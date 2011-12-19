@@ -419,8 +419,16 @@ def advanced_search_view(request):
 
 @login_required   
 def all(request):
-    message = request.session['message']
-    messageType = request.session['messageType']
+    message = ""
+    try:
+        message = request.session['message']
+    except:
+        pass
+    messageType = ""
+    try:
+        messageType = request.session['messageType']
+    except:
+        pass
     ''' Perform search. 
         Second argument says to use all interactions for 
         the search, regardless of search terms. 
