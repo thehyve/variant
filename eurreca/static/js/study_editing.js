@@ -236,49 +236,43 @@ function saveInteractionRow() {
 	// the addNew row and replacing the inputs with links
 	var addNewRow = $( "#interactionTable .addNew" );
     
-    // If the required field has been set, it can be saved.
-    if( addNewRow.find('input[name="statistical_model"]').val()!='' ) {
-        // First destroy the autofill options, since they can not be cloned
-        // See http://bugs.jqueryui.com/ticket/5866
-        destroyAutoFill( "#interactionTable" );	
+    // First destroy the autofill options, since they can not be cloned
+    // See http://bugs.jqueryui.com/ticket/5866
+    destroyAutoFill( "#interactionTable" );	
+    
+    var newRow = addNewRow.clone( true, true ).removeClass( "addNew" );
+    
+    // Replace the input.all elements with links
+    newRow.find( "input.all" ).each( function( idx, el ) {
+        // Create a new link
+        var link = $( "<a class='all' href='#'></a>" ).text( $(el).val() );
+        link.click( function(event) { 
+            showFormByElement( this ); return false; 
+        } );
         
-        var newRow = addNewRow.clone( true, true ).removeClass( "addNew" );
-        
-        // Replace the input.all elements with links
-        newRow.find( "input.all" ).each( function( idx, el ) {
-            // Create a new link
-            var link = $( "<a class='all' href='#'></a>" ).text( $(el).val() );
-            link.click( function(event) { 
-                showFormByElement( this ); return false; 
-            } );
-            
-            // Replace the input element with a link
-            $(el).before( link )
-            $(el).remove();
-        });
-        
-        // Replace the 'save' link with a 'remove' link
-        var buttonsCell = newRow.find( "td.buttons" );
-        buttonsCell.empty();
-        buttonsCell.append( 
-                $( "<a href='#'>remove</a>" ).click( function(event) { removeRow( 'interaction', this ); return false; } )
-        );
-        
-        // Insert the new row
-        addNewRow.before( newRow );
-        
-        // Add the autofill lists to the copied elements again
-        initAutoFill( "#interactionTable" );
+        // Replace the input element with a link
+        $(el).before( link )
+        $(el).remove();
+    });
+    
+    // Replace the 'save' link with a 'remove' link
+    var buttonsCell = newRow.find( "td.buttons" );
+    buttonsCell.empty();
+    buttonsCell.append( 
+            $( "<a href='#'>remove</a>" ).click( function(event) { removeRow( 'interaction', this ); return false; } )
+    );
+    
+    // Insert the new row
+    addNewRow.before( newRow );
+    
+    // Add the autofill lists to the copied elements again
+    initAutoFill( "#interactionTable" );
 
-        // Clear the addNew row, so a new row can be inserted
-        $( "input", addNewRow ).not("[type=button]").val( "" );
-        
-        // Now update the interaction cache. To do that, check whether the inserted genotypes and phenotypes already exist.
-        return updateObjectsBasedOnInteraction( newRow );
-    } else {
-        alert("Please set a value in the the Ratios' statistical model field to continue.");
-        return false;
-	}
+    // Clear the addNew row, so a new row can be inserted
+    $( "input", addNewRow ).not("[type=button]").val( "" );
+    
+    // Now update the interaction cache. To do that, check whether the inserted genotypes and phenotypes already exist.
+    return updateObjectsBasedOnInteraction( newRow );
 }
 
 function getFieldsToUpdate() {
@@ -511,25 +505,30 @@ function inputTabPress( e ) {
 		// Show the form in the next td. If the next td contains buttons,
 		// just close this form
 		var td = $(e.target).parents( "td" ).first();
+		var tdIndex = td.index(); 
 		var nextTd = td.next();
-		
+
 		// If no next td is found, return
 		if( nextTd.length == 0 )
 			return;
 		
-		// If the next td contains buttons, close this form and focus
-		// on the first button
-		if( nextTd.hasClass( "buttons" ) ) {
-			if( saveForm( formShown ) ) {
+		if( saveForm( formShown ) ) {
+			// If we have saved the form for a new interaction,
+			// we should open the td in the row above
+			if( td.parents( ".addNew" ).length > 0 ) {
+				nextTd = td.parent().prev().find( "td" ).eq( tdIndex + 1 );
+			}
+			
+			// If the next td contains buttons, close this form and focus
+			// on the first button
+			if( nextTd.hasClass( "buttons" ) ) {
 				$( "a", nextTd ).first().focus();
+			} else {
+				showForm( nextTd );
 			}
 			return false;
 		} 
 		
-		// Otherwise, open the next form
-		if( saveForm( formShown ) ) {
-			showForm( nextTd );
-		}
 		return false;
 	}
 }
@@ -594,6 +593,20 @@ function saveForm(td) {
 		}
 		
 		formShown = false;
+		
+		// If we are in a 'new row' and have values entered, store the row and add a new one
+		var hasValues = false;
+		$.each( $(td).find( "input[type=text]" ), function( idx, el ) {
+			if( hasValues )
+				return;
+			
+			if( $(el).val().trim() != "" ) 
+				hasValues = true;
+		});
+		
+		if( td.parents( ".addNew" ).length > 0 && hasValues ) {
+			saveRow('interaction', td.siblings( ".buttons" ).children().first() ); 
+		}
 		
 		return true;
 	} else {
@@ -679,13 +692,6 @@ function checkFormConstraints( td, show_alerts) {
 	});
     
     // Additional checks on inputs that cannot be caught with the above selector
-    if($(td).find('input[name="statistical_model"]').val()==''){
-        if(show_alerts){
-            alert("Please set a value in the the tatistical model field to continue.");
-        }
-        $(td).find('input[name="statistical_model"]').addClass( "invalid" );
-        return false;
-    }
     if($(td).find('input[id="input_gene"]').val()==''){
         if(show_alerts){
             alert("Please fill in the gene name field to continue.");
