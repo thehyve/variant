@@ -1,16 +1,15 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404, HttpRequest, HttpResponseRedirect
 from django.template import RequestContext, Context, loader, Template
 from eurreca.models import Study, Genotype, Phenotype, Panel, Interaction
 from eurreca.forms import StudyFormSet, StudyForm, GenotypeFormSet, GenotypeForm, PhenotypeFormSet, PhenotypeForm, PanelForm, PanelFormSet, InteractionForm, InteractionFormSet
-from django.http import HttpResponseRedirect
-from django.contrib.auth.models import User
-from django.contrib.auth import login, logout, authenticate
-from django.contrib.auth.decorators import login_required
 from django.forms.models import modelformset_factory, inlineformset_factory
+from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_protect
 from django.core.context_processors import csrf
 from django.shortcuts import render
-from django.http import Http404, HttpRequest
+
 from django.core import serializers
 from django.core.exceptions import ValidationError
 import json
@@ -23,18 +22,10 @@ from itertools import chain
 from django.views.decorators.csrf import csrf_exempt
 
 def index(request):
-    '''qs = Study.objects.all()
-    study_list = []
-    if not len(qs) == 0:
-        study_list = StudyFormSet(queryset=qs, prefix="study")'''
     t = loader.get_template('index.html')
     c = RequestContext( 
         request,
-        {
-            #'study_list' : study_list,
-            'logged_in' : request.user.is_authenticated(),
-            'user' : request.user,
-        }
+        {}
     )
     return HttpResponse(t.render(c))
 
@@ -117,14 +108,7 @@ def study_create(request):
                      'message' : message,
                      'messageType' : messageType,})         
             except Study.DoesNotExist:
-                qs = Study.objects.all()
-                study_list = []
-                if not len(qs) == 0:
-                    study_list = StudyFormSet(queryset=qs, prefix="study")
-                return render(request, 'domain_views/study_list.html', 
-                    {'message' : "The requested study does not exist.",
-                     'messageType' : "negative",
-                     'study_list' : study_list,})  
+                return HttpResponseRedirect('/all/')
         except ValidationError as inst:
             print "\nin study create view"
             print '\na)',type(inst)     # the exception instance
@@ -222,14 +206,11 @@ def study_update(request, id):
                      'messageType' : messageType,
                      'autofill_lists': utils.get_autofill_lists()})         
             except Study.DoesNotExist:
-                qs = Study.objects.all()
-                study_list = []
-                if not len(qs) == 0:
-                    study_list = StudyFormSet(queryset=qs, prefix="study")
-                return render(request, 'domain_views/study_list.html', 
-                    {'message' : "The requested study does not exist.",
-                     'messageType' : "negative",
-                     'study_list' : study_list,})  
+                message = "The requested study does not exist."
+                messageType = "negative"
+                request.session['message'] = message
+                request.session['messageType'] = messageType
+                return HttpResponseRedirect('/all/')
         except ValidationError as inst:
             print "\nin study update view"
             print '\na)',type(inst)     # the exception instance
@@ -308,14 +289,11 @@ def study_update(request, id):
                  'mouseover_text': utils.get_mouseover_text(),
                  'autofill_lists': utils.get_autofill_lists()})
         except Study.DoesNotExist:
-            qs = Study.objects.all()
-            study_list = []
-            if not len(qs) == 0:
-                study_list = StudyFormSet(queryset=qs, prefix="study")
-            return render(request, 'domain_views/study_list.html', 
-                {'message' : "The requested study does not exist.",
-                 'messageType' : "negative",
-                 'study_list' : study_list,})  
+            message = "The requested study does not exist."
+            messageType = "negative"
+            request.session['message'] = message
+            request.session['messageType'] = messageType
+            return HttpResponseRedirect('/all/')
 
 @login_required   
 def study_view(request, id):
@@ -337,10 +315,11 @@ def study_view(request, id):
              'messageType' : messageType,
              'dbSNP' : results,})         
     except Study.DoesNotExist:
-        return render(request, 'domain_views/study_list.html', 
-            {'message' : "The requested study does not exist.",
-             'messageType' : "negative",
-             'study_list' : Study.objects.all()[:50],})  
+        message = "The requested study does not exist."
+        messageType = "negative"
+        request.session['message'] = message
+        request.session['messageType'] = messageType
+        return HttpResponseRedirect('/all/')
     
 @login_required        
 def study_remove(request, id):
@@ -362,16 +341,10 @@ def study_remove(request, id):
     except Study.DoesNotExist:
         message = "The requested study does not exist."
         messageType = "negative"
-
-                 
-    qs = Study.objects.all()
-    study_list = []
-    if not len(qs) == 0:
-        study_list = StudyFormSet(queryset=qs, prefix="study")
-    return render(request, 'domain_views/study_list.html', 
-            {'message' : message,
-             'messageType' : messageType,
-             'study_list' : study_list,})  
+             
+    request.session['message'] = message
+    request.session['messageType'] = messageType
+    return HttpResponseRedirect('/all/')
  
 @login_required               
 def search_view(request):
@@ -446,9 +419,8 @@ def advanced_search_view(request):
 
 @login_required   
 def all(request):
-    message = ""
-    messageType = ""
-        
+    message = request.session['message']
+    messageType = request.session['messageType']
     ''' Perform search. 
         Second argument says to use all interactions for 
         the search, regardless of search terms. 
@@ -460,7 +432,7 @@ def all(request):
          'messageType' : messageType,
          'formSets' : search_output['results'],
          'study_id_to_interaction_id_mapping' : search_output[
-            'study_id_to_interaction_id_mapping']})             
+            'study_id_to_interaction_id_mapping']})
          
 @login_required           
 def snp_search(request, ref):
@@ -474,22 +446,9 @@ def snp_search(request, ref):
     edited_message += ' <br/>Also available:'
     for r in results:
         edited_message += ' <a href="{0}">{1}</a> '.format(results[r], r)
-    '''qs = Study.objects.all()
-    study_list = []
-    if not len(qs) == 0:
-        study_list = StudyFormSet(queryset=qs, prefix="study")'''
-    t = loader.get_template('index.html')
-    c = RequestContext( 
-        request,
-        {
-            #'study_list' : study_list,
-            'logged_in' : request.user.is_authenticated(),
-            'user' : request.user,
-            'message' : edited_message,
-            'messageType' : message['messageType'],
-        }
-    )
-    return HttpResponse(t.render(c))
+    request.session['message'] = edited_message
+    request.session['messageType'] = message['messageType']
+    return HttpResponseRedirect('/all/')
  
 @csrf_exempt 
 def ajax_snp(request, ref):

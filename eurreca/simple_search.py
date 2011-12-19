@@ -61,8 +61,14 @@ def search_by_interaction(search_terms, use_all_interactions = False):
         statements in the following sections can be significant. '''
     
     # Search through studies
-    output = add_each_matching_item_to_results(Study.objects.all(), search_terms)
+    output = None
+    if search_terms == ['']:
+        output = add_each_item_to_results(Study.objects.all(), search_terms)
+    else:
+        output = add_each_matching_item_to_results(Study.objects.all(), search_terms)
+    
     results = list(set(output['results']))
+    print 'results:',results
     matches = list(set(output['matches']))
     study_id_to_interaction_id_mapping = {}
     
