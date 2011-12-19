@@ -68,7 +68,7 @@ def search_by_interaction(search_terms, use_all_interactions = False):
         output = add_each_matching_item_to_results(Study.objects.all(), search_terms)
     
     results = list(set(output['results']))
-    print 'results:',results
+    print results
     matches = list(set(output['matches']))
     study_id_to_interaction_id_mapping = {}
     
@@ -145,6 +145,7 @@ def get_relevant_interactions_and_related_items(results, matches,
     results += list(set(output['results']))
     matches += list(set(output['matches']))
     
+    
     # Return final results
     return compile_final_results(results, matches, 
         study_id_to_interaction_id_mapping, interaction_mappings)        
@@ -186,6 +187,9 @@ def compile_final_results(results, matches,
         clean_study_id_to_interaction_id_mapping(results, 
             study_id_to_interaction_id_mapping))
 
+    print '---'
+    print results
+    print formSets
     # Return final results
     return {'results': formSets, 'matches': matches, 
         'study_id_to_interaction_id_mapping': 
@@ -244,7 +248,12 @@ def add_each_matching_item_to_results(items, search_terms,
             genotypes_to_be_checked.append(
                 interaction_mappings[item.id]['genotypes'])
             panels_to_be_checked.append(
-                interaction_mappings[item.id]['panels'])   
+                interaction_mappings[item.id]['panels'])
+        else:
+            if not type(item) == Study:
+                if not study_id_to_interaction_id_mapping.has_key(item.study.id):
+                    study_id_to_interaction_id_mapping[item.study.id] = []
+                study_id_to_interaction_id_mapping[item.study.id].append(item.id)   
 
         # Group field names and values together
         list_of_name_value_pairs = [
@@ -316,6 +325,11 @@ def add_each_item_to_results(items, search_terms):
                 results.append(item.genotypes.all()[0])
             if len(item.panels.all())!=0:
                 results.append(item.panels.all()[0])
+        else:
+            if not type(item) == Study:
+                if not study_id_to_interaction_id_mapping.has_key(item.study.id):
+                    study_id_to_interaction_id_mapping[item.study.id] = []
+                study_id_to_interaction_id_mapping[item.study.id].append(item.id)
             
         for li in list_of_name_value_pairs:
             if not (li[0]=='id' or li[0]=='study'):
