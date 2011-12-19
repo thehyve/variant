@@ -22,19 +22,7 @@ def contains(value, arg):
     
 @register.filter()
 def containedin(value, arg):
-    if value == None:
-        return False
-    v = str(value)
-    a = []
-    for item in arg:
-        a.append(str(item))
-    v = v.lower()
-    for item in a:
-        i = item.lower()
-        if i in v:
-            return True
-    return False
-    
+    return (value in arg)
     
 @register.filter()
 def snprefcontainedin(value, arg):
@@ -45,12 +33,4 @@ def snprefcontainedin(value, arg):
     v = str(value)
     if v.startswith('rs'):
            v = v.strip('rs')
-    a = []
-    for item in arg:
-        a.append(str(item))
-    v = v.lower()
-    for item in a:
-        i = item.lower()
-        if i in v:
-            return True
-    return False
+    return (v in arg)
