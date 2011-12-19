@@ -136,7 +136,7 @@ function saveRow(id, that) {
                     var sourceTds = $(that).parents( "tr" ).children();
                     for( i = 0; i < listToUpdate[ id ].length; i++ ) {
                         var value = sourceTds.eq(i).find('input.newVal').val();
-                        $( listToUpdate[ id ][ i ], td ).val( value.trim() );
+                        $( listToUpdate[ id ][ i ], td ).val( $.trim(value) );
                     }
                     updateFields( td );
                 }
@@ -349,7 +349,7 @@ function submitData() {
     var coll = $('#studyInformation tr td.contains_required_inputs');
     coll.each(function() {
         $( this ).children('input').each( function( idx, el ) {
-            if( $(el).val().trim() == "" ) {
+            if( $.trim( $(el).val() ) == "" ) {
                 $(el).addClass( "invalid" );
                 required_fields_set = false;
             } else {
@@ -376,7 +376,7 @@ function submitData() {
     	
     	// Loop through all input elements
     	$( ".editable_ratios input[type=text]", $(row) ).not( ".all" ).each( function( idx, input ) {
-    		interaction[ $(input).attr( 'name' ) ] = $(input).val().trim();
+    		interaction[ $(input).attr( 'name' ) ] = $.trim( $(input).val() );
     	});
     	
     	interactionsArray[ interactionIdx++ ] = interaction;
@@ -440,7 +440,7 @@ function submitDataHelper(type){
             count2 += 1;
             if(count2!=coll2.length){ string += ","; }
         });
-        ret += '"'+count+'":{'+string.trim()+'}';
+        ret += '"'+count+'":{' + $.trim( string )+'}';
         count += 1;
         if(count!=coll.length){ ret += ","; }
     });
@@ -600,7 +600,7 @@ function saveForm(td) {
 			if( hasValues )
 				return;
 			
-			if( $(el).val().trim() != "" ) 
+			if( $.trim( $(el).val() ) != "" ) 
 				hasValues = true;
 		});
 		
@@ -640,7 +640,7 @@ function updateFields( td ) {
 	var label = "";
 	$( ".label", form ).each( function( idx, el ) {
 		if( $(el).val() != "" )
-			label += ( label == "" ? "" : ", " ) + $(el).val().trim();
+			label += ( label == "" ? "" : ", " ) + $.trim( $(el).val() );
 	});
 	
 	$( "input.all", $(td) ).val( label );
@@ -673,7 +673,7 @@ function updateObjectsBasedOnInteraction( row ) {
 	for( type in fieldsToUpdate ) {
 		checkFields[ type ] = [];
 		for( i = 0; i < fieldsToUpdate[ type ].length; i++ ) {
-			checkFields[ type ][ i ] = $( fieldsToUpdate[ type ][ i ], row ).val().trim();
+			checkFields[ type ][ i ] = $.trim( $( fieldsToUpdate[ type ][ i ], row ).val() );
 		}
 	}
 	
@@ -683,7 +683,7 @@ function updateObjectsBasedOnInteraction( row ) {
 function checkFormConstraints( td, show_alerts) {
 	var validated = true;
 	$( "input.required", $(td) ).each( function( idx, el ) {
-		if( $(el).val().trim() == "" ) {
+		if( $.trim( $(el).val() ) == "" ) {
 			$(el).addClass( "invalid" );
 			validated = false;
 		} else {
