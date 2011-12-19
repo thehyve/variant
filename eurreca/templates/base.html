@@ -15,7 +15,19 @@
                     // Tabs
                     $('#pagetabs').tabs();
                 });
+                var isRunningIE7OrBelow = false;
             </script>
+            
+			<!-- 
+				This script checks whether the user runs IE7 or below, since in that 
+				case the edit functionality doesn't work properly.
+			-->
+			<!--[if lte IE 7]>
+			<script type="text/javascript">
+			  isRunningIE7OrBelow = true;
+			</script>
+			<![endif]-->
+            
         {% endblock %}
         {% block extraScripts %}{% endblock %}
 	</head>
