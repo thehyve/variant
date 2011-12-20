@@ -86,7 +86,7 @@ class Interaction(models.Model):
     genotypes = models.ManyToManyField(Genotype, null=True, blank=True)
     phenotypes = models.ManyToManyField(Phenotype, null=True, blank=True)
     panels = models.ManyToManyField(Panel, null=True, blank=True)
-    statistical_model = models.CharField(max_length=200)
+    statistical_model = models.CharField(max_length=200, blank=True)
     p_value = models.CharField(max_length=10, null=True, blank=True)
     p_value_for_trend = models.CharField(max_length=10, null=True, blank=True)
     ratio_type = models.CharField(max_length=1, choices = RATIO_TYPE_CHOICES, blank=True)

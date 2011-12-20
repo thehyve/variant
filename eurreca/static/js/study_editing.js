@@ -702,6 +702,16 @@ function checkFormConstraints( td, show_alerts) {
         $(td).find('input[id="input_gene"]').addClass( "invalid" );
         return false;
     }
+    ref = $(td).find('input[name="genotype-snp_ref"]').val();
+    if(ref!=undefined){
+        if(!ref.match(/^(rs)?\d{0,200}$/)){
+            if(show_alerts){
+                alert("Please fill in a valid SNP ref to continue.");
+            }
+            $(td).find('input[name="genotype-snp_ref"]').addClass( "invalid" );
+            return false;
+        }  
+    }
     if($(td).find('input[id="input_panel_description"]').val()==''){
         if(show_alerts){
             alert("Please fill in the panel description field to continue.");
@@ -717,17 +727,6 @@ function checkFormConstraints( td, show_alerts) {
         return false;
     }
     
-    if($(td).find('input[name="genotype-snp_ref"]')){
-        ref = $(td).find('input[name="genotype-snp_ref"]').val()
-        if(!ref.match(/^(rs)?\d{1,200}$/)){
-            if(show_alerts){
-                alert("Please fill in a valid SNP ref to continue.");
-            }
-            $(td).find('input[name="genotype-snp_ref"]').addClass( "invalid" );
-            return false;
-        }  
-    }
-	
 	if( !validated ) {
         if(show_alerts){
             alert( "Please fill in all required fields." );
