@@ -49,7 +49,7 @@ class Genotype(models.Model):
     mutation = models.CharField(max_length=200, blank=True)
     zygosity = models.CharField(max_length=1, choices=TYPE_CHOICES, blank=True)
     number_of_people_with_genotype = models.IntegerField(max_length=9, blank=True, null=True)
-    genotype_frequency = models.CharField(max_length=30, null=True, blank=True)
+    genotype_frequency = models.CharField(max_length=200, null=True, blank=True)
     estimated_overal_frequency = models.CharField(max_length=10, null=True, blank=True)
     genotype_details = models.CharField(max_length=200, blank=True)
     
