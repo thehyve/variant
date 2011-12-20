@@ -586,11 +586,9 @@ def get_Link_to_dbSNP_by_ref(ref):
         return None
     if ref.startswith('rs'):
        ref = ref.strip('rs')
-    print 'get_Link_to_dbSNP_by_ref: looking for',ref
     link = None
     try:
         link = Link_to_dbSNP.objects.get(snp_ref=ref)
-        print '\tfound', link
         return link
     except:
         return None

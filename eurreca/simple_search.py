@@ -68,7 +68,6 @@ def search_by_interaction(search_terms, use_all_interactions = False):
         output = add_each_matching_item_to_results(Study.objects.all(), search_terms)
     
     results = list(set(output['results']))
-    print results
     matches = list(set(output['matches']))
     study_id_to_interaction_id_mapping = {}
     
@@ -186,10 +185,6 @@ def compile_final_results(results, matches,
     study_id_to_interaction_id_mapping = (
         clean_study_id_to_interaction_id_mapping(results, 
             study_id_to_interaction_id_mapping))
-
-    print '---'
-    print results
-    print formSets
     # Return final results
     return {'results': formSets, 'matches': matches, 
         'study_id_to_interaction_id_mapping': 
