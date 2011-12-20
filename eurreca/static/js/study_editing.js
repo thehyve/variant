@@ -716,6 +716,17 @@ function checkFormConstraints( td, show_alerts) {
         $(td).find('input[id="input_phenotype_name"]').addClass( "invalid" );
         return false;
     }
+    
+    if($(td).find('input[name="genotype-snp_ref"]')){
+        ref = $(td).find('input[name="genotype-snp_ref"]').val()
+        if(!ref.match(/^(rs)?\d{1,200}$/)){
+            if(show_alerts){
+                alert("Please fill in a valid SNP ref to continue.");
+            }
+            $(td).find('input[name="genotype-snp_ref"]').addClass( "invalid" );
+            return false;
+        }  
+    }
 	
 	if( !validated ) {
         if(show_alerts){
@@ -754,6 +765,7 @@ JSON.stringify = JSON.stringify || function (obj) {
  ***/
 function get_snp_url(e) {
     var ref = $(this).val()
+    $(this).removeClass( "invalid" );
     
     // If this request is not necessary, don't do it
     if(get_snp_url_request_last_ref == ref){
@@ -763,11 +775,20 @@ function get_snp_url(e) {
     // Reset everything
     if(ref == '' || ref == null){
         $(this).css("backgroundImage", "None");
-        $(this).removeClass('snpFound');
         get_snp_url_request.abort();
         get_snp_url_request_last_ref = ''
         return false;
     }
+    
+    // If the ref is nonsensical, don't look it up.
+    if(!ref.match(/^(rs)?\d{0,200}$/)){
+        // Not setting the inputfield to red when user has only typed 'r' or 'rs'
+        if(!ref.match(/^r$/)){
+            $(this).addClass( "invalid" );
+        }
+        $(this).css("backgroundImage", "None");
+        return false;
+    }    
     
     // Clear out old request.
     if(get_snp_url_request){
@@ -779,29 +800,22 @@ function get_snp_url(e) {
     var that = this
     var result_of_call = '';
     var image_to_set = '';
-    if (ref != ''){
-        var data = { ref:ref };
-        var args = { type:"POST", 
-                     url:"/ajax_snp/"+ref, 
-                     data:data};
-        get_snp_url_request = $.ajax(args)
-        get_snp_url_request.done(function(result){
-            result_of_call = result;
-            if (result_of_call != ''){
-                //image_to_set = 
-                //background-color: #EDF2F7
-                //$(that).css("background-color", "#00FF00");
-                $(that).css("backgroundImage", "url('/static/images/icons/accept.png')");
-                $(that).css("background-repeat", "no-repeat");
-                $(that).css("background-position", "right top");
-                $(that).addClass('snpFound');
-                //alert(result_of_call);
-            } else {
-                $(that).css("backgroundImage", "None");
-                $(that).removeClass('snpFound');
-            }
-        });
-    } 
+    var data = { ref:ref };
+    var args = { type:"POST", 
+                 url:"/ajax_snp/"+ref, 
+                 data:data};
+    get_snp_url_request = $.ajax(args)
+    get_snp_url_request.done(function(result){
+        result_of_call = result;
+        if (result_of_call != ''){
+            $(that).css("backgroundImage", "url('/static/images/icons/accept.png')");
+            $(that).css("background-repeat", "no-repeat");
+            $(that).css("background-position", "right top");
+        } else {
+            $(that).css("backgroundImage", "None");
+            $(this).addClass( "invalid" );
+        }
+    });
     return false;
 };
 

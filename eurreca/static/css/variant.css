@@ -14,7 +14,6 @@ a img { border-width: 0; }
 input.roundedcorners:focus { outline-width: 0px; }
 input.button { width: 60px; }
 .requiredLabel:after { content: "*"; }
-.snpFound:after { content: "(SNf ref has been found in snpDB)"; }
 
 /* Header styles */
 #header { padding: 0 20px;  }
