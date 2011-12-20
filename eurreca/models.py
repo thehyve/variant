@@ -8,7 +8,7 @@ class Study(models.Model):
         ('U', 'Unknown'),
     )
     study_id = models.CharField(max_length=50)
-    pubmed_id = models.IntegerField(max_length=9)
+    pubmed_id = models.IntegerField(max_length=10)
     year_of_publication = models.CharField(max_length=4)
     authors = models.CharField(max_length=200)
     micronutrient = models.CharField(max_length=200, blank=True)
@@ -18,7 +18,7 @@ class Study(models.Model):
     paper_title = models.CharField(max_length=200)
     journal_title = models.CharField(max_length=200, blank=True)
     study_type = models.CharField(max_length=200, blank=True)
-    number_of_participants = models.IntegerField(max_length=9, blank=True, null=True)
+    number_of_participants = models.IntegerField(max_length=10, blank=True, null=True)
     comments = models.CharField(max_length=500, blank=True, null=True)
     environmental_factor = models.CharField(max_length=200, blank=True, null=True)
     

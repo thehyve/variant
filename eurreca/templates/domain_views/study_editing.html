@@ -95,7 +95,11 @@
                                 {% if field.field.required %}
                                         <td><span class="requiredLabel">{{ field.label_tag }}</span></td>
                                 {% else %}
-                                        <td>{{ field.label_tag }}</td>
+                                        {% if field.name == 'endpoint' %}
+                                            <td>Health outcome</td>
+                                        {% else %}
+                                            <td>{{ field.label_tag }}</td>
+                                        {% endif %}
                                 {% endif %}		
 								
                                 {% if field.field.required %}
