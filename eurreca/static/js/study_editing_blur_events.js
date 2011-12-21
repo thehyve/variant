@@ -153,7 +153,7 @@
         var value = $(this).val();
         value = $.trim(value);
         $(this).val(value);
-        if(!value.match(/^\d{0,10}$/)){
+        if(value.length>50){
             if(!$(this).hasClass( "invalid" )){
                 message1 = '\'Number of participants\' field can consist of at most ten digits.';
                 alert(message1);
