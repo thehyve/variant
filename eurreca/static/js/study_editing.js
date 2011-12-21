@@ -44,7 +44,7 @@ function addRow(id, values, editable) {
     		}
     			
     	} else {
-    		cell.text( newVal );
+    		cell.html( newVal );
     	}
     	
     	row.append( cell );
@@ -146,7 +146,7 @@ function saveRow(id, that) {
             strNewRow = '';
             trs.find( 'td.editable' ).each(function(){
                 var newVal = $('input.newVal', $(this)).val();
-                $(this).text( newVal );
+                $(this).html( newVal );
             });
             
             // Replace the buttons with the correct ones
@@ -165,7 +165,7 @@ function cancelEdit( id, that ) {
                     
     $(that).parents('tr').find('td').each(function() {
     	var oldVal = $('input.oldVal', $(this)).val();
-    	$(this).text( oldVal );
+    	$(this).html( oldVal );
     });
     
     // Replace the buttons with the correct ones
@@ -217,7 +217,7 @@ function removeRow(id, that) {
 	                
 	                // Clear the fields in the interaction to reflect the deleted entity
 	                $( "td.editable_" + id , this).find( "input[type=text]" ).val( "" );
-	                $( "td.editable_" + id , this).find( "a.all" ).text( "" );
+	                $( "td.editable_" + id , this).find( "a.all" ).html( "" );
                 } else if( iRowNr < arrIndex[id+'Nrs'] ) {
                 	// If the entity to remove is in the list before the entity in the interaction
                 	// update the interaction to reflect the changes
@@ -245,7 +245,7 @@ function saveInteractionRow() {
     // Replace the input.all elements with links
     newRow.find( "input.all" ).each( function( idx, el ) {
         // Create a new link
-        var link = $( "<a class='all' href='#'></a>" ).text( $(el).val() );
+        var link = $( "<a class='all' href='#'></a>" ).html( $(el).val() );
         link.click( function(event) { 
             showFormByElement( this ); return false; 
         } );
@@ -644,7 +644,7 @@ function updateFields( td ) {
 	});
 	
 	$( "input.all", $(td) ).val( label );
-	$( "a.all", $(td) ).text( label );	
+	$( "a.all", $(td) ).html( label );	
 }
 
 function storeFields( td ) {
