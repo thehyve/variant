@@ -9,7 +9,6 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_protect
 from django.core.context_processors import csrf
 from django.shortcuts import render
-
 from django.core import serializers
 from django.core.exceptions import ValidationError
 import json

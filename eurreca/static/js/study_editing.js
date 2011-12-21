@@ -364,10 +364,10 @@ function submitData() {
         return false;
     }
     
-    genotypes = '"genotype":'+submitDataHelper('genotype');
-    phenotypes = '"phenotype":'+submitDataHelper('phenotype');
-    panels =  '"panel":'+submitDataHelper('panel');
-    returnObject =  '{' + genotypes + "," + phenotypes + "," + panels + ",";
+    return_map = {}
+    return_map['genotype'] = submitDataHelper('genotype');
+    return_map['phenotype'] = submitDataHelper('phenotype');
+    return_map['panel'] = submitDataHelper('panel');
     
     var interactionsArray = {};
     var interactionIdx = 0;
@@ -376,48 +376,48 @@ function submitData() {
     	
     	// Loop through all input elements
     	$( ".editable_ratios input[type=text]", $(row) ).not( ".all" ).each( function( idx, input ) {
-    		interaction[ $(input).attr( 'name' ) ] = $.trim( $(input).val() );
+    		interaction[ $(input).attr( 'name' ) ] = $(input).val();
     	});
     	
     	interactionsArray[ interactionIdx++ ] = interaction;
     });
     
-    interactions = '"interaction":' + JSON.stringify( interactionsArray );
-
-    interactionRelations = '"interactionRelations":'+retrieve_interaction_relations();
-    
-    returnObject += interactions + ',' + interactionRelations + '}'; 
-    
+    return_map['interaction'] = interactionsArray;
+    return_map['interactionRelations'] = retrieve_interaction_relations();
+    return_object = JSON.stringify(return_map);
+    // Replace ' with ` to deal with crappy Python/Django JSON decoding /
+    // POST handling
+    // ' should actally not be a problem according to JSON specification
+    return_object = return_object.replace(/'/g, "`");
     form = $('form[name=study_editing]');
     formstuff = "<input type=hidden name='returnObject' value='";
-    form.append(formstuff + returnObject +"'>");
+    form.append(formstuff + return_object +"'>");
     form.submit();
 }
 
 function retrieve_interaction_relations(){
-    ret = '{';
+    ret_map = {}
     for(i=0;i<interactCache.length;i++){
         if(interactCache[i]!=undefined){
-            if(ret.length>1) {
-                ret+= ',';
-            }
+            ret_map[""+i] = {}
             gts = -1;
+            pts = -1;
+            panels = -1;
             if(interactCache[i]["genotypeNrs"]!=undefined){
                 gts = interactCache[i]["genotypeNrs"];
             }
-            pts = -1;
             if(interactCache[i]["phenotypeNrs"]!=undefined){
                 pts = interactCache[i]["phenotypeNrs"];
             }
-            panels = -1;
             if(interactCache[i]["panelNrs"]!=undefined){
                 panels = interactCache[i]["panelNrs"];
             }
-            ret += '"'+i+'":{"genotype":'+gts+',"phenotype":'+pts+',"panel":'+panels+'}';
+            ret_map[""+i]['genotype'] = gts;
+            ret_map[""+i]['phenotype'] = pts;
+            ret_map[""+i]['panel'] = panels;
         }
     }
-    ret += "}";
-    return ret;
+    return ret_map;
 }
 
 function submitDataHelper(type){
@@ -426,25 +426,22 @@ function submitDataHelper(type){
         headers.push($(this).attr('id'));
     });
     
-    ret = '{';
+    ret = {};
     count = 0;
     coll = $('#'+type+' tr');
     coll.each(function() {
-        string = '';
+        m = {};
         count2 = 0;
         coll2 = $(this).children('td:not(:last-child)');
         coll2.each(function() {
             item = $(this).html();
             if(item==''){ item = 'null'; }
-            string += '"'+headers[count2]+'":"'+item+'"';
+            m[headers[count2]] = item;
             count2 += 1;
-            if(count2!=coll2.length){ string += ","; }
         });
-        ret += '"'+count+'":{' + $.trim( string )+'}';
+        ret[count] = m;
         count += 1;
-        if(count!=coll.length){ ret += ","; }
     });
-    ret += "}";
     return ret;
 }
 
@@ -756,7 +753,6 @@ JSON.stringify = JSON.stringify || function (obj) {
         return (arr ? "[" : "{") + String(json) + (arr ? "]" : "}");
     }
 };
-
 
 /****
  * Call the application to see if dbSNP contains a particular ref
