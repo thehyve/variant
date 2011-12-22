@@ -28,6 +28,9 @@ def index(request):
     )
     return HttpResponse(t.render(c))
 
+def faq(request):
+	return render( request, 'faq.html' )
+
 def do_logout(request):
     logout(request)
     return HttpResponseRedirect('/')

@@ -179,3 +179,6 @@ table.searchresults td {
 * html .ui-autocomplete {
 	height: 120px;
 }
+
+dl#faq dt { font-weight: bold; }
+dl#faq dd { margin-bottom: 10px; }

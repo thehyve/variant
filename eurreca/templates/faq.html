@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block body %}
+	<h2>FAQ</h2>
+	<dl id="faq">
+		<dt>What is an interaction?</dt>
+		<dd>
+			An interaction is the information that describes the relation 
+			between genotypes, phenotypes and micronutrients.
+		</dd>
+		
+		<dt>Where can I save micronutrients?</dt>
+		<dd>
+			Under study information you can save the interaction that is investigated in the paper, 
+			using the Micronutrient field. When you click in this field, all known micronutrients 
+			in the database are shown.
+		</dd> 
+
+		<dt>Where can I see my studies?</dt>
+		<dd>
+			Click Browse on top of the page to see all interactions, grouped by study. 
+			If you want a specific study, you can use the search bar on the upper right
+			of the page, and search for author, year of publication or paper title. 
+		</dd>
+		
+		<dt>How can I search for an interactions with a certain gene?</dt>
+		<dd>
+			The most direct is to use the search bar on the upper right, and 
+			type the gene name you are looking for. The result page gives an 
+			overview of all the interactions where the gene is found, grouped 
+			by study. For a more specific search use the Advanced Search, where 
+			you can define for which fields you want to search in more detail. 
+		</dd>
+		
+		<dt>What is minimal information to save a study?</dt>
+		<dd>
+			The minimal required information to save a study are required fields 
+			for study details, indicated by * in the interface. You can quit the 
+			study and add more information later on.<br /> 
+			To save an interaction, any combination of genotype, phenotype and/or 
+			linked health outcome is possible. Following this, for genotypes a 
+			gene name is required, for phenotypes a phenotype name, and for ratios
+			a statistical model. 
+		</dd>
+		
+		<dt>What is a genotype?</dt>
+		<dd>
+			A genotype is the genetic makeup of an individual or organism. To save a 
+			genotype in this database minimal required is a gene name. Since this 
+			database is mainly on genetic variations (SNPs), additional information 
+			on SNPs and alleles can also be stored.
+		</dd>
+		
+		<dt>What is a phenotype?</dt>
+		<dd>
+			In this database a phenotype resembles any observable character, trait or 
+			biological property involved in the study you want to store. This can be 
+			BMI, plasma concentrations, saturation values or bio-activity data. This 
+			data can be saved as measured values or ratios.
+		</dd>
+		
+		<dt>Not all fields from interaction are table, where can I see them?</dt> 
+		<dd>
+			Note that all fields are visible when you view the whole study. However, 
+			when you add an interaction, only a few fields are visible in the summary 
+			fields (after clicking OK). Also on the Browse page only the most important 
+			fields for an interaction are shown.<br /><br /> 
+			
+			For example, if you fill in Intake data for a phenotype, this field is only 
+			visible in the study view: Click Browse, search for your study, and click 
+			on the StudyID (first column) to view the whole study.
+		</dd> 
+	</dl>
+{% endblock body %}
