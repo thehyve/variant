@@ -2,10 +2,10 @@ from django.db import models
         
 class Study(models.Model):
     GENDER_CHOICES = (
-        ('F', 'Female'),
-        ('M', 'Male'),
-        ('X', 'Mixed'),
-        ('U', 'Unknown'),
+        ('Female', 'Female'),
+        ('Male', 'Male'),
+        ('Mixed', 'Mixed'),
+        ('Unknown', 'Unknown'),
     )
     study_id = models.CharField(max_length=50)
     pubmed_id = models.IntegerField(max_length=10)
@@ -13,7 +13,7 @@ class Study(models.Model):
     authors = models.CharField(max_length=500)
     micronutrient = models.CharField(max_length=500, blank=True)
     population = models.CharField(max_length=500, blank=True)
-    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, blank=True, null=True)
+    gender = models.CharField(max_length=10, choices=GENDER_CHOICES, blank=True, null=True)
     endpoint = models.CharField(max_length=500, blank=True)
     paper_title = models.CharField(max_length=500)
     journal_title = models.CharField(max_length=500, blank=True)
@@ -35,10 +35,10 @@ class Phenotype(models.Model):
         
 class Genotype(models.Model):
     TYPE_CHOICES = (
-        ('E', 'Heterozygote'),
-        ('O', 'Homozygote'),
-        ('W', 'Wildtype'),
-        ('U', 'Unknown'),
+        ('Heteroz', 'Heterozygote'),
+        ('Homoz', 'Homozygote'),
+        ('WT', 'Wildtype'),
+        ('Unknown', 'Unknown'),
     )
     study = models.ForeignKey(Study)
     gene = models.CharField(max_length=500)
@@ -47,7 +47,7 @@ class Genotype(models.Model):
     snp_name = models.CharField(max_length=500, blank=True, null=True)
     allele = models.CharField(max_length=500, blank=True)
     mutation = models.CharField(max_length=500, blank=True)
-    zygosity = models.CharField(max_length=1, choices=TYPE_CHOICES, blank=True)
+    zygosity = models.CharField(max_length=8, choices=TYPE_CHOICES, blank=True)
     number_of_people_with_genotype = models.CharField(max_length=50, blank=True, null=True)
     genotype_frequency = models.CharField(max_length=500, null=True, blank=True)
     estimated_overal_frequency = models.CharField(max_length=10, null=True, blank=True)
@@ -64,13 +64,13 @@ class Genotype(models.Model):
             
 class Panel(models.Model):
     GENDER_CHOICES = (
-        ('F', 'Female'),
-        ('M', 'Male'),
-        ('X', 'Mixed'),
-        ('U', 'Unknown'),
+        ('Female', 'Female'),
+        ('Male', 'Male'),
+        ('Mixed', 'Mixed'),
+        ('Unknown', 'Unknown'),
     )
     study = models.ForeignKey(Study)
-    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, blank=True, null=True)
+    gender = models.CharField(max_length=10, choices=GENDER_CHOICES, blank=True, null=True)
     number_of_participants = models.CharField(max_length=50, blank=True, null=True)
     mean_age = models.CharField(max_length=10, null=True, blank=True)
     additional_age_description = models.CharField(max_length=500, blank=True)
@@ -78,9 +78,9 @@ class Panel(models.Model):
     
 class Interaction(models.Model):
     RATIO_TYPE_CHOICES = (
-        ('H', 'Hazard ratio'),
-        ('O', 'Odds ratio'),
-        ('R', 'Relative risk'),
+        ('HR', 'Hazard ratio'),
+        ('OR', 'Odds ratio'),
+        ('RR', 'Relative risk'),
     )
     study = models.ForeignKey(Study)
     genotypes = models.ManyToManyField(Genotype, null=True, blank=True)
@@ -89,7 +89,7 @@ class Interaction(models.Model):
     statistical_model = models.CharField(max_length=500, blank=True)
     p_value = models.CharField(max_length=10, null=True, blank=True)
     p_value_for_trend = models.CharField(max_length=10, null=True, blank=True)
-    ratio_type = models.CharField(max_length=1, choices = RATIO_TYPE_CHOICES, blank=True)
+    ratio_type = models.CharField(max_length=2, choices = RATIO_TYPE_CHOICES, blank=True)
     ratio = models.CharField(max_length=10, null=True, blank=True)
     ci_lower = models.CharField(max_length=10, null=True, blank=True)
     ci_upper = models.CharField(max_length=10, null=True, blank=True)

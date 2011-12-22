@@ -74,6 +74,7 @@ function createInput( fieldName, newVal ) {
 
 	if( fieldName == 'zygosity' || fieldName == 'gender' ) {
 		input = $( "<select class='newVal' id='input_" + fieldName + "'/>" );
+		input.append( $( "<option value=''></option>" ) );
 		
 		for( option in choices[ fieldName ] ) {
 			input.append( $( "<option>" ).attr( "value", option ).text( choices[ fieldName ][ option ] ) );
@@ -81,7 +82,7 @@ function createInput( fieldName, newVal ) {
 		input.val( newVal );
 	} else {
 		input = $( "<input class='newVal' type='text' id='input_" + fieldName + "'/>" ).val( newVal );
-	}    		
+	}
 	
 	return input
 }

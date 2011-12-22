@@ -16,6 +16,7 @@
         <label>p Value for trend</label><input type="text" class="label" name="p_value_for_trend" value="{{p_value_for_trend}}"><span class="tooltip"><img src="{{ STATIC_URL }}images/icons/help.png" alt="help"/><span>{{ mouseover_text.p_value_for_trend }}</span></span><br />
 		<label>Ratio type</label>
 			<select class="label" name="ratio_type">
+	            <option value=""></option>
 			    {% for option in choices.ratio_type %}
 			        {% ifequal option.0 ratio_type %}
 			            <option value="{{option.0}}" selected="selected">{{option.1}}</option>
