@@ -55,6 +55,7 @@
 {% endif %}
 {% if title == "Interaction" %}
     {% include 'table2_interaction_geno_pheno_panel.html' %}
+    {% include 'table2_value.html' with field=form.endpoint %}
     {% include 'table2_value.html' with field=form.statistical_model %}
     {% include 'table2_value.html' with field=form.p_value %}
     {% include 'table2_value.html' with field=form.p_value_for_trend %}

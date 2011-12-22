@@ -11,14 +11,28 @@
                     {% if field.value|containedin:matchedValues %}
                         <tr class = "formfield {{ field.name }}">
                             <!-- <td class= "formspacer"></td> -->
-                            <td><b>{{ field.label }}</b></td> 
+                            <td><b>
+                            	{# This is a very ugly construction to change 'endpoint' into 'health outcome'. If you have a better solution, be my guest #}
+                            	{% if field.label == 'Endpoint' %}
+                            		Health outcome
+                            	{% else %}
+                            		{{ field.label }}
+                            	{% endif %}
+                            </b></td> 
                             <td><b>{{ field.value }}</b></td>
                         </tr>
                     {% endif %}     
                 {% else %}
                     <tr class = "formfield {{ field.name }}">
                         <!-- <td class= "formspacer"></td> -->
-                        <td>{{ field.label }}</td> 
+                        <td>
+                           	{# This is a very ugly construction to change 'endpoint' into 'health outcome'. If you have a better solution, be my guest #}
+                           	{% if field.label == 'Endpoint' %}
+                           		Health outcome
+                           	{% else %}
+                           		{{ field.label }}
+                           	{% endif %}
+                        </td> 
                         <td>{{ field.value }}</td>
                     </tr>                    
                 {% endif %}     
