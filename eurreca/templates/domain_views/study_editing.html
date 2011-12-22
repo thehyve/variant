@@ -195,7 +195,7 @@
                                         {% endif %}
 									</td>
 									<td class="editable editable_endpoint">
-                                        {% include 'study_editing/endpoint_form.html' with endpoint='' %}
+                                        {% include 'study_editing/endpoint_form.html' with endpoint=form.endpoint.value %}
 									</td>
 									<td class="editable editable_ratios">
 										{% include 'study_editing/ratios_form.html' with statistical_model=form.statistical_model.value p_value=form.p_value.value p_value_for_trend_value=form.p_value_for_trend_value.value ratio_type=form.ratio_type.value ratio=form.ratio.value ci_lower=form.ci_lower.value ci_upper=form.ci_upper.value significant_associations=form.significant_associations.value %}
