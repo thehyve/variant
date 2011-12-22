@@ -33,7 +33,7 @@ ul#searchMenu { float: right; list-style-type: none; margin: 0; padding: 0; }
 ul#searchMenu li { display: inline-block; *display: inline; zoom: 1; padding-top: 4px; }
 
 /* Content */
-#content { background-color: white; padding: 12px 20px; }
+#content { background-color: white; padding: 12px 20px; min-height: 200px }
 #pagetabs { border-width: 0; background-color: transparent; background-image: none; position: relative; }
 #pagetabs.withcontextmenu { margin-right: 210px; }
 #pagetabs .ui-tabs-panel { padding-left: 0; padding-right: 0; }

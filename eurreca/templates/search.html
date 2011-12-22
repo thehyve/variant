@@ -86,14 +86,18 @@
     {% endif %}
     {% spaceless %}
     {% if formSets %}
-        <table class="searchresults" cellspacing="0">
-            {% include 'search_result2_titles.html' with title="Interaction" %}
-            {% cycle 'row1' 'row2' as rowcolors silent %}
-            {% for form in formSets.study %}
-                {% include 'search_result2.html' with title="Interaction" class=rowcolors filtered="True" %}
-                {% cycle rowcolors %}
-            {% endfor %}
-        </table>
+    	{% if formSets.study %}
+	        <table class="searchresults" cellspacing="0">
+	            {% include 'search_result2_titles.html' with title="Interaction" %}
+	            {% cycle 'row1' 'row2' as rowcolors silent %}
+	            {% for form in formSets.study %}
+	                {% include 'search_result2.html' with title="Interaction" class=rowcolors filtered="True" %}
+	                {% cycle rowcolors %}
+	            {% endfor %}
+	        </table>
+	    {% else %}
+	    	No search results found. Please try again.
+	    {% endif %}
     {% endif %}
     {% endspaceless %}
 {% endblock body %}
