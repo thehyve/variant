@@ -1,4 +1,5 @@
-{% extends "base.html" %}z
+{% extends "base.html" %}
+{% load safeJavascript %}
 
 {% block extraScripts %}
   <script type="text/javascript" 
@@ -19,7 +20,7 @@
 	var availableFields = {};;
 	
 	{% for name,list in autofill_lists.items %}
-		availableFields.{{name}} = [ "{{list|safeseq|join:"\", \""}}" ]; 
+		availableFields.{{name}} = [ "{{list|safeseq|escapejsSeq|join:"\", \""}}" ]; 
 	{% endfor %}    
     
 	$(function() {

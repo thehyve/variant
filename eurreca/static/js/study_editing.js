@@ -71,7 +71,7 @@ function editRow(id, that) {
     
     tr.find('td').each(function(){
         if(iCounter < lstHeaders.length) {
-            oldVal = $(this).html();
+            oldVal = $(this).text();
             
             // Determine the id of the new input field
             var newId;
@@ -145,7 +145,7 @@ function saveRow(id, that) {
             strNewRow = '';
             trs.find( 'td.editable' ).each(function(){
                 var newVal = $('input.newVal', $(this)).val();
-                $(this).html( newVal );
+                $(this).text( newVal );
             });
             
             // Replace the buttons with the correct ones
@@ -431,7 +431,7 @@ function submitDataHelper(type){
         count2 = 0;
         coll2 = $(this).children('td:not(:last-child)');
         coll2.each(function() {
-            item = $(this).html();
+            item = $(this).text();
             if(item==''){ item = 'null'; }
             m[headers[count2]] = item;
             count2 += 1;
