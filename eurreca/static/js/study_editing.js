@@ -56,6 +56,16 @@ function addRow(id, values, editable) {
     $("#"+id).append(row);
     
     initAutoFill( row );
+    
+    if(id == 'panel'){
+        initPanelBlurEvents(row);
+    }
+    if(id == 'phenotype'){
+        initPhenotypeBlurEvents(row);
+    }
+    if(id == 'genotype'){
+        initGenotypeBlurEvents(row);
+    }
 }
 
 

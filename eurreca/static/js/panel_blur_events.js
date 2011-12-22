@@ -44,7 +44,7 @@
         }
     });
     
-    $('input#input_mean_age', tr ).blur(function() {
+    $('input[id=input_mean_age]', tr ).blur(function() {
         var value = $(this).val();
         value = $.trim(value);
         $(this).val(value);
