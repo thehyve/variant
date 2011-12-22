@@ -164,7 +164,7 @@
 									<td class="editable editable_genotype">
                                         {% if interactionValues %}
                                             {% for item, value in interactionValues.items %}
-                                                {% ifequal forloop.parentloop.counter forloop.counter %}
+                                                {% ifequal form.id.value item %}
                                                     {% include 'study_editing/genotype_form.html' with gene=value.gene snp_ref=value.snp_ref snp_variant=value.snp_variant %}
                                                 {% endifequal %}
                                             {% endfor %}
@@ -175,7 +175,7 @@
 									<td class="editable editable_phenotype">
                                         {% if interactionValues %}
                                             {% for item, value in interactionValues.items %}
-                                                {% ifequal forloop.parentloop.counter forloop.counter %}
+                                                {% ifequal form.id.value item %}
                                                     {% include 'study_editing/phenotype_form.html' with phenotype_name=value.phenotype_name intake_data=value.intake_data %}
                                                 {% endifequal %}
                                             {% endfor %}
@@ -186,7 +186,7 @@
 									<td class="editable editable_panel">
                                         {% if interactionValues %}
                                             {% for item, value in interactionValues.items %}
-                                                {% ifequal forloop.parentloop.counter forloop.counter %}
+                                                {% ifequal form.id.value item %}
                                                     {% include 'study_editing/panel_form.html' with panel_description=value.panel_description %}
                                                 {% endifequal %}
                                             {% endfor %}
