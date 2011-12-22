@@ -258,6 +258,7 @@ def add_each_matching_item_to_results(items, search_terms,
         for li in list_of_name_value_pairs:
             if not (li[0]=='id' or li[0]=='study'):
                 # Handle unicode strings to lowercase (since str(u'abc') with a unicode string raises an error)
+                val = ''
                 if isinstance( li[1], str ) or isinstance( li[1], unicode ):
                 	val = li[1].lower()
                 else:
@@ -333,6 +334,8 @@ def add_each_item_to_results(items, search_terms):
             
         for li in list_of_name_value_pairs:
             if not (li[0]=='id' or li[0]=='study'):
+                # Handle unicode strings to lowercase (since str(u'abc') with a unicode string raises an error)
+                val = ''
                 if isinstance( li[1], str ) or isinstance( li[1], unicode ):
                 	val = li[1].lower()
                 else:
@@ -350,16 +353,11 @@ def interactions_to_be_added_helper(input, interactions, interaction_mappings, k
     
     if len(input) != 0:
         if key == 'studies':
-            '''# Add the interactions that belong to newly-added items
+            # Add the interactions that belong to newly-added items
             output = [interaction for interaction in interactions if 
                 interaction.study in input and 
                 not interaction in results]
-            return output '''
-            
-            ''' This no longer return the related interactions.
-                Just because a study is relevant to the search, does not make
-                each of that study's interactions relevant. '''
-            return []
+            return output
         else:
             # Add the interactions that belong to newly-added items
             output = [interaction for interaction in interactions if 
