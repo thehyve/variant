@@ -22,6 +22,12 @@
 	{# That is, the study's 'Year of publication' field #}
 	var availableFields = {};;
 	
+	var choices = {
+		"ratio_type": {},
+		"zygosity": {},
+		"gender": {}
+	};
+	
 	{% for name,list in autofill_lists.items %}
 		availableFields.{{name}} = [ "{{list|safeseq|escapejsSeq|join:"\", \""}}" ]; 
 	{% endfor %}    
@@ -50,6 +56,13 @@
 			interactionIndex++;
 		{% endfor %}
 		
+		/* Select boxes for several fields */
+	    {% for key, options in choices.items %}
+			{% for option in options %}
+		    	choices[ "{{key|safe|escapejs}}" ][ "{{option.0|safe|escapejs}}" ] = "{{option.1|safe|escapejs}}";
+		    {% endfor %}
+		{% endfor %}
+	    
 		initAutoFill();
         
         initBlurEvents();
