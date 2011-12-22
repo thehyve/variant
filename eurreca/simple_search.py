@@ -258,10 +258,10 @@ def add_each_matching_item_to_results(items, search_terms,
         for li in list_of_name_value_pairs:
             if not (li[0]=='id' or li[0]=='study'):
                 # Handle unicode strings to lowercase (since str(u'abc') with a unicode string raises an error)
-                if isinstance( li[0], str ) or isinstance( li[0], unicode ):
-                	val = li[0].lower()
+                if isinstance( li[1], str ) or isinstance( li[1], unicode ):
+                	val = li[1].lower()
                 else:
-                	val = str(li[0]).lower()
+                	val = str(li[1]).lower()
                 	
                 for term in search_terms:
                     if term in val:
@@ -333,7 +333,6 @@ def add_each_item_to_results(items, search_terms):
             
         for li in list_of_name_value_pairs:
             if not (li[0]=='id' or li[0]=='study'):
-                # Handle unicode strings to lowercase (since str(u'abc') with a unicode string raises an error)
                 if isinstance( li[1], str ) or isinstance( li[1], unicode ):
                 	val = li[1].lower()
                 else:
