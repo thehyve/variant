@@ -5,12 +5,12 @@
         $(this).val(value);
         if(value.length>50){
             if(!$(this).hasClass( "invalid" )){
-                message1 = 'Study id can consist of at most 50 characters.';            
+                message1 = 'Study id can consist of at most 50 characters.';
                 alert(message1);
                 $(this).addClass( "invalid" );
             }
         } else {
-            $(this).removeClass( "invalid" );        
+            $(this).removeClass( "invalid" );
         }
     });
     
@@ -25,7 +25,7 @@
                 $(this).addClass( "invalid" );
             }
         } else {
-            $(this).removeClass( "invalid" );        
+            $(this).removeClass( "invalid" );
         }
     });
     
@@ -40,7 +40,7 @@
                 $(this).addClass( "invalid" );
             }
         } else {
-            $(this).removeClass( "invalid" );        
+            $(this).removeClass( "invalid" );
         }
     });
     
@@ -55,7 +55,7 @@
                 $(this).addClass( "invalid" );
             }
         } else {
-            $(this).removeClass( "invalid" );        
+            $(this).removeClass( "invalid" );
         }
     });
     
@@ -70,7 +70,7 @@
                 $(this).addClass( "invalid" );
             }
         } else {
-            $(this).removeClass( "invalid" );        
+            $(this).removeClass( "invalid" );
         }
     });
     
@@ -85,7 +85,7 @@
                 $(this).addClass( "invalid" );
             }
         } else {
-            $(this).removeClass( "invalid" );        
+            $(this).removeClass( "invalid" );
         }
     });
     
@@ -100,7 +100,7 @@
                 $(this).addClass( "invalid" );
             }
         } else {
-            $(this).removeClass( "invalid" );        
+            $(this).removeClass( "invalid" );
         }
     });
     
@@ -115,7 +115,7 @@
                 $(this).addClass( "invalid" );
             }
         } else {
-            $(this).removeClass( "invalid" );        
+            $(this).removeClass( "invalid" );
         }
     });
     
@@ -130,7 +130,7 @@
                 $(this).addClass( "invalid" );
             }
         } else {
-            $(this).removeClass( "invalid" );        
+            $(this).removeClass( "invalid" );
         }
     });
     
@@ -145,7 +145,7 @@
                 $(this).addClass( "invalid" );
             }
         } else {
-            $(this).removeClass( "invalid" );        
+            $(this).removeClass( "invalid" );
         }
     });
     
@@ -155,12 +155,12 @@
         $(this).val(value);
         if(value.length>50){
             if(!$(this).hasClass( "invalid" )){
-                message1 = '\'Number of participants\' field can consist of at most ten digits.';
+                message1 = '\'Number of participants\' field can consist of at most 50 characters.';
                 alert(message1);
                 $(this).addClass( "invalid" );
             }
         } else {
-            $(this).removeClass( "invalid" );        
+            $(this).removeClass( "invalid" );
         }
     });
     
@@ -175,7 +175,7 @@
                 $(this).addClass( "invalid" );
             }
         } else {
-            $(this).removeClass( "invalid" );        
+            $(this).removeClass( "invalid" );
         }
     });
     
@@ -190,7 +190,202 @@
                 $(this).addClass( "invalid" );
             }
         } else {
-            $(this).removeClass( "invalid" );        
+            $(this).removeClass( "invalid" );
+        }
+    });
+    
+    $('input[name=genotype-gene]').blur(function() {
+        var value = $(this).val();
+        value = $.trim(value);
+        $(this).val(value);
+        if(value.length>500){
+            if(!$(this).hasClass( "invalid" )){
+                message1 = '\'Gene name\' field can consist of at most 500 characters.';
+                alert(message1);
+                $(this).addClass( "invalid" );
+            }
+        } else {
+            $(this).removeClass( "invalid" );
+        }
+    });
+    
+    $('input[name=genotype-snp_ref]').blur(function() {
+        var value = $(this).val();
+        value = $.trim(value);
+        $(this).val(value);
+        if(value.length>500){
+            if(!$(this).hasClass( "invalid" )){
+                message1 = '\'SNP ref\' field can consist of at most 500 characters.';
+                alert(message1);
+                $(this).addClass( "invalid" );
+            }
+        } else {
+            $(this).removeClass( "invalid" );
+        }
+    });
+    
+    $('input[name=genotype-snp_variant]').blur(function() {
+        var value = $(this).val();
+        value = $.trim(value);
+        $(this).val(value);
+        if(value.length>500){
+            if(!$(this).hasClass( "invalid" )){
+                message1 = '\'SNP variant\' field can consist of at most 500 characters.';
+                alert(message1);
+                $(this).addClass( "invalid" );
+            }
+        } else {
+            $(this).removeClass( "invalid" );
+        }
+    });
+    
+    $('input[name=phenotype-phenotype_name]').blur(function() {
+        var value = $(this).val();
+        value = $.trim(value);
+        $(this).val(value);
+        if(value.length>500){
+            if(!$(this).hasClass( "invalid" )){
+                message1 = '\'Phenotype name\' field can consist of at most 500 characters.';
+                alert(message1);
+                $(this).addClass( "invalid" );
+            }
+        } else {
+            $(this).removeClass( "invalid" );
+        }
+    });
+    
+    $('input[name=phenotype-intake_data]').blur(function() {
+        var value = $(this).val();
+        value = $.trim(value);
+        $(this).val(value);
+        if(value.length>500){
+            if(!$(this).hasClass( "invalid" )){
+                message1 = '\'Intake data\' field can consist of at most 500 characters.';
+                alert(message1);
+                $(this).addClass( "invalid" );
+            }
+        } else {
+            $(this).removeClass( "invalid" );
+        }
+    });
+    
+    $('input[name=endpoint-endpoint]').blur(function() {
+        var value = $(this).val();
+        value = $.trim(value);
+        $(this).val(value);
+        if(value.length>500){
+            if(!$(this).hasClass( "invalid" )){
+                message1 = '\'Health outcome\' field can consist of at most 500 characters.';
+                alert(message1);
+                $(this).addClass( "invalid" );
+            }
+        } else {
+            $(this).removeClass( "invalid" );
+        }
+    });
+    
+    $('input[name=statistical_model]').blur(function() {
+        var value = $(this).val();
+        value = $.trim(value);
+        $(this).val(value);
+        if(value.length>500){
+            if(!$(this).hasClass( "invalid" )){
+                message1 = '\'Statistical model\' field can consist of at most 500 characters.';
+                alert(message1);
+                $(this).addClass( "invalid" );
+            }
+        } else {
+            $(this).removeClass( "invalid" );
+        }
+    });
+    
+    $('input[name=p_value]').blur(function() {
+        var value = $(this).val();
+        value = $.trim(value);
+        $(this).val(value);
+        if(value.length>10){
+            if(!$(this).hasClass( "invalid" )){
+                message1 = '\'p Value\' field can consist of at most 10 characters.';
+                alert(message1);
+                $(this).addClass( "invalid" );
+            }
+        } else {
+            $(this).removeClass( "invalid" );
+        }
+    });
+    
+    $('input[name=p_value_for_trend]').blur(function() {
+        var value = $(this).val();
+        value = $.trim(value);
+        $(this).val(value);
+        if(value.length>10){
+            if(!$(this).hasClass( "invalid" )){
+                message1 = '\'p Value for trend\' field can consist of at most 10 characters.';
+                alert(message1);
+                $(this).addClass( "invalid" );
+            }
+        } else {
+            $(this).removeClass( "invalid" );
+        }
+    });
+    
+    $('input[name=ratio]').blur(function() {
+        var value = $(this).val();
+        value = $.trim(value);
+        $(this).val(value);
+        if(value.length>10){
+            if(!$(this).hasClass( "invalid" )){
+                message1 = '\'Ratio\' field can consist of at most 10 characters.';
+                alert(message1);
+                $(this).addClass( "invalid" );
+            }
+        } else {
+            $(this).removeClass( "invalid" );
+        }
+    });
+    
+    $('input[name=ci_lower]').blur(function() {
+        var value = $(this).val();
+        value = $.trim(value);
+        $(this).val(value);
+        if(value.length>10){
+            if(!$(this).hasClass( "invalid" )){
+                message1 = '\'CI lower\' field can consist of at most 10 characters.';
+                alert(message1);
+                $(this).addClass( "invalid" );
+            }
+        } else {
+            $(this).removeClass( "invalid" );
+        }
+    });
+    
+    $('input[name=ci_upper]').blur(function() {
+        var value = $(this).val();
+        value = $.trim(value);
+        $(this).val(value);
+        if(value.length>10){
+            if(!$(this).hasClass( "invalid" )){
+                message1 = '\'CI upper\' field can consist of at most 10 characters.';
+                alert(message1);
+                $(this).addClass( "invalid" );
+            }
+        } else {
+            $(this).removeClass( "invalid" );
+        }
+    });
+    
+    $('input[name=significant_associations]').blur(function() {
+        var value = $(this).val();
+        value = $.trim(value);
+        $(this).val(value);
+        if(value.length>500){
+            if(!$(this).hasClass( "invalid" )){
+                message1 = '\'Significant associations\' field can consist of at most 500 characters.';
+                alert(message1);
+                $(this).addClass( "invalid" );
+            }
+        } else {
+            $(this).removeClass( "invalid" );
         }
     });
 }

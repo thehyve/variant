@@ -98,7 +98,7 @@ def study_create(request):
   
             # Study has been saved, show study
             message = "The study has been saved."
-            messageType = "positive"                
+            messageType = "positive"
             try:
                 fs = utils.get_formsets_by_id(study.id)
                 return render(request, 'domain_views/study_view.html', 
