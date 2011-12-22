@@ -20,3 +20,5 @@ syntax: regexp
 ^eurreca/eurreca\.db$
 syntax: regexp
 ^eurreca/fixtures$
+syntax: regexp
+^\.settings/org\.eclipse\.core\.resources\.prefs$
