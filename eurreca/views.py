@@ -148,6 +148,13 @@ def study_create(request):
                  'interactionValues' : inst.args[1]['interactionValues'], 
                  'message' : message,
                  'messageType' : messageType,
+                 
+                 'choices': {
+                 	'ratio_type': Interaction._meta.get_field( 'ratio_type' ).choices,
+                 	'zygosity': Genotype._meta.get_field( 'zygosity' ).choices,
+                 	'gender': Panel._meta.get_field( 'gender' ).choices
+				 },
+				                  
                  'mouseover_text': utils.get_mouseover_text(),
                  'autofill_lists': utils.get_autofill_lists()}) 
     else:
@@ -157,6 +164,13 @@ def study_create(request):
          'message' : message,
          'messageType' : messageType,
          'mouseover_text': utils.get_mouseover_text(),
+                 
+         'choices': {
+         	'ratio_type': Interaction._meta.get_field( 'ratio_type' ).choices,
+         	'zygosity': Genotype._meta.get_field( 'zygosity' ).choices,
+         	'gender': Panel._meta.get_field( 'gender' ).choices
+		 },
+         
          'autofill_lists': utils.get_autofill_lists()})
          
 @login_required   
@@ -240,6 +254,11 @@ def study_update(request, id):
                      'formsetPhenotype' :  fs['phenotype'],
                      'formsetPanel' :  fs['panel'],
                      'formsetInteraction' :  fs['interaction'],
+                     
+	                 'ratio_type_choices': Interaction._meta.get_field( 'ratio_type' ).choices,
+	                 'zygosity_choices':   Genotype._meta.get_field( 'zygosity' ).choices,   
+	                 'gender_choices':   Panel._meta.get_field( 'gender' ).choices,   
+                     
                      'message' : message,
                      'messageType' : messageType,
                      'mouseover_text': utils.get_mouseover_text(),
@@ -262,6 +281,13 @@ def study_update(request, id):
                  'formsetPanel' :  inst.args[1]['formsetPanel'],
                  'formsetInteraction' :  inst.args[1]['formsetInteraction'], 
                  'interactionValues' : inst.args[1]['interactionValues'], 
+                 
+		         'choices': {
+		         	'ratio_type': Interaction._meta.get_field( 'ratio_type' ).choices,
+		         	'zygosity': Genotype._meta.get_field( 'zygosity' ).choices,
+		         	'gender': Panel._meta.get_field( 'gender' ).choices
+				 },
+				 
                  'message' : message,
                  'messageType' : messageType,
                  'mouseover_text': utils.get_mouseover_text(),
@@ -285,6 +311,13 @@ def study_update(request, id):
                  'formsetPhenotype' :  fs['phenotype'],
                  'formsetPanel' :  fs['panel'],
                  'formsetInteraction' :  fs['interaction'],
+                 
+		         'choices': {
+		         	'ratio_type': Interaction._meta.get_field( 'ratio_type' ).choices,
+		         	'zygosity': Genotype._meta.get_field( 'zygosity' ).choices,
+		         	'gender': Panel._meta.get_field( 'gender' ).choices
+				 },
+                 
                  'message' : message,
                  'messageType' : messageType,
                  'interactionValues' : interactionValues,

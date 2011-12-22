@@ -22,6 +22,12 @@
 	{# That is, the study's 'Year of publication' field #}
 	var availableFields = {};;
 	
+	var choices = {
+		"ratio_type": {},
+		"zygosity": {},
+		"gender": {}
+	};
+	
 	{% for name,list in autofill_lists.items %}
 		availableFields.{{name}} = [ "{{list|safeseq|escapejsSeq|join:"\", \""}}" ]; 
 	{% endfor %}    
@@ -50,6 +56,13 @@
 			interactionIndex++;
 		{% endfor %}
 		
+		/* Select boxes for several fields */
+	    {% for key, options in choices.items %}
+			{% for option in options %}
+		    	choices[ "{{key|safe|escapejs}}" ][ "{{option.0|safe|escapejs}}" ] = "{{option.1|safe|escapejs}}";
+		    {% endfor %}
+		{% endfor %}
+	    
 		initAutoFill();
         
         initBlurEvents();
@@ -182,7 +195,7 @@
                                         {% endif %}
 									</td>
 									<td class="editable editable_endpoint">
-                                        {% include 'study_editing/endpoint_form.html' with endpoint='' %}
+                                        {% include 'study_editing/endpoint_form.html' with endpoint=form.endpoint.value %}
 									</td>
 									<td class="editable editable_ratios">
 										{% include 'study_editing/ratios_form.html' with statistical_model=form.statistical_model.value p_value=form.p_value.value p_value_for_trend_value=form.p_value_for_trend_value.value ratio_type=form.ratio_type.value ratio=form.ratio.value ci_lower=form.ci_lower.value ci_upper=form.ci_upper.value significant_associations=form.significant_associations.value %}

@@ -14,7 +14,18 @@
 		</div>
 		<label>p Value for interaction</label><input type="text" class="label" name="p_value" value="{{p_value}}"><span class="tooltip"><img src="{{ STATIC_URL }}images/icons/help.png" alt="help"/><span>{{ mouseover_text.p_value }}</span></span><br />
         <label>p Value for trend</label><input type="text" class="label" name="p_value_for_trend" value="{{p_value_for_trend}}"><span class="tooltip"><img src="{{ STATIC_URL }}images/icons/help.png" alt="help"/><span>{{ mouseover_text.p_value_for_trend }}</span></span><br />
-		<label>Ratio type</label><input type="text" class="label" name="ratio_type" value="{{ratio_type}}"><span class="tooltip"><img src="{{ STATIC_URL }}images/icons/help.png" alt="help"/><span>{{ mouseover_text.ratio_type }}</span></span><br />
+		<label>Ratio type</label>
+			<select class="label" name="ratio_type">
+	            <option value=""></option>
+			    {% for option in choices.ratio_type %}
+			        {% ifequal option.0 ratio_type %}
+			            <option value="{{option.0}}" selected="selected">{{option.1}}</option>
+			        {% else %}
+			            <option value="{{option.0}}">{{option.1}}</option>
+			        {% endifequal %}
+			    {% endfor %}				
+			</select>
+			<span class="tooltip"><img src="{{ STATIC_URL }}images/icons/help.png" alt="help"/><span>{{ mouseover_text.ratio_type }}</span></span><br />
 		<label>Ratio value</label><input type="text" class="label" name="ratio" value="{{ratio}}"><br />
 		<label>CI lower</label><input type="text" class="" name="ci_lower" value="{{ci_lower}}"><span class="tooltip"><img src="{{ STATIC_URL }}images/icons/help.png" alt="help"/><span>{{ mouseover_text.ci_lower }}</span></span><br />
 		<label>CI upper</label><input type="text" class="" name="ci_upper" value="{{ci_upper}}"><span class="tooltip"><img src="{{ STATIC_URL }}images/icons/help.png" alt="help"/><span>{{ mouseover_text.ci_upper }}</span></span><br />

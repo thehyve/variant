@@ -34,8 +34,9 @@ function addRow(id, values, editable) {
     	var cell = $( "<td class='editable'></td>" );
     	
     	if( editable ) {
-    		var fieldName = $(this).attr('id'); 
-    		var input = $( "<input class='newVal' type='text' id='input_" + fieldName + "'/>" ).val( newVal );
+    		var fieldName = $(this).attr('id');
+    		
+    		var input = createInput( fieldName, newVal );
     		
     		if( availableFields && availableFields[ fieldName ] ) {
     			cell.append( $( "<div class='autofill' rel=\"" + fieldName + "\"></div" ).append( input ) );
@@ -68,6 +69,23 @@ function addRow(id, values, editable) {
     }
 }
 
+function createInput( fieldName, newVal ) {
+	var input;
+
+	if( fieldName == 'zygosity' || fieldName == 'gender' ) {
+		input = $( "<select class='newVal' id='input_" + fieldName + "'/>" );
+		input.append( $( "<option value=''></option>" ) );
+		
+		for( option in choices[ fieldName ] ) {
+			input.append( $( "<option>" ).attr( "value", option ).text( choices[ fieldName ][ option ] ) );
+		}
+		input.val( newVal );
+	} else {
+		input = $( "<input class='newVal' type='text' id='input_" + fieldName + "'/>" ).val( newVal );
+	}
+	
+	return input
+}
 
 /**
  * Starts editing a row with data in the given table
@@ -91,7 +109,7 @@ function editRow(id, that) {
             
             // Create a text field to edit this value. Assign id and value this way, so escaping is
             // done properly
-            var newInput = $( "<input type='text' class='newVal'>" ).attr( "id", newId ).val( oldVal );
+    		var newInput = createInput( fieldName, oldVal );
             
             // Create a hidden field with the old value in it, so the edit can be cancelled anytime
             var hiddenOldValue = $( "<input type='hidden' class='oldVal'>" ).val( oldVal );
@@ -144,7 +162,7 @@ function saveRow(id, that) {
                     
                     var sourceTds = trs.children();
                     for( i = 0; i < listToUpdate[ id ].length; i++ ) {
-                        var value = sourceTds.eq(i).find('input.newVal').val();
+                        var value = sourceTds.eq(i).find('.newVal').val();
                         $( listToUpdate[ id ][ i ], td ).val( $.trim(value) );
                     }
                     updateFields( td );
@@ -154,7 +172,13 @@ function saveRow(id, that) {
             // Now put all edited text into the td
             strNewRow = '';
             trs.find( 'td.editable' ).each(function(){
-                var newVal = $('input.newVal', $(this)).val();
+                var input = $('input.newVal', $(this));
+                var newVal;
+                if( input.length > 0 )
+                	newVal = input.val();
+                else
+                	newVal = $( "select.newVal", $(this) ).val();
+                
                 $(this).text( newVal );
             });
             
@@ -384,7 +408,7 @@ function submitData() {
     	var interaction = {};
     	
     	// Loop through all input elements
-    	$( ".editable_ratios input[type=text]", $(row) ).not( ".all" ).each( function( idx, input ) {
+    	$( ".editable_ratios input[type=text], .editable_ratios select", $(row) ).not( ".all" ).each( function( idx, input ) {
     		interaction[ $(input).attr( 'name' ) ] = $(input).val();
     	});
     	
@@ -603,7 +627,7 @@ function saveForm(td) {
 		
 		// If we are in a 'new row' and have values entered, store the row and add a new one
 		var hasValues = false;
-		$.each( $(td).find( "input[type=text]" ), function( idx, el ) {
+		$.each( $(td).find( "input[type=text],select" ), function( idx, el ) {
 			if( hasValues )
 				return;
 			
