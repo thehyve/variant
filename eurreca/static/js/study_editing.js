@@ -73,7 +73,6 @@ function editRow(id, that) {
         if(iCounter < lstHeaders.length) {
             oldVal = $(this).html();
             
-            
             // Determine the id of the new input field
             var newId;
             var fieldName;
@@ -379,19 +378,17 @@ function submitData() {
     		interaction[ $(input).attr( 'name' ) ] = $(input).val();
     	});
     	
+    	// Also add endpoint
+    	interaction[ "endpoint" ] = $( "input[name=endpoint-endpoint]", $(row) ).val();
+    	
     	interactionsArray[ interactionIdx++ ] = interaction;
     });
     
     return_map['interaction'] = interactionsArray;
     return_map['interactionRelations'] = retrieve_interaction_relations();
     return_object = JSON.stringify(return_map);
-    // Replace ' with ` to deal with crappy Python/Django JSON decoding /
-    // POST handling
-    // ' should actally not be a problem according to JSON specification
-    return_object = return_object.replace(/'/g, "`");
-    form = $('form[name=study_editing]');
-    formstuff = "<input type=hidden name='returnObject' value='";
-    form.append(formstuff + return_object +"'>");
+    
+    form = $('form[name=study_editing]').append( $( "<input type=hidden name='returnObject'>" ).val( return_object ) );
     form.submit();
 }
 
