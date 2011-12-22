@@ -328,7 +328,11 @@ def add_each_item_to_results(items, search_terms):
             
         for li in list_of_name_value_pairs:
             if not (li[0]=='id' or li[0]=='study'):
-                val = str(li[1]).lower()
+                if isinstance( li[1], str ) or isinstance( li[1], unicode ):
+                	val = li[1].lower()
+                else:
+                	val = str(li[1]).lower()
+                	
                 for term in search_terms:
                     if term in val:
                         matches.append(val)
