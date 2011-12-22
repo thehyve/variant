@@ -2,7 +2,7 @@
 register = template.Library()
  
 """
- From:
+ Based on:
  http://twigstechtips.blogspot.com/2010/02/django-filter-to-check-if-string.html
 """ 
 @register.filter()
@@ -15,14 +15,30 @@ def contains(value, arg):
     Not a link.
     {% endif %}
     '''
-    value = str(value)
+    if isinstance( value, str ) or isinstance( value, unicode ):
+        value = value.lower()
+    else:
+        value = str(value).lower()
     arg = str(arg)
     return arg in value
     
     
 @register.filter()
 def containedin(value, arg):
-    return (value in arg)
+    if isinstance( value, str ) or isinstance( value, unicode ):
+        value = value.lower()
+    else:
+        value = str(value).lower()
+    if (value in arg):
+        return True
+    for a in arg:
+        if isinstance( a, str ) or isinstance( a, unicode ):
+            a = a.lower()
+        else:
+            a = str(a).lower()
+        if a in value:
+            return True
+    return False
     
 @register.filter()
 def snprefcontainedin(value, arg):
